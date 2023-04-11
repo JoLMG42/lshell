@@ -1,0 +1,10 @@
+-recuperer prompt
+-parser promp:
+		-si probleme de syntaxe -> code d'erreur a 2 + print "Invalid syntax";
+		-pas de suppression des quotes et doubles quotes dans le parsing, on le fera au moment de l'exec,
+			a cause de export par exemple.
+		-gestion des priorites d'execution avec un arbre. (chercher truc du style "Bash operator priority" sur google.
+
+-le stockage des donnees se fait dans une structure bien sur. Il va y avoir une grosse strcture principale ou il y aura deansune structure pour le pasring et une structure pour l'exec etc...
+
+
