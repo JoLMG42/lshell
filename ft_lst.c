@@ -1,0 +1,85 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lst.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
+/*   Updated: 2023/04/12 14:09:33 by jtaravel         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void	ft_lstadd_back(t_cmd **alst, t_cmd *new)
+{
+	t_cmd	*tmp;
+
+	tmp = *alst;
+	if ((*alst))
+	{
+		tmp = ft_lstlast(*alst);
+		tmp->next = new;
+	}
+	else
+	{
+		*alst = new;
+	}
+}
+
+void	del(void *data)
+{
+	free(data);
+}
+
+t_cmd	*ft_lstlast(t_cmd *lst)
+{
+	t_cmd	*tmp;
+
+	while (lst)
+	{
+		tmp = lst;
+		lst = lst->next;
+	}
+	return (tmp);
+}
+
+void	ft_lstclear(t_cmd **lst, void (*del)(void *))
+{
+	t_cmd	*list;
+	t_cmd	*tmp;
+
+	if (!lst || !del)
+		return ;
+	list = *lst;
+	while (list)
+	{
+		tmp = list->next;
+		ft_lstdelone(list, del);
+		list = tmp;
+	}
+	*lst = NULL;
+}
+
+void	ft_lstdelone(t_cmd *lst, void (*del)(void *))
+{
+	if (!lst || !del)
+		return ;
+	if (lst->cmd)
+		(*del)(lst->cmd);
+	free(lst);
+}
+
+t_cmd	*ft_lstnew(char	*cmd, int pos)
+{
+	t_cmd	*tmp;
+
+	tmp = malloc(sizeof(struct s_cmd));
+	if (!tmp)
+		return (0);
+	tmp->cmd = cmd;
+	tmp->pos = pos;
+	tmp->next = NULL;
+	return (tmp);
+}

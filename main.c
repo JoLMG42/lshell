@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/11 17:07:28 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/12 20:08:29 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,6 @@ char	*add_spaces(char *str)
 		}
 		if (str[i] == '|' || str[i] == '<' || str[i] == '>')
 		{
-			printf("res = %s\n", res);
 			res[j] = ' ';
 			j++;
 			res[j] = str[i];
@@ -295,25 +294,212 @@ char	*resjoin(char **tab)
 	return res;
 }
 
+void	free_tab(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+	{
+		free(tab[i]);
+		i++;
+	}
+	free(tab);
+}
+int	ft_lstsize(t_cmd *lst)
+{
+	int	i;
+
+	i = 0;
+	while (lst)
+	{
+		lst = lst->next;
+		i++;
+	}
+	return (i);
+}
+
+t_tree	*fonctiontestpoudoublepipes(t_tree **lst)
+{
+	t_tree	*tmp;
+	char	**tab;
+	int	i;
+
+	tmp = *lst;
+	while (tmp)
+	{
+		if (tmp->cmd_left)
+		{
+			tab = ft_split(tmp->cmd_left, "||");
+			i = 0;
+			while (tab[i])
+			{
+				printf("tab[i]: %s\n", tab[i]);
+				if (i == 0)
+					ft_lstadd_backtree(lst, ft_lstnewtree(ft_strdup("||"), NULL, ft_strdup(tab[i])));
+				else
+					ft_lstadd_backtree(lst, ft_lstnewtree(ft_strdup("||"), ft_strdup(tab[i - 1]), ft_strdup(tab[i])));
+				i++;
+				i++;
+			}
+		}
+		tmp = tmp->next;
+			
+	}
+	return *lst;
+}
+
+char	**rejointab(char **tab)
+{
+	int	i;
+	int	j;
+	int	h;
+	char	**res;
+
+	i = 0;
+	j = 0;
+	h = 1;
+	res = malloc(1000000);
+	res[j] = ft_strdup(tab[0]);
+	while (tab[h])
+	{
+		if (ft_strcmp(tab[h], "|") == 0 || ft_strcmp(tab[h], "&&") == 0 || ft_strcmp(tab[h], "||") == 0)
+		{
+			j++;
+			res[j] = ft_strjoin(res[j], tab[h]);
+			j++;
+		}
+		else
+		{
+			res[j] = ft_strjoin(res[j], tab[h]);
+			res[j] = ft_strjoin(res[j], " ");
+		}
+		h++;
+	}
+	res[j] = 0;
+	return res;
+}
+
 int	pars_prompt(char *str)
 {
 	char	*recup;
 	char	**tab;
+	t_cmd	*l_cmd;
+	t_tree	*tree;
+	char	**suppr;
+
+	suppr = malloc(sizeof(char *) * ft_strlen(str) + 1);
+	l_cmd = malloc(sizeof(struct s_cmd));
+	tree = malloc(sizeof(struct s_tree));
 	printf("recup prompt: %s\n", str);
 	recup = add_spaces(str);
 	printf("AFTER ADD SPACES: %s\n", recup);
-	tab = ft_supersplit(recup, ' ');
-	if (!check_syntax(tab))
-		return (0);
+	tab = ft_split(recup, " ");
+//	if (!check_syntax(tab))
+//		return (0);
 	int	i = 0;
+	int	c = 0;
 	while (tab[i])
 	{
 		printf("after SPLIT: %s\n", tab[i]);
 		i++;
 	}
+	/*tab = ft_split(recup, "&&");
+	i = 0;
+	while (tab[i])
+	{
+		ft_lstadd_back(&l_cmd, ft_lstnew(ft_strdup(tab[i]), LeftET));
+		if (i == 0)
+			l_cmd->prev = NULL;
+		l_cmd->next->prev = l_cmd;
+		l_cmd = l_cmd->next;
+		i++;
+	}
+	i = 1;
+	while (tab[i])
+	{
+		ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("&&"), ft_strdup(tab[i - 1]), ft_strdup(tab[i])));
+		//tree = tree->next;
+
+		//printf("\n\n\n\nTAB[i]: %s\n\n\n", tab[i]);
+		i++;
+		//printf("\n\n\n\nTAB[i]: %s\n\n\n", tab[i]);
+	}*/
+	tab = rejointab(tab);
+	i = 1;
+	while (tab[i])
+	{
+		if (ft_strcmp(tab[i], "&&") == 0)
+		{
+			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("&&"), ft_strdup(tab[i - 1]), ft_strdup(tab[i + 1])));
+		}
+		if (ft_strcmp(tab[i], "||") == 0)
+		{
+			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("||"), ft_strdup(tab[i - 1]), ft_strdup(tab[i + 1])));
+		}
+		if (ft_strcmp(tab[i], "|") == 0)
+		{
+			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("|"), ft_strdup(tab[i - 1]), ft_strdup(tab[i + 1])));
+		}
+		i++;
+
+	}
+	t_tree	*test = tree->next;//fonctiontestpoudoublepipes(&tree->next);
+	while (test && i > 1)
+	{
+		printf("OPERATOR: %s\n", test->ope);
+		printf("CMD LEFT: %s\n", test->cmd_left);
+		printf("CMD right: %s\n", test->cmd_right);
+		test = test->next;
+	}
+	/*i = 0;
+	while (tab[i])
+	{
+		char **tmp = ft_split(tab[i], "||");
+		int j = 0;
+		while (tmp[j] && tmp[1])
+		{
+			suppr[c] = ft_strdup(tab[i]);
+			c++;
+			printf("tab[i] si || -> %s\n\n\n", tab[i]);	
+			ft_lstadd_back(&l_cmd, ft_lstnew(ft_strdup(tmp[j]), LeftDP));
+			l_cmd->next->prev = l_cmd;
+			l_cmd = l_cmd->next;
+			j++;
+		}
+		free_tab(tmp);
+		i++;
+	}
+	printf("\n\n\n");
+	while (l_cmd->prev)
+	{
+		l_cmd = l_cmd->prev;
+	}
+	l_cmd = l_cmd->next;
+	t_cmd	*list = l_cmd;
+	while (list->next)
+	{
+		c = 0;
+		while (suppr[c])
+		{
+			if (ft_strcmp(suppr[c], list->cmd) == 0)
+				ft_lstdelone(list, del);
+			c++;
+		}
+		list = list->next;
+	}
+	l_cmd = list;
+	while (l_cmd->prev)
+	{
+		if (ft_strlen(l_cmd->cmd) > 0)
+			printf("Commande -> %s     POS-> %d\n", l_cmd->cmd, l_cmd->pos);
+		l_cmd = l_cmd->prev;
+	}
+	//printf("test: %s\n", l_cmd->cmd);
+	printf("\n\n\n");
 	//printf("ON REJOIN TOUT APRES PARSING\n\n\n");
 	//char	*res = resjoin(tab);
-	//printf("%s\n\n\n", res);
+	//printf("%s\n\n\n", res);*/
 	return (1);
 }
 
@@ -331,4 +517,5 @@ int	main(int ac, char **av, char **env)
 		if (str[0])
 			add_history(str);
 	}
+
 }
