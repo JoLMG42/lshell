@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/21 10:07:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/12 18:22:44 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/13 15:02:38 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,12 +102,14 @@ char	**ft_split(char *str, char *charset)
 	i = 0;
 	j = 0;
 	c = 0;
-	while (str[i] != '\0')
+	while (str[i])
 	{
 		if (ft_check_charset(charset, str[i], &s_s) == 1)
 			i++;
 		else
 		{
+			printf("DOU VIENT CET INVALID READ\n %s\n\n\n", str + i);
+			res[j] = NULL;
 			res[j] = ft_cpyword(str + i, charset, ft_lenword(str + i, charset, &s_s), &s_s);
 			j++;
 			i = i + ft_lenword(str + i, charset, &s_s);

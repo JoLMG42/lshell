@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/12 19:14:41 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/13 19:50:41 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ t_tree	*ft_lstlasttree(t_tree *lst)
 {
 	t_tree	*tmp;
 
+	if (!lst)
+		return lst;
 	while (lst)
 	{
 		tmp = lst;
@@ -61,12 +63,16 @@ void	ft_lstdelonetree(t_tree *lst, void (*del)(void *))
 {
 	if (!lst || !del)
 		return ;
-	//if (lst->cmd)
-	//	(*del)(lst->cmd);
+	if (lst->cmd_left)
+		ft_lstclear(&lst->cmd_left, del);
+	if (lst->cmd_right)
+		ft_lstclear(&lst->cmd_right, del);
+	if (lst->ope)
+		free(lst->ope);
 	free(lst);
 }
 
-t_tree	*ft_lstnewtree(char *ope, char *cmdl, char *cmdr)
+t_tree	*ft_lstnewtree(char *ope, t_cmd *cmdl, t_cmd *cmdr)
 {
 	t_tree	*tmp;
 

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:23:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/12 18:21:59 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/13 19:16:09 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,15 @@ typedef struct s_syntax
 typedef	struct	s_cmd
 {
 	char	*cmd;
-	int	pos;
+	int	pos; /// besoin ???
+	int	fd_in;
+	int	fd_out;
+	char	*name_in;
+	char	*name_out;
+	int	mode_open;
+	int	is_hd;
+	char	*limiter;
+	int	bracelvl;
 	struct s_cmd	*next;
 	struct s_cmd	*prev;
 }	t_cmd;
@@ -37,8 +45,8 @@ typedef	struct	s_cmd
 typedef	struct	s_tree
 {
 	char	*ope;
-	char	*cmd_left;
-	char	*cmd_right;
+	t_cmd	*cmd_left;
+	t_cmd	*cmd_right;
 	struct	s_tree	*next;
 }	t_tree;
 

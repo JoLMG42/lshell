@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/12 18:32:11 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/13 16:00:21 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,13 @@ char    *ft_strjoin(char *s1, char *s2);
 int	ft_strlen(char *str);
 char    *ft_strdup(char *s);
 char	**ft_split(char *str, char *charset);
-t_cmd   *ft_lstnew(char *cmd, int pos);
+t_cmd   *ft_lstnew(char *cmd);
 void    ft_lstdelone(t_cmd *lst, void (*del)(void *));
 void    ft_lstclear(t_cmd **lst, void (*del)(void *));
 void    ft_lstadd_back(t_cmd **alst, t_cmd *new);
 void    del(void *data);
 t_cmd   *ft_lstlast(t_cmd *lst);
-t_tree  *ft_lstnewtree(char *ope, char *cmdl, char *cmdr);
+t_tree  *ft_lstnewtree(char *ope, t_cmd *cmdl, t_cmd *cmdr);
 void    ft_lstdelonetree(t_tree *lst, void (*del)(void *));
 void    ft_lstcleartree(t_tree **lst, void (*del)(void *));
 t_tree  *ft_lstlasttree(t_tree *lst);
