@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/14 14:50:32 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/14 14:56:15 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -607,6 +607,7 @@ void	setbracelvl(t_tree **lst)
 			}
 			i++;
 		}
+		free_tab(tab);
 		tmp = tmp->next;
 	}
 }
@@ -657,6 +658,7 @@ void	setbracelvlfirstcmd(t_tree **lst)
 		}
 		i++;
 	}
+	free_tab(tab);
 }
 
 void	setarg(t_tree **lst)
@@ -685,6 +687,7 @@ void	setarg(t_tree **lst)
 		}
 		tmp->cmd_right->arg[j] = 0;
 		tmp = tmp->next;
+		free_tab(tab);
 	}
 }
 
@@ -711,6 +714,7 @@ void	setargfirstcmd(t_tree **lst)
 		i++;
 	}
 	tmp->cmd_left->arg[j] = 0;
+	free_tab(tab);
 }
 	
 int	pars_prompt(char *str)
@@ -728,7 +732,11 @@ int	pars_prompt(char *str)
 	//tab = ft_split(recup, " ");
 	tab = ft_supersplit(recup, ' ');
 	if (!tab[0])
+	{
+		free(recup);
+		free_tab(tab);
 		return (1);
+	}
 	/*int j = 0;
 	while (tab[j])
 	{
