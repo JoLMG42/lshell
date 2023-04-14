@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:23:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/13 19:16:09 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/14 14:23:26 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ typedef	struct	s_cmd
 	int	is_hd;
 	char	*limiter;
 	int	bracelvl;
+	char	**subshell;
+	char	**arg;
 	struct s_cmd	*next;
 	struct s_cmd	*prev;
 }	t_cmd;

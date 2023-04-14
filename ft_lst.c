@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/13 19:52:02 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/14 14:51:38 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,10 @@ void	ft_lstdelone(t_cmd *lst, void (*del)(void *))
 		free(lst->name_out);
 	if (lst->limiter)
 		free(lst->limiter);
+	if (lst->arg)
+		free_tab(lst->arg);
+	lst->bracelvl = 0;
+	lst->is_hd = 0;
 	free(lst);
 }
 
@@ -89,5 +93,6 @@ t_cmd	*ft_lstnew(char	*cmd)
 	tmp->name_out = NULL;
 	tmp->limiter = NULL;
 	tmp->next = NULL;
+	tmp->arg = NULL;
 	return (tmp);
 }

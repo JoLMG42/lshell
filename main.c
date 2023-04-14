@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/13 19:54:03 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/14 14:50:32 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ void    init_syntax_struct(t_s *s)
 
 void    check_sq_dq(t_s *s_s, char c)
 {
+	int	cop;
+
+	cop = 0;
         if (c == '\'' && s_s->dq_opened == 0)
         {
                 if (s_s->sq_opened == 0)
@@ -49,12 +52,16 @@ void    check_sq_dq(t_s *s_s, char c)
                 else
                         s_s->dq_opened = 0;
         }
-	if (c == '(' && s_s->braces == 0)
+	if (c == '(')
 	{
-		s_s->braces = 1;
+		cop++;
+		s_s->braces++;
 	}
-	else if (c == ')' && s_s->braces == 1)
-		s_s->braces = 0;
+	if (c == ')' && s_s->braces)
+	{
+		cop--;
+		s_s->braces--;
+	}
 }
 
 int	ft_strlen(char *str)
@@ -546,6 +553,166 @@ void	ouvertureredir(t_tree **lst)
 	}
 }
 
+int	tab_len(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+		i++;
+	return (i);
+}
+
+void	setbracelvl(t_tree **lst)
+{
+	t_tree	*tmp;
+	char	**tab;
+	int	i;
+	int	j;
+	int	count;
+
+	tmp = (*lst)->next;
+	if (!tmp)
+		return ;
+	tab = NULL;
+	while (tmp)
+	{
+		if (tmp->cmd_right)
+			tab = ft_supersplit2(tmp->cmd_right->cmd, ' ');
+		i = 0;
+		count = 0;
+		while (tab && tab[i])
+		{
+			if (ft_strcmp(tab[i], "(") == 0)
+			{
+				j = i + 1;
+				free(tmp->cmd_right->cmd);
+				tmp->cmd_right->cmd = NULL;
+				tmp->cmd_right->bracelvl++;
+				count++;
+				while (tab[j])
+				{
+					if (ft_strcmp(tab[j], "(") == 0)
+						count--;
+					if (ft_strcmp(tab[j], ")") == 0)
+						count--;
+					else
+					{
+						tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, tab[j]);
+							tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, " ");
+					}
+					j++;
+				}
+	
+			}
+			i++;
+		}
+		tmp = tmp->next;
+	}
+}
+
+void	setbracelvlfirstcmd(t_tree **lst)
+{
+	t_tree	*tmp;
+	char	**tab;
+	int	i;
+	int	j;
+	int	count;
+
+	tmp = (*lst)->next;
+	if (!tmp)
+		return ;
+	tab = ft_supersplit2(tmp->cmd_left->cmd, ' ');
+	i = 0;
+	count = 0;
+	while (tab[i])
+	{
+		if (ft_strcmp(tab[i], "(") == 0)
+		{
+			j = i + 1;
+			free(tmp->cmd_left->cmd);
+			tmp->cmd_left->cmd = NULL;
+			tmp->cmd_left->bracelvl++;
+			count++;
+			while (tab[j])
+			{
+				if (ft_strcmp(tab[j], "(") == 0)
+				{
+				//	tmp->cmd_left->bracelvl++;
+					count--;
+				}
+				if (ft_strcmp(tab[j], ")") == 0)
+				{
+					//tmp->cmd_left->bracelvl++;
+					count--;
+				}
+				else
+				{
+					tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, tab[j]);
+					tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
+				}
+				j++;
+			}
+
+		}
+		i++;
+	}
+}
+
+void	setarg(t_tree **lst)
+{
+	t_tree	*tmp;
+	char	**tab;
+	int	i;
+	int	j;
+
+	tmp = (*lst)->next;
+	if (!tmp)
+		return ;
+	while (tmp)
+	{
+		tab = ft_supersplit(tmp->cmd_right->cmd, ' ');
+		tmp->cmd_right->arg = malloc(sizeof(char *) * (tab_len(tab) + 1));
+		free(tmp->cmd_right->cmd);
+		tmp->cmd_right->cmd = ft_strdup(tab[0]);
+		i = 1;
+		j = 0;
+		while (tab[i])
+		{
+			tmp->cmd_right->arg[j] = ft_strdup(tab[i]);
+			j++;
+			i++;
+		}
+		tmp->cmd_right->arg[j] = 0;
+		tmp = tmp->next;
+	}
+}
+
+void	setargfirstcmd(t_tree **lst)
+{
+	t_tree	*tmp;
+	char	**tab;
+	int	i;
+	int	j;
+
+	tmp = (*lst)->next;
+	if (!tmp)
+		return ;
+	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
+	tmp->cmd_left->arg = malloc(sizeof(char *) * (tab_len(tab) + 1));
+	i = 1;
+	j = 0;
+	free(tmp->cmd_left->cmd);
+	tmp->cmd_left->cmd = ft_strdup(tab[0]);
+	while (tab[i])
+	{
+		tmp->cmd_left->arg[j] = ft_strdup(tab[i]);
+		j++;
+		i++;
+	}
+	tmp->cmd_left->arg[j] = 0;
+}
+	
 int	pars_prompt(char *str)
 {
 	char	*recup;
@@ -560,6 +727,14 @@ int	pars_prompt(char *str)
 //	printf("AFTER ADD SPACES: %s\n", recup);
 	//tab = ft_split(recup, " ");
 	tab = ft_supersplit(recup, ' ');
+	if (!tab[0])
+		return (1);
+	/*int j = 0;
+	while (tab[j])
+	{
+		printf("YYYYYYYYYYYYYY %s\n", tab[j]);
+		j++;
+	}*/
 //	if (!check_syntax(tab))
 //		return (0);
 	int	i = 0;
@@ -574,23 +749,13 @@ int	pars_prompt(char *str)
 		l_cmd->next->prev = l_cmd;
 		l_cmd = l_cmd->next;
 		i++;
-	}
-	i = 1;
-	while (tab[i])
-	{
-		ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("&&"), ft_strdup(tab[i - 1]), ft_strdup(tab[i])));
-		//tree = tree->next;
-
-		//printf("\n\n\n\nTAB[i]: %s\n\n\n", tab[i]);
-		i++;
-		//printf("\n\n\n\nTAB[i]: %s\n\n\n", tab[i]);
 	}*/
 	tab = rejointab(tab);
-	/*while (tab[i])
-	{
-		printf("after REJOIN: %s\n", tab[i]);
-		i++;
-	}*/
+//	while (tab[i])
+//	{
+///		printf("after REJOIN: %s\n", tab[i]);
+//		i++;
+//	}
 	i = 1;
 	tree = ft_lstnewtree(NULL, NULL, NULL);
 	if (!tab[1])
@@ -625,84 +790,47 @@ int	pars_prompt(char *str)
 				ft_lstnew(ft_strdup(tab[i])), ft_lstnew(NULL)));
 			i++;
 		}
-		/*if (ft_strcmp(tab[i], "<") == 0)
-		{
-			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("<"), ft_strdup(tab[i - 1]), ft_strdup(tab[i + 1])));
-		}
-		if (ft_strcmp(tab[i], "<<") == 0)
-		{
-			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("<<"), ft_strdup(tab[i - 1]), ft_strdup(tab[i + 1])));
-		}
-		if (ft_strcmp(tab[i], ">") == 0)
-		{
-			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup(">"), ft_strdup(tab[i - 1]), ft_strdup(tab[i + 1])));
-		}
-		if (ft_strcmp(tab[i], ">>") == 0)
-		{
-			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup(">>"), ft_strdup(tab[i - 1]), ft_strdup(tab[i + 1])));
-		}*/
 	}
-	t_tree	*test = tree->next;//fonctiontestpoudoublepipes(&tree->next);
+	t_tree	*test = tree->next;
 	ouverturefirstcmd(&tree);
-	ouvertureredir(&tree);
-	//setbracelvl(&tree);
+	setbracelvlfirstcmd(&tree);
+	setargfirstcmd(&tree);
+	if (i > 1)
+	{
+		ouvertureredir(&tree);
+		setbracelvl(&tree);
+		setarg(&tree);
+	}
 	while (test)
 	{
 		printf("			OPERATOR: %s\n", test->ope);
 		printf("CMD LEFT: %s\n", test->cmd_left->cmd);
-		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\n\n\n", test->cmd_left->name_in, test->cmd_left->name_out, test->cmd_left->is_hd, test->cmd_left->limiter);
+		int n = 0;
+		if (test->cmd_left->arg)
+		{
+			while (test->cmd_left->arg[n])
+			{
+				printf("ARG A LA CMD: %s\n", test->cmd_left->arg[n]);
+				n++;
+			}
+		}
+		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\nBRACE LVL: %d\n\n\n\n", test->cmd_left->name_in, test->cmd_left->name_out, test->cmd_left->is_hd, test->cmd_left->limiter, test->cmd_left->bracelvl);
 		printf("CMD RIGHT: %s\n", test->cmd_right->cmd);
-		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\n\n\n\n", test->cmd_right->name_in, test->cmd_right->name_out, test->cmd_right->is_hd, test->cmd_right->limiter);
+		n = 0;
+		if (test->cmd_right->arg)
+		{
+			while (test->cmd_right->arg[n])
+			{
+				printf("ARG A LA CMD: %s\n", test->cmd_right->arg[n]);
+				n++;
+			}
+		}
+		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\nBRACE LVL: %d\n\n\n\n", test->cmd_right->name_in, test->cmd_right->name_out, test->cmd_right->is_hd, test->cmd_right->limiter, test->cmd_right->bracelvl);
 		test = test->next;
 	}
-	/*i = 0;
-	while (tab[i])
-	{
-		char **tmp = ft_split(tab[i], "||");
-		int j = 0;
-		while (tmp[j] && tmp[1])
-		{
-			suppr[c] = ft_strdup(tab[i]);
-			c++;
-			printf("tab[i] si || -> %s\n\n\n", tab[i]);	
-			ft_lstadd_back(&l_cmd, ft_lstnew(ft_strdup(tmp[j]), LeftDP));
-			l_cmd->next->prev = l_cmd;
-			l_cmd = l_cmd->next;
-			j++;
-		}
-		free_tab(tmp);
-		i++;
-	}
-	printf("\n\n\n");
-	while (l_cmd->prev)
-	{
-		l_cmd = l_cmd->prev;
-	}
-	l_cmd = l_cmd->next;
-	t_cmd	*list = l_cmd;
-	while (list->next)
-	{
-		c = 0;
-		while (suppr[c])
-		{
-			if (ft_strcmp(suppr[c], list->cmd) == 0)
-				ft_lstdelone(list, del);
-			c++;
-		}
-		list = list->next;
-	}
-	l_cmd = list;
-	while (l_cmd->prev)
-	{
-		if (ft_strlen(l_cmd->cmd) > 0)
-			printf("Commande -> %s     POS-> %d\n", l_cmd->cmd, l_cmd->pos);
-		l_cmd = l_cmd->prev;
-	}
-	//printf("test: %s\n", l_cmd->cmd);
-	printf("\n\n\n");
-	//printf("ON REJOIN TOUT APRES PARSING\n\n\n");
-	//char	*res = resjoin(tab);
-	//printf("%s\n\n\n", res);*/
+
+
+
 	ft_lstcleartree(&tree, del);
 	free_tab(tab);
 	free(recup);

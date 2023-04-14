@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/13 16:00:21 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/14 14:47:42 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,7 @@ void    ft_lstdelonetree(t_tree *lst, void (*del)(void *));
 void    ft_lstcleartree(t_tree **lst, void (*del)(void *));
 t_tree  *ft_lstlasttree(t_tree *lst);
 void    ft_lstadd_backtree(t_tree **alst, t_tree *new);
+char    **ft_supersplit2(char *s, char c);
+void	free_tab(char **tab);
 
 #endif
