@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/14 14:56:15 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/14 18:34:26 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -803,11 +803,13 @@ int	pars_prompt(char *str)
 	ouverturefirstcmd(&tree);
 	setbracelvlfirstcmd(&tree);
 	setargfirstcmd(&tree);
+	setwildcardsfirstcmd(&tree);
 	if (i > 1)
 	{
 		ouvertureredir(&tree);
 		setbracelvl(&tree);
 		setarg(&tree);
+		setwildcards(&tree);
 	}
 	while (test)
 	{
@@ -848,7 +850,8 @@ int	pars_prompt(char *str)
 int	main(int ac, char **av, char **env)
 {
 	char	*str;
-
+	t_shell	*shell;
+	
 	while (1)
 	{
 		str = readline("ft_containers$ ");

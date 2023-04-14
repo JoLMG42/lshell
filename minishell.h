@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/14 14:47:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/14 18:27:00 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <linux/random.h>
+# include <dirent.h>
 
 
 void    check_sq_dq(t_s *s_s, char c);
@@ -48,5 +49,9 @@ t_tree  *ft_lstlasttree(t_tree *lst);
 void    ft_lstadd_backtree(t_tree **alst, t_tree *new);
 char    **ft_supersplit2(char *s, char c);
 void	free_tab(char **tab);
+void    setwildcardsfirstcmd(t_tree **lst);
+int	tab_len(char **tab);
+int	ft_strcmp(char *s1, char *s2);
+void    setwildcards(t_tree **lst);
 
 #endif

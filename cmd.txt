@@ -1,0 +1,1 @@
+ls *.c || pwd > out | << OEF cat > out && cat f*i*.c
