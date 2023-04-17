@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:23:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/17 11:11:25 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/17 19:22:42 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef	struct	s_cmd
 	char	**arg;
 	struct s_cmd	*next;
 	struct s_cmd	*prev;
+	int	pid;
 }	t_cmd;
 
 typedef	struct	s_tree
@@ -49,6 +50,7 @@ typedef	struct	s_tree
 	char	*ope;
 	t_cmd	*cmd_left;
 	t_cmd	*cmd_right;
+	int	pipefd[2];
 	struct	s_tree	*next;
 }	t_tree;
 

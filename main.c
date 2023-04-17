@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/17 13:35:39 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/17 16:28:28 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -409,7 +409,7 @@ char	*recalculcmd(char *cmd, char *str, char *ope)
 		tab = ft_supersplit(cmd, ' ');
 		while (tab[i])
 		{
-			if (ft_strcmp(tab[i], str) && ft_strcmp(tab[i], ope))
+			if (str && ft_strcmp(tab[i], str) && ft_strcmp(tab[i], ope))
 				res = ft_strdup(tab[i]);
 			i++;
 		}
@@ -729,6 +729,14 @@ void	setargfirstcmd(t_tree **lst)
 	{
 		if (tab[i][0] == '>')
 			break ;
+		if (tab[0][0] == '<')
+		{
+			free(tmp->cmd_left->cmd);
+			tmp->cmd_left->cmd = NULL;
+			//i++;
+			//tmp->cmd_left->arg[j] = ft_strdup(tab[i]);
+			break ;
+		}
 		tmp->cmd_left->arg[j] = ft_strdup(tab[i]);
 		j++;
 		i++;
@@ -742,6 +750,19 @@ void	setargfirstcmd(t_tree **lst)
 			{
 				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
 				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, tab[i]);
+				i++;
+			}
+			break ;
+		}
+		if (tab[0][0] == '<')
+		{
+			i = 0;
+			while (tab[i])
+			{
+				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
+				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, tab[i]);
+				printf("tab[i] == %s\n\n\n", tab[i]);
+				printf("CMD: %s\n\n\n", tmp->cmd_left->cmd);
 				i++;
 			}
 			break ;
@@ -791,7 +812,7 @@ char	*addspacedol(char *str)
 			i++;
 		}
 	}
-	free(str);
+	//free(str);
 	res[j] = 0;
 	return (res);
 }
