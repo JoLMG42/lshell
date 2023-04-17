@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/14 18:27:00 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/17 14:06:00 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,13 @@ void	free_tab(char **tab);
 void    setwildcardsfirstcmd(t_tree **lst);
 int	tab_len(char **tab);
 int	ft_strcmp(char *s1, char *s2);
+int	ft_strncmp(char *s1, char *s2, size_t len);
 void    setwildcards(t_tree **lst);
+void get_env(t_env **env, char **envi);
+t_env   *ft_lstnew_env(char *line, char *name, char *content);
+void    ft_lstclear_env(t_env **lst, void (*del)(void *));
+char    **list_to_tab(t_env **env);
+int     listenv_size(t_env **env);
+void    exec(t_tree **tree, t_env **env);
 
 #endif

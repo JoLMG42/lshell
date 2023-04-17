@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/14 15:30:58 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/14 19:26:43 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/17 14:06:24 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
 	return (NULL);
 }
 
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
+int	ft_strncmp(char *s1, char *s2, size_t n)
 {
 	size_t	i;
 
@@ -140,11 +140,11 @@ int	checkfile(char *file, char *flag)
 	recup = malloc(sizeof(char) * (ft_strlen(flag) + 10));
 	while (flag[i])
 	{
-		/*if (file[0] == '.' && flag[0] != '.')
+		if (file[0] == '.' && flag[0] != '.')
 		{
 			free(recup);
 			return (0);
-		}*/
+		}
 		if (flag[i] != '*')
 		{
 			recup[j] = flag[i];

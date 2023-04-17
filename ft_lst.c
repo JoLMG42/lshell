@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/14 14:51:38 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/17 13:09:19 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,5 +94,11 @@ t_cmd	*ft_lstnew(char	*cmd)
 	tmp->limiter = NULL;
 	tmp->next = NULL;
 	tmp->arg = NULL;
+	tmp->pos = 0;
+	tmp->fd_in = 0;
+	tmp->fd_out = 1;
+	tmp->mode_open = 0;
+	tmp->is_hd = 0;
+	tmp->bracelvl = 0;
 	return (tmp);
 }
