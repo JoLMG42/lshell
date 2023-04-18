@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/18 14:11:33 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/18 23:46:23 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,14 @@ void	ft_wait(t_cmd **cmd)
 	}
 }
 
+void	handler_fork(int sig)
+{
+	if (sig == 2)
+	{
+		printf("\n");
+		return ;
+	}
+}
 
 void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2])
 {
@@ -297,12 +305,14 @@ void	exec(t_tree **tree, t_env **env)
 	i = 0;
 	tmp = (*tree)->next;
 	pipe(tmp->pipefd);
+	(*tree)->next->in_exec = 1;
+	signal(SIGINT, handler_fork);
 	while (tmp)
 	{
 		if (tmp->cmd_right->cmd == NULL)
 		{
 			if (tmp->cmd_left->is_hd)
-				here_doc(tmp->cmd_left);
+				heredoc(&tmp->cmd_left);
 			executeone(&tmp->cmd_left, env, tmp->pipefd);
 		}
 		if (i == 0)
@@ -339,6 +349,8 @@ void	exec(t_tree **tree, t_env **env)
 		i++;
 		tmp = tmp->next;
 	}
+	//signal(SIGINT, handler);
+	(*tree)->next->in_exec = 0;
 	tmp = (*tree)->next;
 	int j = 0;
 	while (tmp)

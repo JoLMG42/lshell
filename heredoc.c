@@ -6,8 +6,95 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 14:10:05 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/18 14:11:36 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/18 22:02:29 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-void	heredoc
+# include "minishell.h"
+
+void	heredoc_nocmd(char *limiter)
+{
+	char	*str;
+
+	while (1)
+	{
+		str = readline("<");
+		if (!str)
+			break ;
+		if (ft_strcmp(limiter, str) == 0)
+		{
+			free(str);
+			break ;
+		}
+		free(str);
+	}
+}
+
+void	ft_putstr_fd(char *str, int fd)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		write(fd, &str[i], 1);
+		i++;
+	}
+	write(fd, "\n", 1);
+}
+
+int	create_fd_hd(t_cmd *cmd)
+{
+	char	random[11];
+	char	*name;
+	int	dev;
+	int	fd;
+
+	dev = open("/dev/urandom", O_RDONLY);
+	read(dev, random, 10);
+	random[10] = 0;
+	name = ft_strdup(".tmp_file");
+	cmd->name_in = ft_strjoin(name, random);
+	fd = open(cmd->name_in, O_CREAT | O_WRONLY, 0644);
+	if (fd == -1)
+	{
+		printf("ERROR FD HEREDOC\n");
+		return (0);
+	}
+	return fd;
+
+}
+
+void	heredoc_cmd(t_cmd *cmd)
+{
+	char	*str;
+
+	cmd->fd_in = create_fd_hd(cmd);
+
+	while (1)
+	{
+		str = readline("<");
+		if (!str)
+			break ;
+		if (ft_strcmp(cmd->limiter, str) == 0)
+		{
+			free(str);
+			break ;
+		}
+		ft_putstr_fd(str, cmd->fd_in);
+		free(str);
+	}
+}
+
+void	heredoc(t_cmd **cmd)
+{
+	t_cmd	*tmp;
+
+	tmp = (*cmd);
+	if (!tmp->cmd)
+	{
+		heredoc_nocmd(tmp->limiter);
+		return ;
+	}
+	heredoc_cmd(tmp);
+}

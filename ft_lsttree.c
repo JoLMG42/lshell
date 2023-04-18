@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/14 14:47:05 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/18 23:26:48 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ t_tree	*ft_lstnewtree(char *ope, t_cmd *cmdl, t_cmd *cmdr)
 	tmp->ope = ope;
 	tmp->cmd_left = cmdl;
 	tmp->cmd_right = cmdr;
+	tmp->in_exec = 0;
 	tmp->next = NULL;
 	return (tmp);
 }
