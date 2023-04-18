@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/17 19:41:33 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/18 14:11:33 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,8 @@ void	ft_wait(t_cmd **cmd)
 	{
 		if (cmd_lst->next == NULL)
 		{
-			waitpid(cmd_lst->pid, &value, 0);
+			//waitpid(cmd_lst->pid, &value, 0);
+			wait(NULL);
 			if (WIFSIGNALED(value))
 			{
 				value = (WTERMSIG(value) + 128);
@@ -136,7 +137,7 @@ void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2])
 	}
 	if (tmp->name_in)
 	{
-		tmp->fd_in = open(tmp->name_in, O_CREAT | O_RDONLY | O_WRONLY, 0644);
+		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	}
 	else
 		tmp->fd_in = pipefd[0];
@@ -183,7 +184,7 @@ void	middle_execute(t_cmd **cmd, t_env **env, int pipefd[2], int fd_temp)
 	}
 	if (tmp->name_in)
 	{
-		tmp->fd_in = open(tmp->name_in, O_CREAT | O_RDONLY | O_WRONLY, 0644);
+		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	}
 	else
 		tmp->fd_in = fd_temp;
@@ -228,7 +229,7 @@ void	first_execute(t_cmd **cmd, t_env **env, int pipefd[2])
 		tmp->fd_out = pipefd[1];
 	if (tmp->name_in)
 	{
-		tmp->fd_in = open(tmp->name_in, O_CREAT | O_RDONLY | O_WRONLY, 0644);
+		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	}
 	tmp->pid = fork();
 	if (tmp->pid == 0)
@@ -256,19 +257,19 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2])
 	int	frk;
 
 	tmp = *cmd;
+	if (!tmp || !tmp->cmd)
+		return ;
 	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
+	tmp->fd_in = 0;
+	tmp->fd_out = 1;
 	if (!tmp->cmd)
 		return ;
 	exectab = fusioncmdarg(tmp->cmd, tmp->arg);
 	envtab = list_to_tab(env);
 	if (tmp->name_out)
-	{
 		tmp->fd_out = open(tmp->name_out, O_CREAT | O_RDONLY | O_WRONLY, 0644);
-	}
 	if (tmp->name_in)
-	{
-		tmp->fd_in = open(tmp->name_in, O_CREAT | O_RDONLY | O_WRONLY, 0644);
-	}
+		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	tmp->pid = fork();
 	if (tmp->pid == 0)
 	{
@@ -283,7 +284,6 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2])
 			close(tmp->fd_in);
 		if (tmp->fd_out != 1)
 			close(tmp->fd_out);
-		wait(NULL);
 	}
 }
 
@@ -301,8 +301,8 @@ void	exec(t_tree **tree, t_env **env)
 	{
 		if (tmp->cmd_right->cmd == NULL)
 		{
-			pipefd[0] = 0;
-			pipefd[1] = 1;
+			if (tmp->cmd_left->is_hd)
+				here_doc(tmp->cmd_left);
 			executeone(&tmp->cmd_left, env, tmp->pipefd);
 		}
 		if (i == 0)
@@ -345,13 +345,18 @@ void	exec(t_tree **tree, t_env **env)
 	{
 		if (j == 0)
 		{
-			ft_wait(&(tmp->cmd_left));
+//			ft_wait(&(tmp->cmd_left));
+			wait(NULL);
 			if (tmp->cmd_right)
-				ft_wait(&(tmp->cmd_right));
+			{
+				wait(NULL);
+//				ft_wait(&(tmp->cmd_right));
+			}
 		}
 		else
 		{
-			ft_wait(&(tmp->cmd_right));
+//			ft_wait(&(tmp->cmd_right));
+			wait(NULL);
 		}
 		tmp = tmp->next;
 		j++;
