@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/19 01:22:21 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/19 23:48:02 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,8 +151,17 @@ char	*add_spaces(char *str)
 		{
 			dq = 1;
 			space = 1;
+			res[j] = str[i];
+			i++;
+			j++;
 		}
-		else if (str[i] == '"'  && dq == 0 && sq == 0 && str[i - 1] != '=')
+		else if (str[i] == '"' && dq == 1 && space == 1)
+		{
+			res[j] = str[i];
+			j++;
+			i++;
+		}
+		else if (str[i] == '"' && dq == 0 && sq == 0 && str[i - 1] != '=')
 		{
 			res[j] = ' ';
 			j++;
@@ -925,7 +934,7 @@ void	parseargfirstcmd(t_tree **lst, t_env **env)
 				else if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") != 0)
 				{
 					tmpenv = (*env)->next;
-					while (tmpenv->next)
+					while (tmpenv)
 					{
 						if (ft_strcmp(tmpenv->name, tab[j + 1]) == 0)
 							tmp->cmd_left->arg[i] = ft_strjoin(tmp->cmd_left->arg[i], tmpenv->content);
@@ -984,7 +993,7 @@ void	parsearg(t_tree **lst, t_env **env)
 					else if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") != 0)
 					{
 						tmpenv = (*env)->next;
-						while (tmpenv->next)
+						while (tmpenv)
 						{
 							if (ft_strcmp(tmpenv->name, tab[j + 1]) == 0)
 								tmp->cmd_right->arg[i] = ft_strjoin(tmp->cmd_right->arg[i], tmpenv->content);
@@ -1039,9 +1048,9 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 			else if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") != 0)
 			{
 				tmpenv = (*env)->next;
-				while (tmpenv->next)
+				while (tmpenv)
 				{
-					if (ft_strcmp(tmpenv->name, tab[j + 1]) == 0)
+					if (tmpenv->name && ft_strcmp(tmpenv->name, tab[j + 1]) == 0)
 						tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, tmpenv->content);
 					tmpenv = tmpenv->next;
 				}
@@ -1052,6 +1061,7 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 		}
 		else
 			tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, tab[j]);
+		tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
 		j++;
 	}
 	free_tab(tab);
@@ -1092,7 +1102,7 @@ void	parsecmd(t_tree **lst, t_env **env)
 				else if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") != 0)
 				{
 					tmpenv = (*env)->next;
-					while (tmpenv->next)
+					while (tmpenv)
 					{
 						if (ft_strcmp(tmpenv->name, tab[j + 1]) == 0)
 							tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, tmpenv->content);
@@ -1111,13 +1121,12 @@ void	parsecmd(t_tree **lst, t_env **env)
 	}
 }
 	
-int	pars_prompt(char *str, char **envp)
+int	pars_prompt(char *str, t_env *env, t_env *exp)
 {
 	char	*recup;
 	char	**tab;
 	t_cmd	*l_cmd;
 	t_tree	*tree;
-	t_env	*env;
 
 	//env = malloc(sizeof(struct s_env));
 	//l_cmd = malloc(sizeof(struct s_cmd));
@@ -1162,7 +1171,6 @@ int	pars_prompt(char *str, char **envp)
 //	}
 	i = 1;
 	tree = ft_lstnewtree(NULL, NULL, NULL);
-	env = ft_lstnew_env(NULL, NULL, NULL);
 	if (!tab[1])
 	{
 		ft_lstadd_backtree(&tree, ft_lstnewtree(NULL,
@@ -1196,15 +1204,14 @@ int	pars_prompt(char *str, char **envp)
 			i++;
 		}
 	}
-	get_env(&env, envp);
-	t_env	*tmp_env = env->next;
+	t_env	*tmp_env = env;
 	t_tree	*test = tree->next;
+	parsefirstcmd(&tree, &env);
 	setargfirstcmd(&tree);
 	ouverturefirstcmd(&tree);
 	setbracelvlfirstcmd(&tree);
 	setwildcardsfirstcmd(&tree);
 	parseargfirstcmd(&tree, &env);
-	parsefirstcmd(&tree, &env);
 	if (i > 1)
 	{
 		setarg(&tree);
@@ -1242,11 +1249,11 @@ int	pars_prompt(char *str, char **envp)
 		test = test->next;
 	}
 	recup_struct(&tree);
-	exec(&tree, &env);
+	exec(&tree, &env, &exp);
 
 
-	ft_lstcleartree(&tree, del);
-	ft_lstclear_env(&env, del);
+	//ft_lstcleartree(&tree, del);
+	//ft_lstclear_env(&env, del);
 	free_tab(tab);
 	free(recup);
 	return (1);
@@ -1292,18 +1299,22 @@ void	handler(int sig)
 
 }
 
-int	main(int ac, char **av, char **env)
+int	main(int ac, char **av, char **envp)
 {
 	char	*str;
 	t_shell	*shell;
+	t_env	*env;
+	t_env	*exp;
 	
+	get_env(&env, envp);
+	get_env(&exp, envp);
 	while (1)
 	{
 		signal(SIGINT, handler);
 		str = readline("ft_containers$ ");
 		if (!str)
 			break ;
-		if (!pars_prompt(str, env))
+		if (!pars_prompt(str, env, exp))
 			printf("INVALID SYNTAX\n");
 		if (str[0])
 			add_history(str);

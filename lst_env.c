@@ -3,7 +3,6 @@
 t_env	*ft_lstlast_env(t_env *lst)
 {
 	t_env	*tmp;
-
 	while (lst)
 	{
 		tmp = lst;
@@ -39,12 +38,22 @@ void	ft_lstdelone_env(t_env *lst, void (*del)(void *))
 	if (!lst || !del)
 		return ;
 	if (lst->line)
+	{
 		free(lst->line);
+		lst->line = NULL;
+	}
 	if (lst->name)
+	{
 		free(lst->name);
+		lst->name = NULL;
+	}
 	if (lst->content)
+	{
 		free(lst->content);
+		lst->content = NULL;
+	}
 	free(lst);
+	lst = NULL;
 }
 
 void	ft_lstclear_env(t_env **lst, void (*del)(void *))
@@ -66,7 +75,7 @@ void	ft_lstclear_env(t_env **lst, void (*del)(void *))
 
 
 
-t_env	*ft_lstnew_env(char	*line, char	*name, char	*content)
+t_env	*ft_lstnew_env(char *line, char *name, char *content)
 {
 	t_env	*tmp;
 
@@ -203,18 +212,19 @@ void get_env(t_env **env, char **envi)
     t_env   *tmp;
     char *name;
     char *content;
+    char	*str;
     int i = 0;
 
-    tmp = *env;
 
-    while(envi[i++])
+    *env = ft_lstnew_env(NULL, NULL, NULL);
+    while (envi[i])
     {
-        // printf("ENV: %s\n\n\n", envi[i]);
         name = checkegal(envi[i], '=');
         content = checkafteregal(envi[i], '=');
-        ft_lstadd_back_env(&tmp, ft_lstnew_env(ft_strdup(envi[i]), ft_strdup(name), ft_strdup(content)));
+        ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(envi[i]), ft_strdup(name), ft_strdup(content)));
         free(name);
         free(content);
+	i++;
     }
 }
 

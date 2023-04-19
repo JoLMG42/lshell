@@ -6,27 +6,42 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 14:10:05 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/18 22:02:29 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/19 11:46:57 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "minishell.h"
 
+void	handler_heredoc(int sig);
+
 void	heredoc_nocmd(char *limiter)
 {
 	char	*str;
+	int	frk;
 
-	while (1)
+	frk = fork();
+	if (frk == 0)
 	{
-		str = readline("<");
-		if (!str)
-			break ;
-		if (ft_strcmp(limiter, str) == 0)
+		signal(SIGINT, handler_heredoc);
+		while (1)
 		{
+			str = readline("<");
+			if (g_rvalue == 130)
+			{
+				if (str)
+					free(str);
+				break ;
+			}
+			if (!str)
+				break ;
+			if (ft_strcmp(limiter, str) == 0)
+			{
+				free(str);
+				break ;
+			}
 			free(str);
-			break ;
 		}
-		free(str);
+		exit(0);
 	}
 }
 
@@ -68,33 +83,62 @@ int	create_fd_hd(t_cmd *cmd)
 void	heredoc_cmd(t_cmd *cmd)
 {
 	char	*str;
+	int	frk;
 
 	cmd->fd_in = create_fd_hd(cmd);
-
-	while (1)
+	frk = fork();
+	if (frk == 0)
 	{
-		str = readline("<");
-		if (!str)
-			break ;
-		if (ft_strcmp(cmd->limiter, str) == 0)
+		while (1)
 		{
+			signal(SIGINT, handler_heredoc);
+			str = readline("<");
+			if (g_rvalue == 130)
+			{
+				if (str)
+					free(str);
+				break ;
+			}
+			if (!str)
+				break ;
+			if (ft_strcmp(cmd->limiter, str) == 0)
+			{
+				free(str);
+				break ;
+			}
+			ft_putstr_fd(str, cmd->fd_in);
 			free(str);
-			break ;
 		}
-		ft_putstr_fd(str, cmd->fd_in);
-		free(str);
+		exit(0);
+	}
+}
+
+void	handler_heredoc(int sig)
+{
+	if (sig == 2)
+	{
+		g_rvalue = 130;
+		printf("\n");
+		exit(2);
 	}
 }
 
 void	heredoc(t_cmd **cmd)
 {
 	t_cmd	*tmp;
-
+	int	tmpvalue;
+	
+	tmpvalue = g_rvalue;
+	g_rvalue = 0;
 	tmp = (*cmd);
 	if (!tmp->cmd)
 	{
 		heredoc_nocmd(tmp->limiter);
+		if (g_rvalue == 0)
+			g_rvalue = tmpvalue;
 		return ;
 	}
 	heredoc_cmd(tmp);
+	if (g_rvalue == 0)
+		g_rvalue = tmpvalue;
 }

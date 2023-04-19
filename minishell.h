@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/19 00:16:56 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/19 21:14:52 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,27 @@ t_env   *ft_lstnew_env(char *line, char *name, char *content);
 void    ft_lstclear_env(t_env **lst, void (*del)(void *));
 char    **list_to_tab(t_env **env);
 int     listenv_size(t_env **env);
-void    exec(t_tree **tree, t_env **env);
+void    exec(t_tree **tree, t_env **env, t_env **exp);
 void    heredoc(t_cmd **cmd);
 void	handler(int sig);
 t_tree  *recup_struct(t_tree **tree);
 char    *ft_itoa(int n);
+void    handler_fork(int sig);
+void	ft_putstr_fd(char *str, int fd);
+void	ft_putchar_fd(char c, int fd);
+void	ft_echo(char **tab);
+int     check_builtins(t_cmd *cmd, t_env **env, t_env **exp);
+void	ft_env(t_env **env);
+void    ft_lstdelone_env(t_env *lst, void (*del)(void *));
+void	ft_unset(char **tab, t_env **env);
+int     is_builtins(char *cmd);
+void    putstr_fd_echo(char *str, int fd);
+void    ft_cd(char **tab, t_env **env);
+void    ft_lstadd_back_env(t_env **alst, t_env *new);
+t_env   *ft_lstlast_env(t_env *lst);
+void    ft_export(char **tab, t_env **env, t_env **exp);
+char    *ft_suppr_dq_sq(char *str);
+char    *before_egal(char *str);
+int     len_egal(char *str);
 
 #endif

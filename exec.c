@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/18 23:46:23 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/19 23:46:29 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,14 @@ char	*check_slash(char *cmd)
 {
 	if (access(cmd, X_OK) == 0)
 	{
-		return (cmd);
+		putstr_fd_echo("minishell: ", 2);
+		putstr_fd_echo(cmd, 2);
+		putstr_fd_echo(": Is a directory\n", 2);
+		return (NULL);
 	}
-	printf("%s: %s\n", "access denied", cmd);
+	putstr_fd_echo("minishell: ", 2);
+	putstr_fd_echo(cmd, 2);
+	putstr_fd_echo(": No such file or directory\n", 2);
 	return (NULL);
 }
 
@@ -66,6 +71,8 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 	char	*tmp;
 	char	*recover;
 	
+	if (is_builtins(cmd))
+		return (cmd);
 	if (cmd[0] == '/')
 		return (check_slash(cmd));
 	newpath = recover_path(list_to_tab(env));
@@ -98,21 +105,20 @@ void	ft_wait(t_cmd **cmd)
 	{
 		if (cmd_lst->next == NULL)
 		{
-			//waitpid(cmd_lst->pid, &value, 0);
-			wait(NULL);
-			if (WIFSIGNALED(value))
+			waitpid(cmd_lst->pid, &g_rvalue, 0);
+			if (WIFSIGNALED(g_rvalue))
 			{
-				value = (WTERMSIG(value) + 128);
+				g_rvalue = (WTERMSIG(g_rvalue) + 128);
 			}
 			else
-				value = WEXITSTATUS(value);
+				g_rvalue = WEXITSTATUS(g_rvalue);
 			break ;
 		}
-		waitpid(cmd_lst->pid, &value, 0);
-		if (WIFSIGNALED(value) && WIFSIGNALED(value) != 1)
-			value = WTERMSIG(value) + 128;
+		waitpid(cmd_lst->pid, &g_rvalue, 0);
+		if (WIFSIGNALED(g_rvalue) && WIFSIGNALED(g_rvalue) != 1)
+			value = WTERMSIG(g_rvalue) + 128;
 		else
-			value = WEXITSTATUS(value);
+			value = WEXITSTATUS(g_rvalue);
 		cmd_lst = cmd_lst->next;
 	}
 }
@@ -121,6 +127,7 @@ void	handler_fork(int sig)
 {
 	if (sig == 2)
 	{
+		g_rvalue = 130;
 		printf("\n");
 		return ;
 	}
@@ -257,7 +264,7 @@ void	first_execute(t_cmd **cmd, t_env **env, int pipefd[2])
 	}
 }
 
-void	executeone(t_cmd **cmd, t_env **env, int pipefd[2])
+void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 {
 	t_cmd	*tmp;
 	char	**envtab;
@@ -268,16 +275,18 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2])
 	if (!tmp || !tmp->cmd)
 		return ;
 	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
-	tmp->fd_in = 0;
-	tmp->fd_out = 1;
 	if (!tmp->cmd)
 		return ;
+	tmp->fd_in = 0;
+	tmp->fd_out = 1;
 	exectab = fusioncmdarg(tmp->cmd, tmp->arg);
 	envtab = list_to_tab(env);
 	if (tmp->name_out)
 		tmp->fd_out = open(tmp->name_out, O_CREAT | O_RDONLY | O_WRONLY, 0644);
 	if (tmp->name_in)
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
+	if (check_builtins(tmp, env, exp))
+		return ;
 	tmp->pid = fork();
 	if (tmp->pid == 0)
 	{
@@ -285,6 +294,7 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2])
 		dup2(tmp->fd_out, 1);
 		if (execve(tmp->cmd, exectab, envtab) == -1)
 			printf("lol\n");
+		exit(127);
 	}
 	else
 	{
@@ -295,7 +305,7 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2])
 	}
 }
 
-void	exec(t_tree **tree, t_env **env)
+void	exec(t_tree **tree, t_env **env, t_env **exp)
 {
 	t_tree	*tmp;
 	int	i;
@@ -313,7 +323,7 @@ void	exec(t_tree **tree, t_env **env)
 		{
 			if (tmp->cmd_left->is_hd)
 				heredoc(&tmp->cmd_left);
-			executeone(&tmp->cmd_left, env, tmp->pipefd);
+			executeone(&tmp->cmd_left, env, tmp->pipefd, exp);
 		}
 		if (i == 0)
 		{
@@ -357,18 +367,15 @@ void	exec(t_tree **tree, t_env **env)
 	{
 		if (j == 0)
 		{
-//			ft_wait(&(tmp->cmd_left));
-			wait(NULL);
+			ft_wait(&(tmp->cmd_left));
 			if (tmp->cmd_right)
 			{
-				wait(NULL);
-//				ft_wait(&(tmp->cmd_right));
+				ft_wait(&(tmp->cmd_right));
 			}
 		}
 		else
 		{
-//			ft_wait(&(tmp->cmd_right));
-			wait(NULL);
+			ft_wait(&(tmp->cmd_right));
 		}
 		tmp = tmp->next;
 		j++;
