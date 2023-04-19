@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/19 21:14:52 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/20 01:17:39 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,5 +81,6 @@ void    ft_export(char **tab, t_env **env, t_env **exp);
 char    *ft_suppr_dq_sq(char *str);
 char    *before_egal(char *str);
 int     len_egal(char *str);
+int     check_name(char *str);
 
 #endif

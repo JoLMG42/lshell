@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 19:42:22 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/20 01:02:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/20 01:26:32 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,14 @@ void	export_exp(char *str, t_env **exp)
 	if (var_in_exp(str, exp) != NULL)
 		return ;
 	name = ft_strdup(str);
+	if (!check_name(name))
+	{
+		putstr_fd_echo("minishell: export: '", 2);
+		putstr_fd_echo(name, 2);
+		putstr_fd_echo("': not a valid identifier\n", 2);
+		free(name);
+		return ;
+	}
 	ft_lstadd_back_env(exp, ft_lstnew_env(ft_strdup(name), ft_strdup(name), NULL));
 	free(name);
 }
@@ -128,8 +136,15 @@ void	join_content(char *content, char *name, t_env **env, t_env **exp)
 	char	*join;
 	
 	tmp = ft_strdup(name);
+	if (!check_name(tmp))
+	{
+		putstr_fd_echo("minishell: export: '", 2);
+		putstr_fd_echo(tmp, 2);
+		putstr_fd_echo("': not a valid identifier\n", 2);
+		free(tmp);
+		return ;
+	}
 	tmp[ft_strlen(tmp) - 1] = 0;
-	printf("TMPMPMPMPMPP = %s\n", tmp);
 	recup = var_in_exp(tmp, exp);
 	join = NULL;
 	join = ft_strjoin(join, tmp);
@@ -177,6 +192,14 @@ void	export_both(char *str, t_env **env, t_env **exp)
 	t_env	*recup;
 	
 	tmp = before_egal(str);
+	if (!check_name(tmp))
+	{
+		putstr_fd_echo("minishell: export: '", 2);
+		putstr_fd_echo(tmp, 2);
+		putstr_fd_echo("': not a valid identifier\n", 2);
+		free(tmp);
+		return ;
+	}
 	content = ft_strdup(str + len_egal(str));
 	if (check_plus(tmp))
 	{
@@ -208,12 +231,15 @@ int	check_name(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if (str[i] == '_' && str[i] >= 48 && str[i] <= 57
-			&& str[i] >= 65 && str[i] <= 90
-			&& str[i] >= 97 && str[i] <= 122)
+		if (str[i] == '_' || (str[i] >= 48 && str[i] <= 57)
+			|| (str[i] >= 65 && str[i] <= 90)
+			|| (str[i] >= 97 && str[i] <= 122))
 			i++;
 		else
+		{
+			printf("AAAAAAAAAAA = %c\n", str[i]);
 			return (0);
+		}
 	}
 	return (1);
 
@@ -227,13 +253,7 @@ void	export_arg(char **tab, t_env **exp, t_env **env)
 	while (tab[i])
 	{
 		ft_suppr_dq_sq(tab[i]);
-		if (!check_name(tab[i]))
-		{
-			putstr_fd_echo("minishell: export: '", 2);
-			putstr_fd_echo(tab[i], 2);
-			putstr_fd_echo("': not a valid identifier\n", 2);
-		}
-		else if (!check_egal(tab[i]))
+		if (!check_egal(tab[i]))
 			export_exp(tab[i], exp);
 		else
 			export_both(tab[i], env, exp);
