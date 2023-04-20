@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 14:10:05 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/19 11:46:57 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/20 12:13:14 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,9 @@ void	heredoc_nocmd(char *limiter)
 {
 	char	*str;
 	int	frk;
+	int	value;
 
+	value = 0;
 	frk = fork();
 	if (frk == 0)
 	{
@@ -42,6 +44,10 @@ void	heredoc_nocmd(char *limiter)
 			free(str);
 		}
 		exit(0);
+	}
+	else
+	{
+		waitpid(frk, &value, 0);
 	}
 }
 
@@ -84,7 +90,9 @@ void	heredoc_cmd(t_cmd *cmd)
 {
 	char	*str;
 	int	frk;
+	int	value;
 
+	value = 0;
 	cmd->fd_in = create_fd_hd(cmd);
 	frk = fork();
 	if (frk == 0)
@@ -110,6 +118,10 @@ void	heredoc_cmd(t_cmd *cmd)
 			free(str);
 		}
 		exit(0);
+	}
+	else
+	{
+		waitpid(frk, &value, 0);
 	}
 }
 

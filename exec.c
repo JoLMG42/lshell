@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/19 23:46:29 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/20 20:13:27 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,18 +32,20 @@ char	**fusioncmdarg(char *cmd, char **arg)
 	return (res);
 }
 
-char	*check_slash(char *cmd)
+char	*check_slash(char *cmd, int mode)
 {
-	if (access(cmd, X_OK) == 0)
+	if (access(cmd, X_OK) == 0 && mode == 0)
 	{
-		putstr_fd_echo("minishell: ", 2);
+		/*putstr_fd_echo("minishell: ", 2);
 		putstr_fd_echo(cmd, 2);
 		putstr_fd_echo(": Is a directory\n", 2);
-		return (NULL);
+		return (NULL);*/
+		return (cmd);
 	}
 	putstr_fd_echo("minishell: ", 2);
 	putstr_fd_echo(cmd, 2);
-	putstr_fd_echo(": No such file or directory\n", 2);
+	putstr_fd_echo(": command not found\n", 2);
+	//putstr_fd_echo(": No such file or directory\n", 2);
 	return (NULL);
 }
 
@@ -74,7 +76,7 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 	if (is_builtins(cmd))
 		return (cmd);
 	if (cmd[0] == '/')
-		return (check_slash(cmd));
+		return (check_slash(cmd, 0));
 	newpath = recover_path(list_to_tab(env));
 	recover = ft_strdup(cmd);
 	while (newpath && newpath[i++])
@@ -92,6 +94,7 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 		recover = NULL;
 	}
 	printf("%s : command not found\n", cmd);
+	//g_rvalue = 127;
 	free(cmd);
 	//free_tab(newpath);
 	return (NULL);
@@ -99,28 +102,15 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 
 void	ft_wait(t_cmd **cmd)
 {
-	int value = 0;
+	int	value;
+
+	value = 0;
 	t_cmd *cmd_lst = *cmd;
-	while (cmd_lst)
-	{
-		if (cmd_lst->next == NULL)
-		{
-			waitpid(cmd_lst->pid, &g_rvalue, 0);
-			if (WIFSIGNALED(g_rvalue))
-			{
-				g_rvalue = (WTERMSIG(g_rvalue) + 128);
-			}
-			else
-				g_rvalue = WEXITSTATUS(g_rvalue);
-			break ;
-		}
-		waitpid(cmd_lst->pid, &g_rvalue, 0);
-		if (WIFSIGNALED(g_rvalue) && WIFSIGNALED(g_rvalue) != 1)
-			value = WTERMSIG(g_rvalue) + 128;
-		else
-			value = WEXITSTATUS(g_rvalue);
-		cmd_lst = cmd_lst->next;
-	}
+	waitpid(cmd_lst->pid, &value, 0);
+	if (WIFSIGNALED(value))
+		g_rvalue = (WTERMSIG(value) + 128);
+	else
+		g_rvalue = WEXITSTATUS(value);
 }
 
 void	handler_fork(int sig)
@@ -133,7 +123,19 @@ void	handler_fork(int sig)
 	}
 }
 
-void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2])
+void	del_sq_dq_arg(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+	{
+		ft_suppr_dq_sq(tab[i]);
+		i++;
+	}
+}
+
+void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 {
 	t_cmd	*tmp;
 	char	**envtab;
@@ -141,11 +143,14 @@ void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2])
 	int	frk;
 
 	tmp = *cmd;
-	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 	if (!tmp->cmd)
 		return ;
-	exectab = fusioncmdarg(tmp->cmd, tmp->arg);
-	envtab = list_to_tab(env);
+	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
+	if (tmp->cmd)
+	{
+		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
+		envtab = list_to_tab(env);
+	}
 	if (tmp->name_out)
 	{
 		tmp->fd_out = open(tmp->name_out, O_CREAT | O_RDONLY | O_WRONLY, 0644);
@@ -156,13 +161,22 @@ void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2])
 	}
 	else
 		tmp->fd_in = pipefd[0];
+	if (tmp->cmd)
+		del_sq_dq_arg(exectab);
 	tmp->pid = fork();
 	if (tmp->pid == 0)
 	{
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
-		if (execve(tmp->cmd, exectab, envtab) == -1)
-			printf("lol\n");
+		if (tmp->cmd && check_builtins(tmp, env, exp))
+			;
+		else if (execve(tmp->cmd, exectab, envtab) == -1)
+		{
+			if (tmp->cmd)
+				check_slash(tmp->cmd, 1);
+			exit(127);
+		}
+		exit(0);
 	}
 	else
 	{
@@ -175,7 +189,7 @@ void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2])
 	}
 }
 
-void	middle_execute(t_cmd **cmd, t_env **env, int pipefd[2], int fd_temp)
+void	middle_execute(t_cmd **cmd, t_env **env, int pipefd[2], int fd_temp, t_env **exp)
 {
 	t_cmd	*tmp;
 	char	**envtab;
@@ -183,11 +197,14 @@ void	middle_execute(t_cmd **cmd, t_env **env, int pipefd[2], int fd_temp)
 	int	frk;
 
 	tmp = *cmd;
-	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 	if (!tmp->cmd)
 		return ;
-	exectab = fusioncmdarg(tmp->cmd, tmp->arg);
-	envtab = list_to_tab(env);
+	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
+	if (tmp->cmd)
+	{
+		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
+		envtab = list_to_tab(env);
+	}
 	if (tmp->name_out)
 	{
 		tmp->fd_out = open(tmp->name_out, O_CREAT | O_RDONLY | O_WRONLY, 0644);
@@ -203,18 +220,28 @@ void	middle_execute(t_cmd **cmd, t_env **env, int pipefd[2], int fd_temp)
 	}
 	else
 		tmp->fd_in = fd_temp;
+	if (tmp->cmd)
+		del_sq_dq_arg(exectab);
 	tmp->pid = fork();
 	if (tmp->pid == 0)
 	{
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
-		if (execve(tmp->cmd, exectab, envtab) == -1)
-			printf("lol\n");
+		if (tmp->cmd && check_builtins(tmp, env, exp))
+			;
+		else if (execve(tmp->cmd, exectab, envtab) == -1)
+		{
+			if (tmp->cmd)
+				check_slash(tmp->cmd, 1);
+			exit(127);
+		}
+		exit(0);
 	}
 	else
 	{
 		close(pipefd[1]);
-		close(fd_temp);
+		if (fd_temp != 0)
+			close(fd_temp);
 		if (tmp->fd_in != 0)
 			close(tmp->fd_in);
 		if (tmp->fd_out != 1)
@@ -222,7 +249,7 @@ void	middle_execute(t_cmd **cmd, t_env **env, int pipefd[2], int fd_temp)
 	}
 }
 
-void	first_execute(t_cmd **cmd, t_env **env, int pipefd[2])
+void	first_execute(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 {
 	t_cmd	*tmp;
 	char	**envtab;
@@ -230,11 +257,14 @@ void	first_execute(t_cmd **cmd, t_env **env, int pipefd[2])
 	int	frk;
 
 	tmp = *cmd;
-	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 	if (!tmp->cmd)
 		return ;
-	exectab = fusioncmdarg(tmp->cmd, tmp->arg);
-	envtab = list_to_tab(env);
+	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
+	if (tmp->cmd)
+	{
+		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
+		envtab = list_to_tab(env);
+	}
 	close(pipefd[0]);
 	if (tmp->name_out)
 	{
@@ -246,13 +276,21 @@ void	first_execute(t_cmd **cmd, t_env **env, int pipefd[2])
 	{
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	}
+	if (tmp->cmd)
+		del_sq_dq_arg(exectab);
 	tmp->pid = fork();
 	if (tmp->pid == 0)
 	{
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
+		if (tmp->cmd && check_builtins(tmp, env, exp))
+			exit(0);
 		if (execve(tmp->cmd, exectab, envtab) == -1)
-			printf("lol\n");
+		{
+			if (tmp->cmd)
+				check_slash(tmp->cmd, 1);
+			exit(127);
+		}
 	}
 	else
 	{
@@ -274,27 +312,42 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 	tmp = *cmd;
 	if (!tmp || !tmp->cmd)
 		return ;
+	ft_suppr_dq_sq(tmp->cmd);
 	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
-	if (!tmp->cmd)
-		return ;
+	//if (!tmp->cmd)
+	//	return ;
 	tmp->fd_in = 0;
 	tmp->fd_out = 1;
-	exectab = fusioncmdarg(tmp->cmd, tmp->arg);
-	envtab = list_to_tab(env);
+	if (tmp->cmd)
+	{
+		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
+		envtab = list_to_tab(env);
+	}
 	if (tmp->name_out)
 		tmp->fd_out = open(tmp->name_out, O_CREAT | O_RDONLY | O_WRONLY, 0644);
 	if (tmp->name_in)
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
-	if (check_builtins(tmp, env, exp))
-		return ;
+	if (tmp->cmd)
+	{
+		if (check_builtins(tmp, env, exp))
+			return ;
+	}
+	if (tmp->cmd)
+		del_sq_dq_arg(exectab);
+	g_rvalue = 0;
 	tmp->pid = fork();
 	if (tmp->pid == 0)
 	{
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
 		if (execve(tmp->cmd, exectab, envtab) == -1)
-			printf("lol\n");
-		exit(127);
+		{
+			if (tmp->cmd)
+				check_slash(tmp->cmd, 1);
+			g_rvalue = 423;
+			exit(127);
+		}
+		exit(0);
 	}
 	else
 	{
@@ -302,6 +355,22 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 			close(tmp->fd_in);
 		if (tmp->fd_out != 1)
 			close(tmp->fd_out);
+	}
+	printf("ggggggg = %d\n", g_rvalue);
+}
+
+void	init_heredoc(t_tree **tree)
+{
+	t_tree	*tmp;
+
+	tmp = (*tree)->next;
+	if (tmp && tmp->cmd_left->is_hd)
+		heredoc(&tmp->cmd_left);
+	while (tmp)
+	{
+		if (tmp->cmd_right->is_hd)
+			heredoc(&tmp->cmd_right);
+		tmp = tmp->next;
 	}
 }
 
@@ -313,6 +382,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 	int	tmpfd;
 
 	i = 0;
+	init_heredoc(tree);
 	tmp = (*tree)->next;
 	pipe(tmp->pipefd);
 	(*tree)->next->in_exec = 1;
@@ -321,46 +391,102 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 	{
 		if (tmp->cmd_right->cmd == NULL)
 		{
-			if (tmp->cmd_left->is_hd)
-				heredoc(&tmp->cmd_left);
 			executeone(&tmp->cmd_left, env, tmp->pipefd, exp);
+			ft_wait(&(tmp->cmd_left));
+			break ;
 		}
 		if (i == 0)
 		{
 			if (tmp->ope && ft_strcmp(tmp->ope, "|") == 0)
 			{
-				//tmpfd = pipefd[1];
-				first_execute(&tmp->cmd_left, env, tmp->pipefd);
-				//pipefd[0] = tmpfd;
-				if (!tmp->next)
+				first_execute(&tmp->cmd_left, env, tmp->pipefd, exp);
+				ft_wait(&(tmp->cmd_left));
+				if (!tmp->next || ft_strcmp(tmp->next->ope, "|") != 0)
 				{
-					last_execute(&tmp->cmd_right, env, tmp->pipefd);
+					last_execute(&tmp->cmd_right, env, tmp->pipefd, exp);
+					ft_wait(&(tmp->cmd_right));
 				}
 				else
 				{
 					tmpfd = tmp->pipefd[0];
 					pipe(tmp->pipefd);
-					middle_execute(&tmp->cmd_right, env, tmp->pipefd, tmpfd);
+					middle_execute(&tmp->cmd_right, env, tmp->pipefd, tmpfd, exp);
+					ft_wait(&(tmp->cmd_right));
 				}
 
+			}
+			else if (tmp->ope && ft_strcmp(tmp->ope, "&&") == 0)
+			{
+				exec_and(&tmp->cmd_left, env, exp);
+				ft_wait(&(tmp->cmd_left));
+				if (!tmp->next && g_rvalue == 0)
+				{
+					exec_and(&tmp->cmd_right, env, exp);
+					ft_wait(&(tmp->cmd_right));
+					return ;
+				}
+				else if (g_rvalue == 0)
+				{
+					exec_and(&tmp->cmd_right, env, exp);
+					ft_wait(&(tmp->cmd_right));
+				}
 			}
 		}
 		else
 		{
-			if (!tmp->next)
-				last_execute(&tmp->cmd_right, env, tmp->pipefd);
-			else
+			if (tmp->ope && ft_strcmp(tmp->ope, "|") == 0)
 			{
-				tmpfd = tmp->pipefd[0];
-				pipe(tmp->pipefd);
-				middle_execute(&tmp->cmd_right, env, tmp->pipefd, tmpfd);
+				if (!tmp->next)
+				{
+					last_execute(&tmp->cmd_right, env, tmp->pipefd, exp);
+					ft_wait(&(tmp->cmd_right));
+				}
+				else
+				{
+					tmpfd = tmp->pipefd[0];
+					pipe(tmp->pipefd);
+					middle_execute(&tmp->cmd_right, env, tmp->pipefd, tmpfd, exp);
+					ft_wait(&(tmp->cmd_right));
+				}
+			}
+			else if (tmp->ope && ft_strcmp(tmp->ope, "&&") == 0 && !tmp->next)
+			{
+				if (g_rvalue == 0)
+				{
+					exec_and(&tmp->cmd_right, env, exp);
+					ft_wait(&(tmp->cmd_right));
+					return ;
+				}
+			}
+			else if (tmp->ope && ft_strcmp(tmp->ope, "&&") == 0 && tmp->next
+				&& ft_strcmp(tmp->next->ope, "|") != 0)
+			{
+				if (g_rvalue == 0)
+				{
+					exec_and(&tmp->cmd_right, env, exp);
+					ft_wait(&(tmp->cmd_right));
+				}
+				if (!tmp->next)
+					return ;
+			}
+			else if (tmp->ope && ft_strcmp(tmp->ope, "&&") == 0 && tmp->next
+				&& ft_strcmp(tmp->next->ope, "|") == 0)
+			{
+				if (g_rvalue == 0)
+				{
+
+					//first_execute(&tmp->cmd_right, env, tmp->pipefd, exp);
+					//middle_execute(&tmp->cmd_right, env, tmp->pipefd, tmpfd, exp);
+					//exec_and(&tmp->cmd_right, env, exp);
+					//ft_wait(&(tmp->cmd_right));
+				}
 			}
 		}
 		i++;
 		tmp = tmp->next;
 	}
 	//signal(SIGINT, handler);
-	(*tree)->next->in_exec = 0;
+/*	(*tree)->next->in_exec = 0;
 	tmp = (*tree)->next;
 	int j = 0;
 	while (tmp)
@@ -368,7 +494,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 		if (j == 0)
 		{
 			ft_wait(&(tmp->cmd_left));
-			if (tmp->cmd_right)
+			if (tmp->cmd_right->cmd)
 			{
 				ft_wait(&(tmp->cmd_right));
 			}
@@ -379,6 +505,6 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 		}
 		tmp = tmp->next;
 		j++;
-	}
+	}*/
 	
 }

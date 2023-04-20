@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/20 01:17:39 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/20 17:20:41 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ char    *ft_itoa(int n);
 void    handler_fork(int sig);
 void	ft_putstr_fd(char *str, int fd);
 void	ft_putchar_fd(char c, int fd);
-void	ft_echo(char **tab);
+void	ft_echo(char **tab, t_env **env);
 int     check_builtins(t_cmd *cmd, t_env **env, t_env **exp);
 void	ft_env(t_env **env);
 void    ft_lstdelone_env(t_env *lst, void (*del)(void *));
@@ -82,5 +82,16 @@ char    *ft_suppr_dq_sq(char *str);
 char    *before_egal(char *str);
 int     len_egal(char *str);
 int     check_name(char *str);
+void    ft_pwd(void);
+t_env   *var_in_exp(char *str, t_env **exp);
+char    *reparse_dol(char *str, t_env **env);
+void    exec_and(t_cmd **cmd, t_env **env, t_env **exp);
+void	ft_wait(t_cmd **cmd);
+char	*recup_cmd(char *cmd, t_env **env, int i);
+char	**recover_path(char **envp);
+char	*check_slash(char *cmd, int mode);
+char	**fusioncmdarg(char *cmd, char **arg);
+void	del_sq_dq_arg(char **tab);
+
 
 #endif

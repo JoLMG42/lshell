@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/19 23:48:02 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/20 17:04:20 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ char	*add_spaces(char *str)
 			j++;
 			i++;
 		}
-		else if (str[i] == '"' && str[i - 1] == '=')
+/*		else if (str[i] == '"' && str[i - 1] == '=')
 		{
 			dq = 1;
 			space = 1;
@@ -196,7 +196,7 @@ char	*add_spaces(char *str)
 			j++;
 			i++;
 			sq = 0;
-		}
+		}*/
 		else
 		{
 			res[j] = str[i];
@@ -360,14 +360,14 @@ char	**rejointab(char **tab)
 	//j++;
 	while (tab[h])
 	{
-		if (ft_strcmp(tab[h], "|") == 0 || ft_strcmp(tab[h], "&&") == 0 || ft_strcmp(tab[h], "||") == 0)
+		if (tab[h + 1] && ft_strcmp(tab[h], "|") == 0 || ft_strcmp(tab[h], "&&") == 0 || ft_strcmp(tab[h], "||") == 0)
 			//|| ft_strcmp(tab[h], "<") == 0 || ft_strcmp(tab[h], "<<") == 0 || ft_strcmp(tab[h], ">") == 0
 			//|| ft_strcmp(tab[h], ">>") == 0)
 		{
 			j++;
 			res[j] = NULL;
 			res[j] = ft_strjoin(res[j], tab[h]);
-			if (ft_strcmp(tab[h + 1], "|") == 0 || ft_strcmp(tab[h + 1], "&&") == 0 || ft_strcmp(tab[h + 1], "||") == 0)
+			if (tab[h + 1] && ft_strcmp(tab[h + 1], "|") == 0 || ft_strcmp(tab[h + 1], "&&") == 0 || ft_strcmp(tab[h + 1], "||") == 0)
 				//|| ft_strcmp(tab[h + 1], "<") == 0 || ft_strcmp(tab[h + 1], "<<") == 0 || ft_strcmp(tab[h + 1], ">") == 0
 				//|| ft_strcmp(tab[h + 1], ">>") == 0)
 				;
@@ -450,7 +450,7 @@ void	ouverturefirstcmd(t_tree **lst)
 	int	i;
 
 	tmp = (*lst)->next;
-	if (!tmp)
+	if (!tmp || !tmp->cmd_left || !tmp->cmd_left->cmd)
 		return ;
 	i = 0;
 	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
@@ -519,7 +519,7 @@ void	ouvertureredir(t_tree **lst)
 	i = 0;
 	while (tmp)
 	{
-		if (tmp->cmd_right->cmd)
+		if (tmp->cmd_right && tmp->cmd_right->cmd)
 		{
 			tab = ft_supersplit(tmp->cmd_right->cmd, ' ');
 			i = 0;
@@ -807,7 +807,9 @@ char	*addspacedol(char *str)
 	int	j;
 	int	c;
 	char	*res;
+	t_s	s_s;
 
+	init_syntax_struct(&s_s);
 	i = 0;
 	c = 0;
 	while (str[i])
@@ -818,12 +820,18 @@ char	*addspacedol(char *str)
 			c++;
 		i++;
 	}
-	res = malloc(sizeof(char *) * (c + 1));
+	res = malloc(sizeof(char *) * (c + 10));
 	i = 0;
 	j = 0;
 	while (str[i])
 	{
-		if (str[i] == '$')
+		if (str[i] == '"' && s_s.sq_opened == 0 && s_s.dq_opened == 1)
+		{
+			ft_suppr_dq_sq(str);
+			ft_suppr_dq_sq(res);
+		}
+		check_sq_dq(&s_s, str[i]);
+		if (str[i] == '$' && s_s.sq_opened == 0 && s_s.dq_opened == 0)
 		{
 			res[j] = ' ';
 			j++;
@@ -1004,6 +1012,9 @@ void	parsearg(t_tree **lst, t_env **env)
 						tmp->cmd_right->arg[i] = ft_strjoin(tmp->cmd_right->arg[i], tab[j]);
 					j++;
 				}
+				else
+					tmp->cmd_right->arg[i] = ft_strjoin(tmp->cmd_right->arg[i], tab[j]);
+
 				j++;
 			}
 			free_tab(tab);
@@ -1031,6 +1042,7 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 	j = 0;
 	while (tab && tab[j])
 	{
+		//tab[j] = reparse_dol(tab[j], env);
 		if (ft_strcmp(tab[j], "$") == 0)
 		{
 			if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") == 0)
@@ -1115,6 +1127,7 @@ void	parsecmd(t_tree **lst, t_env **env)
 			}
 			else
 				tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, tab[j]);
+			tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, " ");
 			j++;
 		}
 		tmp = tmp->next;
@@ -1142,14 +1155,14 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 		free_tab(tab);
 		return (1);
 	}
+	if (!check_syntax(tab))
+		return (0);
 	/*int j = 0;
 	while (tab[j])
 	{
 		printf("YYYYYYYYYYYYYY %s\n", tab[j]);
 		j++;
 	}*/
-//	if (!check_syntax(tab))
-//		return (0);
 	int	i = 0;
 	int	c = 0;
 	/*tab = ft_split(recup, "&&");
@@ -1214,12 +1227,12 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 	parseargfirstcmd(&tree, &env);
 	if (i > 1)
 	{
+		parsecmd(&tree, &env);
 		setarg(&tree);
 		ouvertureredir(&tree);
 		setbracelvl(&tree);
 		setwildcards(&tree);
 		parsearg(&tree, &env);
-		parsecmd(&tree, &env);
 	}
 	while (test)
 	{
@@ -1311,6 +1324,7 @@ int	main(int ac, char **av, char **envp)
 	while (1)
 	{
 		signal(SIGINT, handler);
+		signal(SIGQUIT, SIG_IGN);
 		str = readline("ft_containers$ ");
 		if (!str)
 			break ;

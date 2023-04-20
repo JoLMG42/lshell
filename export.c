@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 19:42:22 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/20 01:26:32 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/20 16:51:39 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void	export_exp(char *str, t_env **exp)
 		putstr_fd_echo("minishell: export: '", 2);
 		putstr_fd_echo(name, 2);
 		putstr_fd_echo("': not a valid identifier\n", 2);
+		g_rvalue = 1;
 		free(name);
 		return ;
 	}
@@ -141,6 +142,7 @@ void	join_content(char *content, char *name, t_env **env, t_env **exp)
 		putstr_fd_echo("minishell: export: '", 2);
 		putstr_fd_echo(tmp, 2);
 		putstr_fd_echo("': not a valid identifier\n", 2);
+		g_rvalue = 1;
 		free(tmp);
 		return ;
 	}
@@ -197,6 +199,7 @@ void	export_both(char *str, t_env **env, t_env **exp)
 		putstr_fd_echo("minishell: export: '", 2);
 		putstr_fd_echo(tmp, 2);
 		putstr_fd_echo("': not a valid identifier\n", 2);
+		g_rvalue = 1;
 		free(tmp);
 		return ;
 	}
@@ -236,10 +239,7 @@ int	check_name(char *str)
 			|| (str[i] >= 97 && str[i] <= 122))
 			i++;
 		else
-		{
-			printf("AAAAAAAAAAA = %c\n", str[i]);
 			return (0);
-		}
 	}
 	return (1);
 

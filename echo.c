@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 12:48:20 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/19 14:49:17 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/20 17:04:30 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,13 +69,17 @@ char	*ft_suppr_dq_sq(char *str)
 	return (str);
 }
 
-static void	ft_suppr(char **tab)
+char    *reparse_dol(char *str, t_env **env);
+
+
+static void	ft_suppr(char **tab, t_env **env)
 {
 	int	i;
 
 	i = 0;
 	while (tab[i])
 	{
+		tab[i] = reparse_dol(tab[i], env);
 		ft_suppr_dq_sq(tab[i]);
 		i++;
 	}
@@ -116,7 +120,35 @@ void	putstr_fd_echo(char *str, int fd)
 	}
 }
 
-void	ft_echo(char **tab)
+char	*reparse_dol(char *str, t_env **env)
+{
+	char	*res;
+	t_env	*tmp;
+	int	i;
+	char	*truc;
+
+	i = 0;
+	if (str[0] != '\'')
+		return (str);
+	//res = malloc(sizeof(char) * ft_strlen(str) + 1);
+	res = ft_strdup(str + 1);
+	res[ft_strlen(res) - 1] = 0;
+	if (res[0] == '$')
+	{
+		truc = ft_strdup(res + 1);
+		res = ft_strdup(truc);
+	}
+	tmp = var_in_exp(res, env);
+	free(res);
+	if (!tmp)
+		return (str);
+	res = ft_strjoin(res, "'");
+	res = ft_strdup(tmp->content);
+	res = ft_strjoin(res, "'");
+	return (res);
+}
+
+void	ft_echo(char **tab, t_env **env)
 {
 	int		i;
 	int		j;
@@ -126,11 +158,12 @@ void	ft_echo(char **tab)
 		putstr_fd_echo("\n", 1);
 		return ;
 	}
-	ft_suppr(tab);
+	ft_suppr(tab, env);
 	i = ft_check_options(tab);
 	j = i;
 	while (tab[i])
 	{
+		reparse_dol(tab[i], env);
 		putstr_fd_echo(tab[i], 1);
 		i++;
 		if (tab[i])
