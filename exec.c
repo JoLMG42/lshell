@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/20 20:13:27 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/21 13:45:55 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ void	del_sq_dq_arg(char **tab)
 	}
 }
 
-void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
+void	last_execute(t_cmd **cmd, t_env **env, t_tree *tree, t_env **exp)
 {
 	t_cmd	*tmp;
 	char	**envtab;
@@ -160,7 +160,7 @@ void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	}
 	else
-		tmp->fd_in = pipefd[0];
+		tmp->fd_in = tree->pipefd[0];
 	if (tmp->cmd)
 		del_sq_dq_arg(exectab);
 	tmp->pid = fork();
@@ -169,7 +169,7 @@ void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
 		if (tmp->cmd && check_builtins(tmp, env, exp))
-			;
+			exit(0);
 		else if (execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
@@ -180,8 +180,8 @@ void	last_execute(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 	}
 	else
 	{
-		if (pipefd[0] != 0)
-			close(pipefd[0]);
+		if (tree->pipefd[0] != 0)
+			close(tree->pipefd[0]);
 		if (tmp->fd_in != 0)
 			close(tmp->fd_in);
 		if (tmp->fd_out != 1)
@@ -228,7 +228,7 @@ void	middle_execute(t_cmd **cmd, t_env **env, int pipefd[2], int fd_temp, t_env 
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
 		if (tmp->cmd && check_builtins(tmp, env, exp))
-			;
+			exit(0);
 		else if (execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
@@ -249,7 +249,7 @@ void	middle_execute(t_cmd **cmd, t_env **env, int pipefd[2], int fd_temp, t_env 
 	}
 }
 
-void	first_execute(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
+void	first_execute(t_cmd **cmd, t_env **env, t_tree *tree, t_env **exp)
 {
 	t_cmd	*tmp;
 	char	**envtab;
@@ -265,13 +265,13 @@ void	first_execute(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
 		envtab = list_to_tab(env);
 	}
-	close(pipefd[0]);
+	close(tree->pipefd[0]);
 	if (tmp->name_out)
 	{
 		tmp->fd_out = open(tmp->name_out, O_CREAT | O_RDONLY | O_WRONLY, 0644);
 	}
 	else
-		tmp->fd_out = pipefd[1];
+		tmp->fd_out = tree->pipefd[1];
 	if (tmp->name_in)
 	{
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
@@ -291,10 +291,11 @@ void	first_execute(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 				check_slash(tmp->cmd, 1);
 			exit(127);
 		}
+		exit(0);
 	}
 	else
 	{
-		close(pipefd[1]);
+		close(tree->pipefd[1]);
 		if (tmp->fd_in != 0)
 			close(tmp->fd_in);
 		if (tmp->fd_out != 1)
@@ -316,8 +317,8 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 	//if (!tmp->cmd)
 	//	return ;
-	tmp->fd_in = 0;
-	tmp->fd_out = 1;
+	//tmp->fd_in = 0;
+	//tmp->fd_out = 1;
 	if (tmp->cmd)
 	{
 		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
@@ -344,7 +345,6 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
-			g_rvalue = 423;
 			exit(127);
 		}
 		exit(0);
@@ -356,7 +356,6 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 		if (tmp->fd_out != 1)
 			close(tmp->fd_out);
 	}
-	printf("ggggggg = %d\n", g_rvalue);
 }
 
 void	init_heredoc(t_tree **tree)
@@ -378,7 +377,6 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 {
 	t_tree	*tmp;
 	int	i;
-	int	pipefd[2];
 	int	tmpfd;
 
 	i = 0;
@@ -399,12 +397,13 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 		{
 			if (tmp->ope && ft_strcmp(tmp->ope, "|") == 0)
 			{
-				first_execute(&tmp->cmd_left, env, tmp->pipefd, exp);
-				ft_wait(&(tmp->cmd_left));
-				if (!tmp->next || ft_strcmp(tmp->next->ope, "|") != 0)
+				first_execute(&tmp->cmd_left, env, tmp, exp);
+			//	ft_wait(&(tmp->cmd_left));
+				if (!tmp->next)// || ft_strcmp(tmp->next->ope, "|") != 0)
 				{
-					last_execute(&tmp->cmd_right, env, tmp->pipefd, exp);
-					ft_wait(&(tmp->cmd_right));
+					last_execute(&tmp->cmd_right, env, tmp, exp);
+					break ;
+			//		ft_wait(&(tmp->cmd_right));
 				}
 				else
 				{
@@ -415,7 +414,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 				}
 
 			}
-			else if (tmp->ope && ft_strcmp(tmp->ope, "&&") == 0)
+	/*		else if (tmp->ope && ft_strcmp(tmp->ope, "&&") == 0)
 			{
 				exec_and(&tmp->cmd_left, env, exp);
 				ft_wait(&(tmp->cmd_left));
@@ -430,7 +429,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 					exec_and(&tmp->cmd_right, env, exp);
 					ft_wait(&(tmp->cmd_right));
 				}
-			}
+			}*/
 		}
 		else
 		{
@@ -438,7 +437,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 			{
 				if (!tmp->next)
 				{
-					last_execute(&tmp->cmd_right, env, tmp->pipefd, exp);
+					last_execute(&tmp->cmd_right, env, tmp, exp);
 					ft_wait(&(tmp->cmd_right));
 				}
 				else
@@ -449,7 +448,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 					ft_wait(&(tmp->cmd_right));
 				}
 			}
-			else if (tmp->ope && ft_strcmp(tmp->ope, "&&") == 0 && !tmp->next)
+			/*else if (tmp->ope && ft_strcmp(tmp->ope, "&&") == 0 && !tmp->next)
 			{
 				if (g_rvalue == 0)
 				{
@@ -480,13 +479,13 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 					//exec_and(&tmp->cmd_right, env, exp);
 					//ft_wait(&(tmp->cmd_right));
 				}
-			}
+			}*/
 		}
 		i++;
 		tmp = tmp->next;
 	}
-	//signal(SIGINT, handler);
-/*	(*tree)->next->in_exec = 0;
+//	signal(SIGINT, handler);
+	(*tree)->next->in_exec = 0;
 	tmp = (*tree)->next;
 	int j = 0;
 	while (tmp)
@@ -505,6 +504,6 @@ void	exec(t_tree **tree, t_env **env, t_env **exp)
 		}
 		tmp = tmp->next;
 		j++;
-	}*/
+	}
 	
 }
