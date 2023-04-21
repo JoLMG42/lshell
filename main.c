@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/20 17:04:20 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/21 18:17:31 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1140,7 +1140,9 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 	char	**tab;
 	t_cmd	*l_cmd;
 	t_tree	*tree;
+	t_shell	*shell;
 
+	shell = malloc(sizeof(struct s_shell));
 	//env = malloc(sizeof(struct s_env));
 	//l_cmd = malloc(sizeof(struct s_cmd));
 	//tree = malloc(sizeof(struct s_tree));
@@ -1262,7 +1264,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 		test = test->next;
 	}
 	recup_struct(&tree);
-	exec(&tree, &env, &exp);
+	exec(&tree, &env, &exp, shell);
 
 
 	//ft_lstcleartree(&tree, del);

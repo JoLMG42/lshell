@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/20 17:20:41 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/21 18:17:46 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ t_env   *ft_lstnew_env(char *line, char *name, char *content);
 void    ft_lstclear_env(t_env **lst, void (*del)(void *));
 char    **list_to_tab(t_env **env);
 int     listenv_size(t_env **env);
-void    exec(t_tree **tree, t_env **env, t_env **exp);
+void    exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell);
 void    heredoc(t_cmd **cmd);
 void	handler(int sig);
 t_tree  *recup_struct(t_tree **tree);
