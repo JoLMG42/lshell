@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/21 18:17:46 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/24 13:16:37 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ char	**recover_path(char **envp);
 char	*check_slash(char *cmd, int mode);
 char	**fusioncmdarg(char *cmd, char **arg);
 void	del_sq_dq_arg(char **tab);
+int     pars_prompt(char *str, t_env *env, t_env *exp);
 
 
 #endif
