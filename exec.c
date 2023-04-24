@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/24 13:30:35 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/24 15:54:14 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,16 @@ char	**recover_path(char **envp)
 {
 	int        i;
 	char    *s;
+	char	**tab;
 	i = 0;
 	while (envp[i] != NULL)
 	{
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 		{
-			s = envp[i] + 5;
-			return (ft_supersplit(s, ':'));
+			s = ft_strdup(envp[i] + 5);
+			tab = ft_supersplit(s, ':');
+			free(s);
+			return (tab);
 		}
 		i++;
 	}
@@ -72,21 +75,23 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 	char	**newpath;
 	char	*tmp;
 	char	*recover;
+	char	**tab;
 	
 	if (is_builtins(cmd))
 		return (cmd);
 	if (cmd[0] == '/')
 		return (check_slash(cmd, 0));
-	newpath = recover_path(list_to_tab(env));
-	recover = ft_strdup(cmd);
+	tab = list_to_tab(env);
+	newpath = recover_path(tab);
+	free_tab(tab);
 	while (newpath && newpath[i++])
 	{
-		tmp = ft_strjoin(newpath[i], "/");
+		tmp = ft_strjoin2(newpath[i], "/");
 		recover = ft_strjoin(tmp, cmd);
 		//free(tmp);
 		if (recover && access(recover, X_OK) == 0)
 		{
-		//	free_tab(newpath);
+			free_tab(newpath);
 			free(cmd);
 			return (recover);
 		}
@@ -96,7 +101,8 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 	printf("%s : command not found\n", cmd);
 	//g_rvalue = 127;
 	free(cmd);
-	//free_tab(newpath);
+	free(recover);
+	free_tab(newpath);
 	return (NULL);
 }
 
@@ -183,6 +189,7 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
+			ft_lstclear(&tmp, del);
 			exit(127);
 		}
 		exit(0);
@@ -323,7 +330,7 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 	return ;
 }
 
-void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
+void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 {
 	t_cmd	*tmp;
 	char	**envtab;
@@ -331,6 +338,8 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 	int	frk;
 
 	tmp = *cmd;
+	envtab = NULL;
+	exectab = NULL;
 	if (!tmp || !tmp->cmd)
 		return ;
 	ft_suppr_dq_sq(tmp->cmd);
@@ -370,6 +379,14 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
+			ft_lstclear(&tmp, del);
+			t_tree *t;
+			t = recup_struct(NULL);
+			//ft_lstcleartree(&t, del);
+			ft_lstclear_env(env, del);
+			ft_lstclear_env(exp, del);
+			free_tab(envtab);
+			free_tab(exectab);
 			exit(127);
 		}
 		exit(0);
@@ -381,6 +398,8 @@ void	executeone(t_cmd **cmd, t_env **env, int pipefd[2], t_env **exp)
 		if (tmp->fd_out != 1)
 			close(tmp->fd_out);
 	}
+	free_tab(exectab);
+	free_tab(envtab);
 }
 
 void	init_heredoc(t_tree **tree)
@@ -422,7 +441,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				pars_prompt(tmp->cmd_left->cmd, *env, *exp);
 			else
 			{
-				executeone(&tmp->cmd_left, env, pipefd, exp);
+				executeone(&tmp->cmd_left, env, shell, exp);
 				ft_wait(&(tmp->cmd_left));
 			}
 			break ;

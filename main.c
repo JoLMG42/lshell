@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/21 18:17:31 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/24 15:55:42 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,12 +325,14 @@ void	free_tab(char **tab)
 	int	i;
 
 	i = 0;
-	while (tab[i])
+	while (tab && tab[i])
 	{
-		free(tab[i]);
+		if (tab[i])
+			free(tab[i]);
 		i++;
 	}
-	free(tab);
+	if (tab)
+		free(tab);
 }
 int	ft_lstsize(t_cmd *lst)
 {
@@ -383,7 +385,8 @@ char	**rejointab(char **tab)
 			{
 				res[j] = NULL;
 				res[j] = ft_strdup(tab[h]);
-				res[j] = ft_strjoin(res[j], " ");
+				if (tab[h + 1])
+					res[j] = ft_strjoin(res[j], " ");
 
 			}
 			else
@@ -884,6 +887,7 @@ char	**list_to_tab(t_env **env)
 		i++;
 		tmp = tmp->next;
 	}
+	res[i] = 0;
 	return (res);
 }
 
@@ -1143,6 +1147,9 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 	t_shell	*shell;
 
 	shell = malloc(sizeof(struct s_shell));
+	shell->env = NULL;
+	shell->exp = NULL;
+	shell->tree = NULL;
 	//env = malloc(sizeof(struct s_env));
 	//l_cmd = malloc(sizeof(struct s_cmd));
 	//tree = malloc(sizeof(struct s_tree));
@@ -1150,15 +1157,20 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 	recup = add_spaces(str);
 //	printf("AFTER ADD SPACES: %s\n", recup);
 	//tab = ft_split(recup, " ");
+	tab = NULL;
 	tab = ft_supersplit(recup, ' ');
+	free(recup);
 	if (!tab[0])
 	{
-		free(recup);
 		free_tab(tab);
+		free(shell);
 		return (1);
 	}
 	if (!check_syntax(tab))
+	{
+		free(shell);
 		return (0);
+	}
 	/*int j = 0;
 	while (tab[j])
 	{
@@ -1219,6 +1231,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 			i++;
 		}
 	}
+	free_tab(tab);
 	t_env	*tmp_env = env;
 	t_tree	*test = tree->next;
 	parsefirstcmd(&tree, &env);
@@ -1264,13 +1277,15 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 		test = test->next;
 	}
 	recup_struct(&tree);
+	shell->tree = tree;
+	shell->env = env;
+	shell->exp = exp;
 	exec(&tree, &env, &exp, shell);
 
 
-	//ft_lstcleartree(&tree, del);
+	ft_lstcleartree(&tree, del);
 	//ft_lstclear_env(&env, del);
-	free_tab(tab);
-	free(recup);
+	free(shell);
 	return (1);
 }
 
@@ -1314,6 +1329,12 @@ void	handler(int sig)
 
 }
 
+void	free_stuff(t_env **env, t_env **exp)
+{
+	ft_lstclear_env(env, del);
+	ft_lstclear_env(exp, del);
+}
+
 int	main(int ac, char **av, char **envp)
 {
 	char	*str;
@@ -1336,5 +1357,5 @@ int	main(int ac, char **av, char **envp)
 			add_history(str);
 		free(str);
 	}
-
+	free_stuff(&env, &exp);
 }

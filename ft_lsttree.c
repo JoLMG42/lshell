@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/18 23:26:48 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/24 15:36:02 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,8 @@ void	ft_lstdelonetree(t_tree *lst, void (*del)(void *))
 		ft_lstclear(&lst->cmd_right, del);
 	if (lst->ope)
 		free(lst->ope);
-	free(lst);
+	if (lst)
+		free(lst);
 }
 
 t_tree	*ft_lstnewtree(char *ope, t_cmd *cmdl, t_cmd *cmdr)

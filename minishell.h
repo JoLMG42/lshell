@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/24 13:16:37 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/24 15:51:10 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void    check_sq_dq(t_s *s_s, char c);
 void    init_syntax_struct(t_s *s);
 char    **ft_supersplit(char *s, char c);
 char    *ft_strjoin(char *s1, char *s2);
+char    *ft_strjoin2(char *s1, char *s2);
 int	ft_strlen(char *str);
 char    *ft_strdup(char *s);
 char	**ft_split(char *str, char *charset);

@@ -179,12 +179,15 @@ char	**ft_supersplit_lucie(char *s, char c)
 char *checkegal(char *str, char c)
 {
     int i = 0;
+    char	**tab;
 
     while (str && str[i] )
     {
         if (str[i] == c)
         {
-            str = *ft_supersplit_lucie(str, c);
+            tab = ft_supersplit_lucie(str, c);
+	    str = ft_strdup(*tab);
+	    free_tab(tab);
             return (str);
         }
         i++;
@@ -195,11 +198,14 @@ char *checkegal(char *str, char c)
 char *checkafteregal(char *str, char c)
 {
     int i = 0;
+    char	**tab;
     while(str &&str[i])
     {
         if (str[i] == c)
         {
-            str = *ft_supersplit_lucie(str + i, c);
+            tab = ft_supersplit_lucie(str + i, c);
+	    str = ft_strdup(*tab);
+	    free_tab(tab);
             return (str);
         }
         i++;
