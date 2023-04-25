@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 01:43:32 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 11:16:35 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,8 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 	char	**exectab;
 	int	frk;
 
+	exectab = NULL;
+	envtab = NULL;
 	tmp = *cmd;
 	if (!tmp->cmd)
 		return ;
@@ -204,8 +206,10 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			free(tree);
 			ft_lstclear_env(env, del);
 			ft_lstclear_env(exp, del);
-			free_tab(envtab);
-			free_tab(exectab);
+			//if (envtab)
+			//	free_tab(envtab);
+			//if (exectab)
+			//	free_tab(exectab);
 			exit(127);
 		}
 		exit(0);
@@ -228,6 +232,8 @@ void	middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp, t_env 
 	char	**exectab;
 	int	frk;
 
+	envtab = NULL;
+	exectab = NULL;
 	tmp = *cmd;
 	if (!tmp->cmd)
 		return ;
@@ -311,6 +317,8 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 	char	**exectab;
 	int	frk;
 
+	envtab = NULL;
+	exectab = NULL;
 	tmp = *cmd;
 	if (!tmp->cmd)
 		return ;
@@ -365,8 +373,8 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			free(tree);
 			ft_lstclear_env(env, del);
 			ft_lstclear_env(exp, del);
-			free_tab(envtab);
-			free_tab(exectab);
+			//free_tab(envtab);
+			//free_tab(exectab);
 			exit(127);
 		}
 		exit(0);
@@ -487,6 +495,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	int	flag = 0;
 	while (tmp)
 	{
+
 		if (tmp->cmd_right->cmd == NULL)
 		{
 			if (tmp->cmd_left->bracelvl)
@@ -500,6 +509,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 		}
 		if (i == 0)
 		{
+
 			if (!tmp->next)
 			{
 				if (ft_strcmp(tmp->ope, "|") == 0)
@@ -515,6 +525,8 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				}
 				else if (ft_strcmp(tmp->ope, "&&") == 0)
 				{
+					if (tmp->cmd_left->bracelvl)
+						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
 					exec_and(&tmp->cmd_left, env, exp, shell);
 					ft_wait(&(tmp->cmd_left));
 					if (g_rvalue == 0)
@@ -567,6 +579,8 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			}
 			else if (ft_strcmp(tmp->ope, "&&") == 0)
 			{
+				if (tmp->cmd_left->bracelvl)
+					pars_prompt(tmp->cmd_left->cmd, *env, *exp);
 				exec_and(&tmp->cmd_left, env, exp, shell);
 				ft_wait(&(tmp->cmd_left));
 				if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
