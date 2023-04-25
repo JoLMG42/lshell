@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 11:16:35 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 19:46:27 by lcalvie          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ void	ft_wait(t_cmd **cmd)
 {
 	int	value;
 
+	printf("on wait = %s\n", (*cmd)->cmd);
 	value = 0;
 	t_cmd *cmd_lst = *cmd;
 	waitpid(cmd_lst->pid, &value, 0);
@@ -118,6 +119,32 @@ void	ft_wait(t_cmd **cmd)
 	}
 	else
 		g_rvalue = WEXITSTATUS(value);
+}
+
+void	ft_wait_all(t_tree *to_wait, t_tree *end, int first)
+{
+	t_tree *tmp;
+
+	printf("WAIT ALL\n");
+	tmp = to_wait;
+	while (tmp != end)
+	{
+		if (tmp == to_wait && first)
+		{
+			//printf("on wait1 = %s\n", tmp->cmd_left->cmd);
+			ft_wait(&(tmp->cmd_left));
+		}
+		//printf("on wait2 = %s\n", tmp->cmd_right->cmd);
+		ft_wait(&(tmp->cmd_right));
+		tmp = tmp->next;
+	}
+	if (tmp == to_wait && first)
+	{
+		//printf("on wait3 = %s\n", tmp->cmd_left->cmd);
+		ft_wait(&(tmp->cmd_left));
+	}
+	ft_wait(&(tmp->cmd_right));
+	//printf("on wait4 = %s\n", tmp->cmd_right->cmd);
 }
 
 void	handler_fork(int sig)
@@ -322,7 +349,9 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 	tmp = *cmd;
 	if (!tmp->cmd)
 		return ;
+	//printf("avant recup %s\n", tmp->cmd);
 	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
+	//printf("apres recup %s\n", tmp->cmd);
 	tmp->pid = fork();
 	if (tmp->pid == 0)
 	{
@@ -484,6 +513,8 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	int	tmpfd;
 	int	pipefd[2];
 	char	*saveope;
+	t_tree	*to_wait;
+	int	first_to_wait;
 
 	i = 0;
 	saveope = NULL;
@@ -493,6 +524,8 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	(*tree)->next->in_exec = 1;
 	signal(SIGINT, handler_fork);
 	int	flag = 0;
+	to_wait = NULL;
+	first_to_wait = 1;
 	while (tmp)
 	{
 
@@ -551,124 +584,186 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					}
 				}
 			}
-			else if (ft_strcmp(tmp->ope, "|") == 0)
+			else if (ft_strcmp(tmp->ope, "|") == 0) //premier groupe + pipe + next
 			{
-				if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
+				if (ft_strcmp(tmp->next->ope, "|") == 0)
 				{
 					first_execute(&tmp->cmd_left, env, shell, exp);
-					ft_wait(&(tmp->cmd_left));
+					//ft_wait(&(tmp->cmd_left));
 					tmpfd = shell->pipefd[0];
 					pipe(shell->pipefd);
 					middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
-					ft_wait(&(tmp->cmd_right));
+					//ft_wait(&(tmp->cmd_right));
+					to_wait = tmp;
 				}
-				if (tmp->next && ft_strcmp(tmp->next->ope, "&&") == 0)
+				else
 				{
 					first_execute(&tmp->cmd_left, env, shell, exp);
-					ft_wait(&(tmp->cmd_left));
 					last_execute(&tmp->cmd_right, env, shell, exp);
-					ft_wait(&(tmp->cmd_right));
-				}
-				if (tmp->next && ft_strcmp(tmp->next->ope, "||") == 0)
-				{
-					first_execute(&tmp->cmd_left, env, shell, exp);
 					ft_wait(&(tmp->cmd_left));
-					last_execute(&tmp->cmd_right, env, shell, exp);
 					ft_wait(&(tmp->cmd_right));
 				}
 			}
-			else if (ft_strcmp(tmp->ope, "&&") == 0)
+			else if (ft_strcmp(tmp->ope, "&&") == 0) //premier groupe + et + next
 			{
+				//printf("PREMIER GROUPE\n");
 				if (tmp->cmd_left->bracelvl)
 					pars_prompt(tmp->cmd_left->cmd, *env, *exp);
 				exec_and(&tmp->cmd_left, env, exp, shell);
 				ft_wait(&(tmp->cmd_left));
-				if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
+				if (g_rvalue == 0)
 				{
-					first_execute(&tmp->cmd_right, env, shell, exp);
-					ft_wait(&(tmp->cmd_right));
-				}
-				else if (tmp->next && ft_strcmp(tmp->next->ope, "&&") == 0)
-				{
-					if (g_rvalue == 0)
+					if (ft_strcmp(tmp->next->ope, "|") == 0)
+					{
+						first_execute(&tmp->cmd_right, env, shell, exp);
+						to_wait = tmp;
+						first_to_wait = 0;
+						//ft_wait(&(tmp->cmd_right));
+					}
+					else
 					{
 						exec_and(&tmp->cmd_right, env, exp, shell);
 						ft_wait(&(tmp->cmd_right));
-					}	
+					}
 				}
-				else if (tmp->next && ft_strcmp(tmp->next->ope, "||") == 0)
+				else
 				{
-					if (g_rvalue == 0)
+					while (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
 					{
-						exec_and(&tmp->cmd_right, env, exp, shell);
-						ft_wait(&(tmp->cmd_right));
-					}	
+						//printf("AUT SKIP LO\n");
+						tmp = tmp->next;
+					}
 				}
 			}
-			else if (ft_strcmp(tmp->ope, "||") == 0)
+			else if (ft_strcmp(tmp->ope, "||") == 0) //premier groupe + ou + next
 			{
 				exec_and(&tmp->cmd_left, env, exp, shell);
 				ft_wait(&(tmp->cmd_left));
-				if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0 && g_rvalue != 0)
+				if (g_rvalue != 0)
 				{
-					first_execute(&tmp->cmd_right, env, shell, exp);
-					ft_wait(&(tmp->cmd_right));
-				}
-				else if (tmp->next && ft_strcmp(tmp->next->ope, "||") == 0)
-				{
-					if (g_rvalue != 0)
+					if (ft_strcmp(tmp->next->ope, "|") == 0)
+					{
+						printf("OUIOUOI OU PUIS PIPE \n");
+						first_execute(&tmp->cmd_right, env, shell, exp);
+						to_wait = tmp;
+						first_to_wait = 0;
+					}
+					else
 					{
 						exec_and(&tmp->cmd_right, env, exp, shell);
 						ft_wait(&(tmp->cmd_right));
-					}	
+					}
 				}
-				else if (tmp->next && ft_strcmp(tmp->next->ope, "&&") == 0)
+				else
 				{
-					if (g_rvalue != 0)
+					while (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
 					{
-						exec_and(&tmp->cmd_right, env, exp, shell);
-						ft_wait(&(tmp->cmd_right));
-					}	
+						//printf("AUT SKIP LO\n");
+						tmp = tmp->next;
+					}
 				}
 			}
-		}
+		} // deuxieme groupe
 		else
 		{
 			if (tmp->next && ft_strcmp(saveope, "|") == 0 && ft_strcmp(tmp->ope, "|") == 0
 				&& ft_strcmp(tmp->next->ope, "|") == 0)
 			{
 	//			printf("CMD 1 = %s\n", tmp->cmd_right->cmd);
+				printf("CMD iciii = %s\n", tmp->cmd_right->cmd);
 				tmpfd = shell->pipefd[0];
 				pipe(shell->pipefd);
 				middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
-				ft_wait(&(tmp->cmd_right));
+				//ft_wait(&(tmp->cmd_right));
 			}
-			else if (!tmp->next && ft_strcmp(saveope, "|") == 0 && ft_strcmp(tmp->ope, "|") == 0)
+			else if (ft_strcmp(saveope, "|") == 0 && ft_strcmp(tmp->ope, "|") == 0) // fin de la serie de pipe
 			{
 	//			printf("CMD 2 = %s\n", tmp->cmd_right->cmd);
+				printf("FIN DE PIPE 1\n");
 				last_execute(&tmp->cmd_right, env, shell, exp);
-				ft_wait(&(tmp->cmd_right));
+				//ft_wait(&(tmp->cmd_right));
+				ft_wait_all(to_wait, tmp, first_to_wait);
+				to_wait = NULL;
 			}
-			else if (ft_strcmp(saveope, "|") == 0 && ft_strcmp(tmp->ope, "&&") == 0)
+			else if (ft_strcmp(tmp->ope, "&&") == 0)
 			{
-				if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
+				if (g_rvalue == 0)
 				{
-	//				printf("CMD 5 = %s\n", tmp->cmd_right->cmd);
-					pipe(shell->pipefd);
-					first_execute(&tmp->cmd_right, env, shell, exp);
-					ft_wait(&(tmp->cmd_right));
+					if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
+					{
+		//				printf("CMD 5 = %s\n", tmp->cmd_right->cmd);
+						pipe(shell->pipefd);
+						first_execute(&tmp->cmd_right, env, shell, exp);
+						to_wait = tmp;
+						first_to_wait = 0;
+					}
+					else
+					{
+		//				printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
+						exec_and(&tmp->cmd_right, env, exp, shell);
+						//last_execute(&tmp->cmd_right, env, shell, exp);
+						ft_wait(&(tmp->cmd_right));
+					}
 				}
 				else
 				{
-	//				printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
-					exec_and(&tmp->cmd_right, env, exp, shell);
-					//last_execute(&tmp->cmd_right, env, shell, exp);
-					ft_wait(&(tmp->cmd_right));
+					while (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
+					{
+						//printf("AUT SKIP LO\n");
+						tmp = tmp->next;
+					}
 				}
 			}
-			else if (tmp->next && ft_strcmp(tmp->ope, "&&") == 0 && ft_strcmp(tmp->next->ope, "|") == 0)
+			else if (ft_strcmp(tmp->ope, "||") == 0)
 			{
-	//			printf("CMD 4 = %s\n", tmp->cmd_right->cmd);
+				if (g_rvalue != 0)
+				{
+					if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
+					{
+		//				printf("CMD 5 = %s\n", tmp->cmd_right->cmd);
+						pipe(shell->pipefd);
+						first_execute(&tmp->cmd_right, env, shell, exp);
+						to_wait = tmp;
+						first_to_wait = 0;
+					}
+					else
+					{
+		//				printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
+						exec_and(&tmp->cmd_right, env, exp, shell);
+						//last_execute(&tmp->cmd_right, env, shell, exp);
+						ft_wait(&(tmp->cmd_right));
+					}
+				}
+				else
+				{
+					while (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
+					{
+						//printf("AUT SKIP LO\n");
+						tmp = tmp->next;
+					}
+				}
+			}
+			else if (ft_strcmp(tmp->ope, "|") == 0)
+			{
+				if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
+				{
+					printf("ON CONTINUE LES PIPES\n");
+					tmpfd = shell->pipefd[0];
+					pipe(shell->pipefd);
+					middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
+				}
+				else
+				{
+					printf("FIN DE PIPE 2\n");
+					//exec_and(&tmp->cmd_right, env, exp, shell);
+					last_execute(&tmp->cmd_right, env, shell, exp);
+					ft_wait_all(to_wait, tmp, first_to_wait);
+					to_wait = NULL;
+				}
+			}
+			/*else if (tmp->next && ft_strcmp(tmp->ope, "&&") == 0 && ft_strcmp(tmp->next->ope, "|") == 0)
+			{
+				printf("CMD 4 = %s\n", tmp->cmd_right->cmd);
 				first_execute(&tmp->cmd_right, env, shell, exp);
 				ft_wait(&(tmp->cmd_right));
 			}
@@ -676,8 +771,9 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					//&& ft_strcmp(tmp->next->ope, "|") != 0)
 			{
 				//pipe(shell->pipefd);
+				printf("CMD 6 = %s\n", tmp->cmd_right->cmd);
 				last_execute(&tmp->cmd_right, env, shell, exp);
-				ft_wait(&(tmp->cmd_left));
+				//ft_wait(&(tmp->cmd_left));
 			}
 			else if (ft_strcmp(saveope, "&&") == 0 && ft_strcmp(tmp->ope, "&&") == 0 && g_rvalue == 0)
 			{
@@ -705,7 +801,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			{
 				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
-			}
+			}*/
 		}
 		/*if (i == 0)
 		{
