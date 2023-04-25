@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 12:48:20 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/20 17:04:30 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 17:37:54 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,17 @@ char    *reparse_dol(char *str, t_env **env);
 
 static void	ft_suppr(char **tab, t_env **env)
 {
-	int	i;
+	int		i;
+	char	*tmp;
 
 	i = 0;
 	while (tab[i])
 	{
+		tmp = ft_strdup(tab[i]);
 		tab[i] = reparse_dol(tab[i], env);
-		ft_suppr_dq_sq(tab[i]);
+		if (ft_strcmp(tab[i], tmp) == 0)
+			ft_suppr_dq_sq(tab[i]);
+		free(tmp);
 		i++;
 	}
 }
@@ -136,16 +140,37 @@ char	*reparse_dol(char *str, t_env **env)
 	if (res[0] == '$')
 	{
 		truc = ft_strdup(res + 1);
+		if (truc[ft_strlen(truc) - 1] == '\'')
+			truc[ft_strlen(truc) - 1] = 0;
 		res = ft_strdup(truc);
 	}
 	tmp = var_in_exp(res, env);
 	free(res);
+	res = NULL;
 	if (!tmp)
+	{
 		return (str);
+	}
 	res = ft_strjoin(res, "'");
-	res = ft_strdup(tmp->content);
+	res = ft_strjoin(res, tmp->content);
 	res = ft_strjoin(res, "'");
 	return (res);
+}
+
+int	dol_check(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '$')
+		{
+			return (1);
+		}
+		i++;
+	}
+	return (0);
 }
 
 void	ft_echo(char **tab, t_env **env)
@@ -163,7 +188,11 @@ void	ft_echo(char **tab, t_env **env)
 	j = i;
 	while (tab[i])
 	{
-		reparse_dol(tab[i], env);
+		if (dol_check(tab[i]))
+		{
+			reparse_dol(tab[i], env);
+		}
+			
 		putstr_fd_echo(tab[i], 1);
 		i++;
 		if (tab[i])

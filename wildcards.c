@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/14 15:30:58 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 00:29:35 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 18:31:28 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,31 @@ int	ft_cmpend(char *s1, char *s2)
 	return (0);
 }
 
+int	checkfile_all_in(char *file, char *flag)
+{
+	char	**split;
+	int	i;
+	int	count;
+	char	*str;
+
+	split = ft_supersplit(flag, ' ');
+	i = 0;
+	count = 0;
+	while (split[i])
+	{
+		if (i == 0)
+			str = ft_strstr(file, split[i]);
+		else
+			str = ft_strstr(str, split[i]);
+		if (str)
+			count++;
+		i++;
+	}
+	if (i == count)
+		return (1);
+	return (0);
+}
+
 int	checkfile(char *file, char *flag)
 {
 	int	i;
@@ -131,12 +156,14 @@ int	checkfile(char *file, char *flag)
 	char	*mid;
 	char	*end;
 	int	count;
+	int	count2;
 
 	i = 0;
 	j = 0;
 	n = 0;
 	h = 0;
 	count = 0;
+	count2 = 0;
 	recup = malloc(sizeof(char) * (ft_strlen(flag) + 10));
 	while (flag[i])
 	{
@@ -152,13 +179,39 @@ int	checkfile(char *file, char *flag)
 		}
 		else
 		{
-			count++;
-			recup[j] = ' ';
-			j++;
+			if (i > 0 && flag[i - 1] != flag[i])
+			{
+				count++;
+				count2++;
+				recup[j] = ' ';
+				j++;
+			}
+			if (i == 0)
+			{
+				count++;
+				count2++;
+				recup[j] = ' ';
+				j++;
+			}
 		}
 		i++;
 	}
 	recup[j] = 0;
+	/*if (recup[0] == ' ')
+	{
+		char *ttt = ft_strdup(recup + 1);
+		free(recup);
+		recup = NULL;
+		recup = ft_strdup(ttt);
+		free(ttt);
+	}*/
+	printf("recup = %s\n", recup);
+	if (flag[0] == '*' && flag[ft_strlen(flag) - 1] == '*')
+	{
+		if (checkfile_all_in(file, recup))
+			return (1);
+		return (0);
+	}
 	start = malloc(i);
 	mid = malloc(i);
 	end = malloc(i);
@@ -166,17 +219,20 @@ int	checkfile(char *file, char *flag)
 	while (recup[i] && recup[i] != ' ')
 	{
 		start[i] = recup[i];
+		count2--;
 		i++;
 	}
 	start[i] = 0;
 	if (i == 0 && start[i] == 0)
 	{
+		mid[n] = recup[i];
 		free(start);
 		start = NULL;
 	}
 	i++;
-	while (recup[i] && recup[i] != ' ' && count > 1)
+	while (recup[i] && recup[i] != ' ' && count > 1 && count2 > 1)
 	{
+		count2--;
 		mid[n] = recup[i];
 		n++;
 		i++;
@@ -202,6 +258,9 @@ int	checkfile(char *file, char *flag)
 		end = NULL;
 	}
 	
+	printf("START = %s\n", start);
+	printf("MID = %s\n", mid);
+	printf("END = %s\n", end);
 	count = 0;
 	if (start)
 	{
@@ -299,6 +358,41 @@ char	**recreatearg(char **tab, char *str)
 	res[i] = 0;
 	return res;
 }
+
+void	check_wildcards_first_cmd(t_tree **lst)
+{
+	t_tree	*tmp;
+	char	**res;
+	int	i;
+	int	f;
+	char **split;
+
+	tmp = (*lst)->next;
+	split = ft_supersplit(tmp->cmd_left->cmd, ' ');
+	res = malloc(sizeof(char *) * (ft_strlen(tmp->cmd_left->cmd) + 1));
+	i = 0;
+	f = 0;
+	if (checkstar(split[0]))
+	{
+		res = recreatearg(&split[0], split[0]);
+		int	k = 0;
+		while (res[k])
+		{
+			printf("res[k] = %s\n", res[k]);
+			k++;
+		}
+		f = 1;
+	}
+	//free_tab(tmp->cmd_left->arg);
+	if (f)
+	{
+		free(tmp->cmd_left->cmd);
+		tmp->cmd_left->cmd = *res;
+	}
+	//else
+			//free_tab(res);
+}
+
 void	setwildcardsfirstcmd(t_tree **lst)
 {
 	t_tree	*tmp;
@@ -306,6 +400,7 @@ void	setwildcardsfirstcmd(t_tree **lst)
 	int	i;
 	int	f;
 
+	check_wildcards_first_cmd(lst);
 	tmp = (*lst)->next;
 	tab = malloc(sizeof(char *) * (tab_len(tmp->cmd_left->arg) + 1));
 	i = 0;

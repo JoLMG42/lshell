@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 01:40:07 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 17:26:55 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -809,31 +809,38 @@ char	*addspacedol(char *str)
 	int	i;
 	int	j;
 	int	c;
+	int	f;
 	char	*res;
 	t_s	s_s;
 
 	init_syntax_struct(&s_s);
 	i = 0;
 	c = 0;
+	f = 0;
 	while (str[i])
 	{
 		if (str[i] == '$')
+		{
 			c += 2;
+			f = 1;
+		}
 		else
 			c++;
 		i++;
 	}
+	if (f == 0)
+		return (str);
 	res = malloc(sizeof(char *) * (c + 10));
 	i = 0;
 	j = 0;
 	while (str[i])
 	{
+		check_sq_dq(&s_s, str[i]);
 		if (str[i] == '"' && s_s.sq_opened == 0 && s_s.dq_opened == 1)
 		{
 			ft_suppr_dq_sq(str);
 			ft_suppr_dq_sq(res);
 		}
-		check_sq_dq(&s_s, str[i]);
 		if (str[i] == '$' && s_s.sq_opened == 0 && s_s.dq_opened == 0)
 		{
 			res[j] = ' ';
@@ -1039,7 +1046,9 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 	tmp = (*lst)->next;
 	if (!tmp || !tmp->cmd_left->cmd)
 		return ;
+	printf("CMD parsefirstcmd = %s\n", tmp->cmd_left->cmd);
 	tmp->cmd_left->cmd = addspacedol(tmp->cmd_left->cmd);
+	printf("CMD after add space dol parsefirstcmd = %s\n", tmp->cmd_left->cmd);
 	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
 	free(tmp->cmd_left->cmd);
 	tmp->cmd_left->cmd = NULL;
