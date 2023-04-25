@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 19:46:27 by lcalvie          ###   ########.fr       */
+/*   Updated: 2023/04/26 01:47:05 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	ft_wait(t_cmd **cmd)
 {
 	int	value;
 
-	printf("on wait = %s\n", (*cmd)->cmd);
+	//printf("on wait = %s\n", (*cmd)->cmd);
 	value = 0;
 	t_cmd *cmd_lst = *cmd;
 	waitpid(cmd_lst->pid, &value, 0);
@@ -211,11 +211,19 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			perror("dup2");
 		if (dup2(tmp->fd_out, 1) == -1)
 			perror("dup2");
-		if (tmp->cmd && check_builtins(tmp, env, exp))
+		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			free_tab(envtab);
+			free_tab(exectab);
+		}
+		if (tmp->cmd && check_builtins(tmp, env, exp, tree))
+		{
+			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
+				return ;
 			t_tree *t;
 			t = recup_struct(NULL, 1);
 			ft_lstcleartree(&t, del);
+			free(tree->saveope);
 			free(tree);
 			ft_lstclear_env(env, del);
 			ft_lstclear_env(exp, del);
@@ -223,13 +231,14 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			free_tab(exectab);
 			exit(0);
 		}
-		else if (execve(tmp->cmd, exectab, envtab) == -1)
+		else if (!tmp->cmd || execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
 			t_tree *t;
 			t = recup_struct(NULL, 1);
 			ft_lstcleartree(&t, del);
+			free(tree->saveope);
 			free(tree);
 			ft_lstclear_env(env, del);
 			ft_lstclear_env(exp, del);
@@ -297,11 +306,19 @@ void	middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp, t_env 
 			perror("dup2");
 		if (dup2(tmp->fd_out, 1) == -1)
 			perror("dup2");
-		if (tmp->cmd && check_builtins(tmp, env, exp))
+		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			free_tab(envtab);
+			free_tab(exectab);
+		}
+		if (tmp->cmd && check_builtins(tmp, env, exp, tree))
+		{
+			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
+				return ;
 			t_tree *t;
 			t = recup_struct(NULL, 1);
 			ft_lstcleartree(&t, del);
+			free(tree->saveope);
 			free(tree);
 			ft_lstclear_env(env, del);
 			ft_lstclear_env(exp, del);
@@ -309,13 +326,14 @@ void	middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp, t_env 
 			free_tab(exectab);
 			exit(0);
 		}
-		else if (execve(tmp->cmd, exectab, envtab) == -1)
+		else if (!tmp->cmd || execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
 			t_tree *t;
 			t = recup_struct(NULL, 1);
 			ft_lstcleartree(&t, del);
+			free(tree->saveope);
 			free(tree);
 			ft_lstclear_env(env, del);
 			ft_lstclear_env(exp, del);
@@ -380,11 +398,19 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			perror("dup2");
 		if (dup2(tmp->fd_out, 1) == -1)
 			perror("dup2");
-		if (tmp->cmd && check_builtins(tmp, env, exp))
+		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			free_tab(envtab);
+			free_tab(exectab);
+		}
+		if (tmp->cmd && check_builtins(tmp, env, exp, tree))
+		{
+			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
+				return ;
 			t_tree *t;
 			t = recup_struct(NULL, 1);
 			ft_lstcleartree(&t, del);
+			free(tree->saveope);
 			free(tree);
 			ft_lstclear_env(env, del);
 			ft_lstclear_env(exp, del);
@@ -392,13 +418,14 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			free_tab(exectab);
 			exit(0);
 		}
-		if (execve(tmp->cmd, exectab, envtab) == -1)
+		else if (!tmp->cmd || execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
 			t_tree *t;
 			t = recup_struct(NULL, 1);
 			ft_lstcleartree(&t, del);
+			free(tree->saveope);
 			free(tree);
 			ft_lstclear_env(env, del);
 			ft_lstclear_env(exp, del);
@@ -449,8 +476,15 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	if (tmp->cmd)
 	{
-		if (check_builtins(tmp, env, exp))
+		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			free_tab(envtab);
+			free_tab(exectab);
+		}
+		if (check_builtins(tmp, env, exp, shell))
+		{
+			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
+				return ;
 			free_tab(exectab);
 			free_tab(envtab);
 			return ;
@@ -464,7 +498,7 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 	{
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
-		if (execve(tmp->cmd, exectab, envtab) == -1)
+		if (!tmp->cmd || execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
@@ -512,12 +546,11 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	int	i;
 	int	tmpfd;
 	int	pipefd[2];
-	char	*saveope;
 	t_tree	*to_wait;
 	int	first_to_wait;
 
 	i = 0;
-	saveope = NULL;
+	shell->saveope = NULL;
 	init_heredoc(tree, env, exp, shell);
 	tmp = (*tree)->next;
 	pipe(shell->pipefd);
@@ -666,7 +699,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 		} // deuxieme groupe
 		else
 		{
-			if (tmp->next && ft_strcmp(saveope, "|") == 0 && ft_strcmp(tmp->ope, "|") == 0
+			if (tmp->next && ft_strcmp(shell->saveope, "|") == 0 && ft_strcmp(tmp->ope, "|") == 0
 				&& ft_strcmp(tmp->next->ope, "|") == 0)
 			{
 	//			printf("CMD 1 = %s\n", tmp->cmd_right->cmd);
@@ -676,7 +709,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
 				//ft_wait(&(tmp->cmd_right));
 			}
-			else if (ft_strcmp(saveope, "|") == 0 && ft_strcmp(tmp->ope, "|") == 0) // fin de la serie de pipe
+			else if (ft_strcmp(shell->saveope, "|") == 0 && ft_strcmp(tmp->ope, "|") == 0) // fin de la serie de pipe
 			{
 	//			printf("CMD 2 = %s\n", tmp->cmd_right->cmd);
 				printf("FIN DE PIPE 1\n");
@@ -767,7 +800,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				first_execute(&tmp->cmd_right, env, shell, exp);
 				ft_wait(&(tmp->cmd_right));
 			}
-			else if (!tmp->next && ft_strcmp(saveope, "&&") == 0 && ft_strcmp(tmp->ope, "|") == 0)
+			else if (!tmp->next && ft_strcmp(shell->saveope, "&&") == 0 && ft_strcmp(tmp->ope, "|") == 0)
 					//&& ft_strcmp(tmp->next->ope, "|") != 0)
 			{
 				//pipe(shell->pipefd);
@@ -775,29 +808,29 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				last_execute(&tmp->cmd_right, env, shell, exp);
 				//ft_wait(&(tmp->cmd_left));
 			}
-			else if (ft_strcmp(saveope, "&&") == 0 && ft_strcmp(tmp->ope, "&&") == 0 && g_rvalue == 0)
+			else if (ft_strcmp(shell->saveope, "&&") == 0 && ft_strcmp(tmp->ope, "&&") == 0 && g_rvalue == 0)
 			{
 				if (tmp->cmd_right->bracelvl)
 					pars_prompt(tmp->cmd_right->cmd, *env, *exp);
 				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
 			}
-			else if (ft_strcmp(saveope, "&&") == 0 && ft_strcmp(tmp->ope, "||") == 0 && g_rvalue != 0)
+			else if (ft_strcmp(shell->saveope, "&&") == 0 && ft_strcmp(tmp->ope, "||") == 0 && g_rvalue != 0)
 			{
 				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
 			}
-			else if (ft_strcmp(saveope, "|") == 0 && ft_strcmp(tmp->ope, "||") == 0 && g_rvalue != 0)
+			else if (ft_strcmp(shell->saveope, "|") == 0 && ft_strcmp(tmp->ope, "||") == 0 && g_rvalue != 0)
 			{
 				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
 			}
-			else if (ft_strcmp(saveope, "||") == 0 && ft_strcmp(tmp->ope, "&&") == 0 && g_rvalue == 0)
+			else if (ft_strcmp(shell->saveope, "||") == 0 && ft_strcmp(tmp->ope, "&&") == 0 && g_rvalue == 0)
 			{
 				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
 			}
-			else if (ft_strcmp(saveope, "||") == 0 && ft_strcmp(tmp->ope, "||") == 0 && g_rvalue != 0)
+			else if (ft_strcmp(shell->saveope, "||") == 0 && ft_strcmp(tmp->ope, "||") == 0 && g_rvalue != 0)
 			{
 				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
@@ -845,7 +878,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			if (tmp->ope && ft_strcmp(tmp->ope, "|") == 0
 				&& tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
 			{
-				if (ft_strcmp(saveope, "&&") == 0 && g_rvalue == 0)
+				if (ft_strcmp(shell->saveope, "&&") == 0 && g_rvalue == 0)
 				{
 					flag = 1;
 					pipe(shell->pipefd);
@@ -908,18 +941,18 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			}
 		}*/
 		i++;
-		if (saveope)
+		if (shell->saveope)
 		{
-			free(saveope);
-			saveope = NULL;
+			free(shell->saveope);
+			shell->saveope = NULL;
 		}
-		saveope = ft_strdup(tmp->ope);
+		shell->saveope = ft_strdup(tmp->ope);
 		tmp = tmp->next;
 	}
-	if (saveope)
+	if (shell->saveope)
 	{
-		free(saveope);
-		saveope = NULL;
+		free(shell->saveope);
+		shell->saveope = NULL;
 	}
 //	signal(SIGINT, handler);
 	(*tree)->next->in_exec = 0;

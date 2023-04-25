@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/14 15:30:58 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 18:31:28 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 23:22:01 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,6 @@ int	checkfile(char *file, char *flag)
 		recup = ft_strdup(ttt);
 		free(ttt);
 	}*/
-	printf("recup = %s\n", recup);
 	if (flag[0] == '*' && flag[ft_strlen(flag) - 1] == '*')
 	{
 		if (checkfile_all_in(file, recup))
@@ -257,10 +256,6 @@ int	checkfile(char *file, char *flag)
 		free(end);
 		end = NULL;
 	}
-	
-	printf("START = %s\n", start);
-	printf("MID = %s\n", mid);
-	printf("END = %s\n", end);
 	count = 0;
 	if (start)
 	{
@@ -368,29 +363,27 @@ void	check_wildcards_first_cmd(t_tree **lst)
 	char **split;
 
 	tmp = (*lst)->next;
-	split = ft_supersplit(tmp->cmd_left->cmd, ' ');
-	res = malloc(sizeof(char *) * (ft_strlen(tmp->cmd_left->cmd) + 1));
+	if (tmp->cmd_left->cmd)
+		split = ft_supersplit(tmp->cmd_left->cmd, ' ');
+	//res = malloc(sizeof(char *) * (ft_strlen(tmp->cmd_left->cmd) + 1));
 	i = 0;
 	f = 0;
 	if (checkstar(split[0]))
 	{
 		res = recreatearg(&split[0], split[0]);
-		int	k = 0;
-		while (res[k])
-		{
-			printf("res[k] = %s\n", res[k]);
-			k++;
-		}
 		f = 1;
 	}
 	//free_tab(tmp->cmd_left->arg);
 	if (f)
 	{
 		free(tmp->cmd_left->cmd);
-		tmp->cmd_left->cmd = *res;
+		tmp->cmd_left->cmd = ft_strdup(*res);
+		free_tab(res);
 	}
 	//else
-			//free_tab(res);
+	//		free_tab(res);
+	if (split)
+		free_tab(split);
 }
 
 void	setwildcardsfirstcmd(t_tree **lst)
@@ -400,8 +393,9 @@ void	setwildcardsfirstcmd(t_tree **lst)
 	int	i;
 	int	f;
 
-	check_wildcards_first_cmd(lst);
 	tmp = (*lst)->next;
+	if (tmp->cmd_left->cmd)
+		check_wildcards_first_cmd(lst);
 	tab = malloc(sizeof(char *) * (tab_len(tmp->cmd_left->arg) + 1));
 	i = 0;
 	f = 0;

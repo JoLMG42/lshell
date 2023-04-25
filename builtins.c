@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 12:54:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 13:45:57 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 01:04:37 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	is_builtins(char *cmd)
 	return (0);
 }
 
-int	check_builtins(t_cmd *cmd, t_env **env, t_env **exp)
+int	check_builtins(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
 {
 	char	*str;
 
@@ -108,7 +108,7 @@ int	check_builtins(t_cmd *cmd, t_env **env, t_env **exp)
 	}
 	if (ft_strcmp(cmd->cmd, "exit") == 0)
 	{
-		ft_exit(cmd);
+		ft_exit(cmd, env, exp, shell);
 		return (1);
 	}
 	return (0);

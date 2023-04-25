@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 17:26:55 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 23:05:57 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -416,11 +416,11 @@ char	*recalculcmd(char *cmd, char *str, char *ope)
 	char	*res;
 	int	i;
 
+	res = NULL;
 	if (ft_strcmp(ope, "<") == 0)
 	{
 		tab = ft_supersplit(cmd, ' ');
 		i = 0;
-		printf("TA[i] = %s\n\n\n\n", tab[i]);
 		while (tab[i])
 		{
 			if (str && ft_strcmp(tab[i], str) && ft_strcmp(tab[i], ope))
@@ -1046,9 +1046,7 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 	tmp = (*lst)->next;
 	if (!tmp || !tmp->cmd_left->cmd)
 		return ;
-	printf("CMD parsefirstcmd = %s\n", tmp->cmd_left->cmd);
 	tmp->cmd_left->cmd = addspacedol(tmp->cmd_left->cmd);
-	printf("CMD after add space dol parsefirstcmd = %s\n", tmp->cmd_left->cmd);
 	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
 	free(tmp->cmd_left->cmd);
 	tmp->cmd_left->cmd = NULL;
@@ -1319,6 +1317,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 
 
 	ft_lstcleartree(&tree, del);
+	recup_struct(NULL, 3);
 	//ft_lstclear_env(&env, del);
 	free(shell);
 	return (1);
@@ -1327,6 +1326,8 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 t_tree	*recup_struct(t_tree **tree, int mode)
 {
 	static t_tree *tmp;
+	if (mode == 3)
+		tmp = NULL;
 	if (tree != NULL)
 		tmp = *tree;
 	if (tree == NULL && tmp && mode == 2)

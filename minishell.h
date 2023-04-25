@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 13:38:52 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 01:05:13 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void    handler_fork(int sig);
 void	ft_putstr_fd(char *str, int fd);
 void	ft_putchar_fd(char c, int fd);
 void	ft_echo(char **tab, t_env **env);
-int     check_builtins(t_cmd *cmd, t_env **env, t_env **exp);
+int     check_builtins(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell);
 void	ft_env(t_env **env);
 void    ft_lstdelone_env(t_env *lst, void (*del)(void *));
 void	ft_unset(char **tab, t_env **env);
@@ -94,7 +94,7 @@ char	*check_slash(char *cmd, int mode);
 char	**fusioncmdarg(char *cmd, char **arg);
 void	del_sq_dq_arg(char **tab);
 int     pars_prompt(char *str, t_env *env, t_env *exp);
-void	ft_exit(t_cmd *cmd);
+void	ft_exit(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell);
 char    *rejoinstr(char **tab);
 int     ft_isalpha(char c);
 

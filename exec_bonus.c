@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 17:04:44 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 01:01:51 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 01:45:11 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,16 @@ void	exec_and(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell)
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	if (tmp->cmd)
 	{
-		if (check_builtins(tmp, env, exp))
+		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			free_tab(envtab);
+			free_tab(exectab);
+		}
+
+		if (check_builtins(tmp, env, exp, shell))
+		{
+			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
+				return ;
 			free_tab(exectab);
 			free_tab(envtab);
 			return ;
