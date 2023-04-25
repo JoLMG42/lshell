@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/24 15:55:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 01:40:07 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -851,7 +851,7 @@ char	*addspacedol(char *str)
 			i++;
 		}
 	}
-	//free(str);
+	free(str);
 	res[j] = 0;
 	return (res);
 }
@@ -1134,6 +1134,7 @@ void	parsecmd(t_tree **lst, t_env **env)
 			tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, " ");
 			j++;
 		}
+		free_tab(tab);
 		tmp = tmp->next;
 	}
 }
@@ -1198,37 +1199,62 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 //	}
 	i = 1;
 	tree = ft_lstnewtree(NULL, NULL, NULL);
+	char	*t;
+	char	*o;
+	char	*p;
 	if (!tab[1])
 	{
+		t = ft_strdup(tab[0]);
 		ft_lstadd_backtree(&tree, ft_lstnewtree(NULL,
-			ft_lstnew(ft_strdup(tab[0])), ft_lstnew(NULL)));
+			ft_lstnew(t), ft_lstnew(NULL)));
+		free(t);
 
 	}
 	while (tab && tab[i])
 	{
 		if (ft_strcmp(tab[i], "&&") == 0)
 		{
-			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("&&"),
-				ft_lstnew(ft_strdup(tab[i - 1])), ft_lstnew(ft_strdup(tab[i + 1]))));
+			t = ft_strdup("&&");
+			o = ft_strdup(tab[i - 1]);
+			p = ft_strdup(tab[i + 1]);
+			ft_lstadd_backtree(&tree, ft_lstnewtree(t,
+				ft_lstnew(o), ft_lstnew(p)));
 			i += 2;
+			free(t);
+			free(o);
+			free(p);
 		}
 		else if (ft_strcmp(tab[i], "||") == 0)
 		{
-			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("||"),
-				ft_lstnew(ft_strdup(tab[i - 1])), ft_lstnew(ft_strdup(tab[i + 1]))));
+			t = ft_strdup("||");
+			o = ft_strdup(tab[i - 1]);
+			p = ft_strdup(tab[i + 1]);
+			ft_lstadd_backtree(&tree, ft_lstnewtree(t,
+				ft_lstnew(o), ft_lstnew(p)));
 			i += 2;
+			free(t);
+			free(o);
+			free(p);
 		}
 		else if (ft_strcmp(tab[i], "|") == 0)
 		{
-			ft_lstadd_backtree(&tree, ft_lstnewtree(ft_strdup("|"),
-				ft_lstnew(ft_strdup(tab[i - 1])), ft_lstnew(ft_strdup(tab[i + 1]))));
+			t = ft_strdup("|");
+			o = ft_strdup(tab[i - 1]);
+			p = ft_strdup(tab[i + 1]);
+			ft_lstadd_backtree(&tree, ft_lstnewtree(t,
+				ft_lstnew(o), ft_lstnew(p)));
 			i += 2;
+			free(t);
+			free(o);
+			free(p);
 		}
 		else
 		{
+			o = ft_strdup(tab[i]);
 			ft_lstadd_backtree(&tree, ft_lstnewtree(NULL,
-				ft_lstnew(ft_strdup(tab[i])), ft_lstnew(NULL)));
+				ft_lstnew(o), ft_lstnew(NULL)));
 			i++;
+			free(o);
 		}
 	}
 	free_tab(tab);
@@ -1276,7 +1302,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\nBRACE LVL: %d\n\n\n\n", test->cmd_right->name_in, test->cmd_right->name_out, test->cmd_right->is_hd, test->cmd_right->limiter, test->cmd_right->bracelvl);
 		test = test->next;
 	}
-	recup_struct(&tree);
+	recup_struct(&tree, 0);
 	shell->tree = tree;
 	shell->env = env;
 	shell->exp = exp;
@@ -1289,19 +1315,21 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 	return (1);
 }
 
-t_tree	*recup_struct(t_tree **tree)
+t_tree	*recup_struct(t_tree **tree, int mode)
 {
 	static t_tree *tmp;
 	if (tree != NULL)
 		tmp = *tree;
-	if (tree == NULL && tmp)
+	if (tree == NULL && tmp && mode == 2)
 		return (tmp->next);
+	if (tree == NULL && tmp && mode == 1)
+		return (tmp);
 	return NULL;
 }
 
 void	handler(int sig)
 {
-	t_tree *tmp = recup_struct(NULL);
+	t_tree *tmp = recup_struct(NULL, 2);
 	if (tmp && tmp->in_exec)
 	{
 		//printf("\n");

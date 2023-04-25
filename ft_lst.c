@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/24 15:44:14 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/24 22:32:37 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ t_cmd	*ft_lstnew(char	*cmd)
 	tmp = malloc(sizeof(struct s_cmd));
 	if (!tmp)
 		return (0);
-	tmp->cmd = cmd;
+	tmp->cmd = ft_strdup(cmd);
 	tmp->name_in = NULL;
 	tmp->name_out = NULL;
 	tmp->limiter = NULL;

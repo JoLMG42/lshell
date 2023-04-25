@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/24 15:51:10 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 01:16:56 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,9 @@ void    ft_lstclear_env(t_env **lst, void (*del)(void *));
 char    **list_to_tab(t_env **env);
 int     listenv_size(t_env **env);
 void    exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell);
-void    heredoc(t_cmd **cmd);
+void    heredoc(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell);
 void	handler(int sig);
-t_tree  *recup_struct(t_tree **tree);
+t_tree  *recup_struct(t_tree **tree, int mode);
 char    *ft_itoa(int n);
 void    handler_fork(int sig);
 void	ft_putstr_fd(char *str, int fd);
@@ -86,7 +86,7 @@ int     check_name(char *str);
 void    ft_pwd(void);
 t_env   *var_in_exp(char *str, t_env **exp);
 char    *reparse_dol(char *str, t_env **env);
-void    exec_and(t_cmd **cmd, t_env **env, t_env **exp);
+void    exec_and(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell);
 void	ft_wait(t_cmd **cmd);
 char	*recup_cmd(char *cmd, t_env **env, int i);
 char	**recover_path(char **envp);

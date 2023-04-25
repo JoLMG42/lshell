@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/24 15:54:14 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 01:43:32 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 	{
 		tmp = ft_strjoin2(newpath[i], "/");
 		recover = ft_strjoin(tmp, cmd);
-		//free(tmp);
 		if (recover && access(recover, X_OK) == 0)
 		{
 			free_tab(newpath);
@@ -184,12 +183,29 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 		if (dup2(tmp->fd_out, 1) == -1)
 			perror("dup2");
 		if (tmp->cmd && check_builtins(tmp, env, exp))
+		{
+			t_tree *t;
+			t = recup_struct(NULL, 1);
+			ft_lstcleartree(&t, del);
+			free(tree);
+			ft_lstclear_env(env, del);
+			ft_lstclear_env(exp, del);
+			free_tab(envtab);
+			free_tab(exectab);
 			exit(0);
+		}
 		else if (execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
-			ft_lstclear(&tmp, del);
+			t_tree *t;
+			t = recup_struct(NULL, 1);
+			ft_lstcleartree(&t, del);
+			free(tree);
+			ft_lstclear_env(env, del);
+			ft_lstclear_env(exp, del);
+			free_tab(envtab);
+			free_tab(exectab);
 			exit(127);
 		}
 		exit(0);
@@ -249,11 +265,29 @@ void	middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp, t_env 
 		if (dup2(tmp->fd_out, 1) == -1)
 			perror("dup2");
 		if (tmp->cmd && check_builtins(tmp, env, exp))
+		{
+			t_tree *t;
+			t = recup_struct(NULL, 1);
+			ft_lstcleartree(&t, del);
+			free(tree);
+			ft_lstclear_env(env, del);
+			ft_lstclear_env(exp, del);
+			free_tab(envtab);
+			free_tab(exectab);
 			exit(0);
+		}
 		else if (execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
+			t_tree *t;
+			t = recup_struct(NULL, 1);
+			ft_lstcleartree(&t, del);
+			free(tree);
+			ft_lstclear_env(env, del);
+			ft_lstclear_env(exp, del);
+			free_tab(envtab);
+			free_tab(exectab);
 			exit(127);
 		}
 		exit(0);
@@ -310,11 +344,29 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 		if (dup2(tmp->fd_out, 1) == -1)
 			perror("dup2");
 		if (tmp->cmd && check_builtins(tmp, env, exp))
+		{
+			t_tree *t;
+			t = recup_struct(NULL, 1);
+			ft_lstcleartree(&t, del);
+			free(tree);
+			ft_lstclear_env(env, del);
+			ft_lstclear_env(exp, del);
+			free_tab(envtab);
+			free_tab(exectab);
 			exit(0);
+		}
 		if (execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
+			t_tree *t;
+			t = recup_struct(NULL, 1);
+			ft_lstcleartree(&t, del);
+			free(tree);
+			ft_lstclear_env(env, del);
+			ft_lstclear_env(exp, del);
+			free_tab(envtab);
+			free_tab(exectab);
 			exit(127);
 		}
 		exit(0);
@@ -344,10 +396,6 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 		return ;
 	ft_suppr_dq_sq(tmp->cmd);
 	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
-	//if (!tmp->cmd)
-	//	return ;
-	//tmp->fd_in = 0;
-	//tmp->fd_out = 1;
 	if (tmp->cmd)
 	{
 		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
@@ -365,7 +413,11 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 	if (tmp->cmd)
 	{
 		if (check_builtins(tmp, env, exp))
+		{
+			free_tab(exectab);
+			free_tab(envtab);
 			return ;
+		}
 	}
 	if (tmp->cmd)
 		del_sq_dq_arg(exectab);
@@ -379,10 +431,10 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
-			ft_lstclear(&tmp, del);
 			t_tree *t;
-			t = recup_struct(NULL);
-			//ft_lstcleartree(&t, del);
+			t = recup_struct(NULL, 1);
+			ft_lstcleartree(&t, del);
+			free(shell);
 			ft_lstclear_env(env, del);
 			ft_lstclear_env(exp, del);
 			free_tab(envtab);
@@ -402,17 +454,17 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 	free_tab(envtab);
 }
 
-void	init_heredoc(t_tree **tree)
+void	init_heredoc(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 {
 	t_tree	*tmp;
 
 	tmp = (*tree)->next;
 	if (tmp && tmp->cmd_left->is_hd)
-		heredoc(&tmp->cmd_left);
+		heredoc(&tmp->cmd_left, env, exp, shell);
 	while (tmp)
 	{
 		if (tmp->cmd_right->is_hd)
-			heredoc(&tmp->cmd_right);
+			heredoc(&tmp->cmd_right, env, exp, shell);
 		tmp = tmp->next;
 	}
 }
@@ -427,7 +479,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 
 	i = 0;
 	saveope = NULL;
-	init_heredoc(tree);
+	init_heredoc(tree, env, exp, shell);
 	tmp = (*tree)->next;
 	pipe(shell->pipefd);
 	(*tree)->next->in_exec = 1;
@@ -463,7 +515,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				}
 				else if (ft_strcmp(tmp->ope, "&&") == 0)
 				{
-					exec_and(&tmp->cmd_left, env, exp);
+					exec_and(&tmp->cmd_left, env, exp, shell);
 					ft_wait(&(tmp->cmd_left));
 					if (g_rvalue == 0)
 					{
@@ -472,17 +524,17 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
 							break ;
 						}
-						exec_and(&tmp->cmd_right, env, exp);
+						exec_and(&tmp->cmd_right, env, exp, shell);
 						ft_wait(&(tmp->cmd_right));
 					}
 				}
 				else if (ft_strcmp(tmp->ope, "||") == 0)
 				{
-					exec_and(&tmp->cmd_left, env, exp);
+					exec_and(&tmp->cmd_left, env, exp, shell);
 					ft_wait(&(tmp->cmd_left));
 					if (g_rvalue != 0)
 					{
-						exec_and(&tmp->cmd_right, env, exp);
+						exec_and(&tmp->cmd_right, env, exp, shell);
 						ft_wait(&(tmp->cmd_right));
 					}
 				}
@@ -515,7 +567,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			}
 			else if (ft_strcmp(tmp->ope, "&&") == 0)
 			{
-				exec_and(&tmp->cmd_left, env, exp);
+				exec_and(&tmp->cmd_left, env, exp, shell);
 				ft_wait(&(tmp->cmd_left));
 				if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
 				{
@@ -526,7 +578,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (g_rvalue == 0)
 					{
-						exec_and(&tmp->cmd_right, env, exp);
+						exec_and(&tmp->cmd_right, env, exp, shell);
 						ft_wait(&(tmp->cmd_right));
 					}	
 				}
@@ -534,14 +586,14 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (g_rvalue == 0)
 					{
-						exec_and(&tmp->cmd_right, env, exp);
+						exec_and(&tmp->cmd_right, env, exp, shell);
 						ft_wait(&(tmp->cmd_right));
 					}	
 				}
 			}
 			else if (ft_strcmp(tmp->ope, "||") == 0)
 			{
-				exec_and(&tmp->cmd_left, env, exp);
+				exec_and(&tmp->cmd_left, env, exp, shell);
 				ft_wait(&(tmp->cmd_left));
 				if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0 && g_rvalue != 0)
 				{
@@ -552,7 +604,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (g_rvalue != 0)
 					{
-						exec_and(&tmp->cmd_right, env, exp);
+						exec_and(&tmp->cmd_right, env, exp, shell);
 						ft_wait(&(tmp->cmd_right));
 					}	
 				}
@@ -560,7 +612,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (g_rvalue != 0)
 					{
-						exec_and(&tmp->cmd_right, env, exp);
+						exec_and(&tmp->cmd_right, env, exp, shell);
 						ft_wait(&(tmp->cmd_right));
 					}	
 				}
@@ -595,7 +647,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				else
 				{
 	//				printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
-					exec_and(&tmp->cmd_right, env, exp);
+					exec_and(&tmp->cmd_right, env, exp, shell);
 					//last_execute(&tmp->cmd_right, env, shell, exp);
 					ft_wait(&(tmp->cmd_right));
 				}
@@ -617,27 +669,27 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			{
 				if (tmp->cmd_right->bracelvl)
 					pars_prompt(tmp->cmd_right->cmd, *env, *exp);
-				exec_and(&tmp->cmd_right, env, exp);
+				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
 			}
 			else if (ft_strcmp(saveope, "&&") == 0 && ft_strcmp(tmp->ope, "||") == 0 && g_rvalue != 0)
 			{
-				exec_and(&tmp->cmd_right, env, exp);
+				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
 			}
 			else if (ft_strcmp(saveope, "|") == 0 && ft_strcmp(tmp->ope, "||") == 0 && g_rvalue != 0)
 			{
-				exec_and(&tmp->cmd_right, env, exp);
+				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
 			}
 			else if (ft_strcmp(saveope, "||") == 0 && ft_strcmp(tmp->ope, "&&") == 0 && g_rvalue == 0)
 			{
-				exec_and(&tmp->cmd_right, env, exp);
+				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
 			}
 			else if (ft_strcmp(saveope, "||") == 0 && ft_strcmp(tmp->ope, "||") == 0 && g_rvalue != 0)
 			{
-				exec_and(&tmp->cmd_right, env, exp);
+				exec_and(&tmp->cmd_right, env, exp, shell);
 				ft_wait(&(tmp->cmd_right));
 			}
 		}
@@ -747,9 +799,17 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 		}*/
 		i++;
 		if (saveope)
+		{
 			free(saveope);
+			saveope = NULL;
+		}
 		saveope = ft_strdup(tmp->ope);
 		tmp = tmp->next;
+	}
+	if (saveope)
+	{
+		free(saveope);
+		saveope = NULL;
 	}
 //	signal(SIGINT, handler);
 	(*tree)->next->in_exec = 0;

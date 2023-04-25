@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/11 11:19:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/24 15:50:56 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/24 20:54:04 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,14 @@ char	*ft_strjoin2(char *s1, char *s2)
 {
 	int		total_lenght;
 	char	*join;
+	int	c;
 
+	c = 0;
 	if (!s1)
 	{
 		s1 = malloc(1);
 		s1[0] = '\0';
+		c = 1;
 	}
 
 	if (!s1 || !s2)
@@ -73,6 +76,8 @@ char	*ft_strjoin2(char *s1, char *s2)
 	if (!join)
 		return (NULL);
 	join = ft_strjoin5(s1, s2, join);
+	if (c == 1)
+		free(s1);
 	return (join);
 }
 

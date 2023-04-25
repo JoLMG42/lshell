@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 14:10:05 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/20 12:13:14 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 01:22:06 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	handler_heredoc(int sig);
 
-void	heredoc_nocmd(char *limiter)
+void	heredoc_nocmd(char *limiter, t_env **env, t_env **exp, t_shell *shell)
 {
 	char	*str;
 	int	frk;
@@ -43,6 +43,12 @@ void	heredoc_nocmd(char *limiter)
 			}
 			free(str);
 		}
+		t_tree *t;
+		t = recup_struct(NULL, 1);
+		ft_lstcleartree(&t, del);
+		free(shell);
+		ft_lstclear_env(env, del);
+		ft_lstclear_env(exp, del);
 		exit(0);
 	}
 	else
@@ -86,7 +92,7 @@ int	create_fd_hd(t_cmd *cmd)
 
 }
 
-void	heredoc_cmd(t_cmd *cmd)
+void	heredoc_cmd(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
 {
 	char	*str;
 	int	frk;
@@ -117,6 +123,12 @@ void	heredoc_cmd(t_cmd *cmd)
 			ft_putstr_fd(str, cmd->fd_in);
 			free(str);
 		}
+		t_tree *t;
+		t = recup_struct(NULL, 1);
+		ft_lstcleartree(&t, del);
+		free(shell);
+		ft_lstclear_env(env, del);
+		ft_lstclear_env(exp, del);
 		exit(0);
 	}
 	else
@@ -135,7 +147,7 @@ void	handler_heredoc(int sig)
 	}
 }
 
-void	heredoc(t_cmd **cmd)
+void	heredoc(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell)
 {
 	t_cmd	*tmp;
 	int	tmpvalue;
@@ -145,12 +157,12 @@ void	heredoc(t_cmd **cmd)
 	tmp = (*cmd);
 	if (!tmp->cmd)
 	{
-		heredoc_nocmd(tmp->limiter);
+		heredoc_nocmd(tmp->limiter, env, exp, shell);
 		if (g_rvalue == 0)
 			g_rvalue = tmpvalue;
 		return ;
 	}
-	heredoc_cmd(tmp);
+	heredoc_cmd(tmp, env, exp, shell);
 	if (g_rvalue == 0)
 		g_rvalue = tmpvalue;
 }

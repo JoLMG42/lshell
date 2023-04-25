@@ -6,13 +6,13 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 17:04:44 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/20 17:19:34 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 01:01:51 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	exec_and(t_cmd **cmd, t_env **env, t_env **exp)
+void	exec_and(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell)
 {
 	t_cmd	*tmp;
 	char	**envtab;
@@ -38,7 +38,11 @@ void	exec_and(t_cmd **cmd, t_env **env, t_env **exp)
 	if (tmp->cmd)
 	{
 		if (check_builtins(tmp, env, exp))
+		{
+			free_tab(exectab);
+			free_tab(envtab);
 			return ;
+		}
 	}
 	if (tmp->cmd)
 		del_sq_dq_arg(exectab);
@@ -52,6 +56,14 @@ void	exec_and(t_cmd **cmd, t_env **env, t_env **exp)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
+			t_tree *t;
+			t = recup_struct(NULL, 1);
+			ft_lstcleartree(&t, del);
+			free(shell);
+			ft_lstclear_env(env, del);
+			ft_lstclear_env(exp, del);
+			free_tab(envtab);
+			free_tab(exectab);
 			exit(127);
 		}
 	}
@@ -62,5 +74,7 @@ void	exec_and(t_cmd **cmd, t_env **env, t_env **exp)
 		if (tmp->fd_out != 1)
 			close(tmp->fd_out);
 	}
+	free_tab(exectab);
+	free_tab(envtab);
 }
 

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/14 15:30:58 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/17 14:06:24 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 00:29:35 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,6 +330,25 @@ void	setwildcardsfirstcmd(t_tree **lst)
 			free(tab);
 }
 
+char	**dup_tab(char **tab)
+{
+	int	i;
+	char	**res;
+
+	i = 0;
+	res = malloc(sizeof(char *) * (tab_len(tab) + 1));
+	if (!res)
+		return (NULL);
+	while (tab[i])
+	{
+		res[i] = ft_strdup(tab[i]);
+		i++;
+	}
+	res[i] = 0;
+	return (res);
+	
+}
+
 void	setwildcards(t_tree **lst)
 {
 	t_tree	*tmp;
@@ -343,7 +362,9 @@ void	setwildcards(t_tree **lst)
 	{
 		if (tmp->cmd_right->arg)
 		{
-			tab = malloc(sizeof(char *) * (tab_len(tmp->cmd_right->arg) + 1));
+			if (tab)
+				free_tab(tab);
+			//tab = malloc(sizeof(char *) * (tab_len(tmp->cmd_right->arg) + 1));
 			i = 0;
 			f = 0;
 			while (tmp->cmd_right->arg[i])
@@ -358,7 +379,9 @@ void	setwildcards(t_tree **lst)
 			if (f)
 			{
 				free_tab(tmp->cmd_right->arg);
-				tmp->cmd_right->arg = tab;
+				tmp->cmd_right->arg = dup_tab(tab);
+				free_tab(tab);
+				tab = NULL;
 			}
 		}
 		tmp = tmp->next;

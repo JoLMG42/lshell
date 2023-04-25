@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/24 15:36:02 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 00:43:00 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,7 @@ void	ft_lstdelonetree(t_tree *lst, void (*del)(void *))
 		ft_lstclear(&lst->cmd_right, del);
 	if (lst->ope)
 		free(lst->ope);
-	if (lst)
-		free(lst);
+	free(lst);
 }
 
 t_tree	*ft_lstnewtree(char *ope, t_cmd *cmdl, t_cmd *cmdr)
@@ -80,7 +79,7 @@ t_tree	*ft_lstnewtree(char *ope, t_cmd *cmdl, t_cmd *cmdr)
 	tmp = malloc(sizeof(struct s_tree));
 	if (!tmp)
 		return (0);
-	tmp->ope = ope;
+	tmp->ope = ft_strdup(ope);
 	tmp->cmd_left = cmdl;
 	tmp->cmd_right = cmdr;
 	tmp->in_exec = 0;

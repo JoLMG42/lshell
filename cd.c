@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 16:36:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/19 19:32:10 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 01:44:37 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,12 @@ void	cd_no_arg(t_env **env)
 	if (!str)
 		putstr_fd_echo("minishell: cd: HOME not set\n", 2);
 	if (chdir(str) == -1)
+	{
+		free(str);
 		return ;
+	}
 	update_pwd_oldpwd(env, str, 1);
+	free(str);
 }
 
 void	cd_tild(t_env **env)
@@ -115,10 +119,12 @@ void	cd_moins(t_env **env)
 		putstr_fd_echo("minishell: cd: ", 2);
 		putstr_fd_echo(str, 2);
 		putstr_fd_echo(": No such file or directory\n", 2);
+		free(str);
 		return ;
 	}
 	putstr_fd_echo(str, 1);
 	putstr_fd_echo("\n", 1);
+	free(str);
 	return ;
 }
 
