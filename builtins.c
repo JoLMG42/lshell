@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 12:54:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/21 17:58:20 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/25 13:45:57 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ char	*rejoinstr(char **tab)
 		c++;
 		i++;
 	}
-	res = malloc(sizeof(char) * (c + 1));
+	res = NULL;
 	i = 0;
 	while (tab[i])
 	{
@@ -108,6 +108,7 @@ int	check_builtins(t_cmd *cmd, t_env **env, t_env **exp)
 	}
 	if (ft_strcmp(cmd->cmd, "exit") == 0)
 	{
+		ft_exit(cmd);
 		return (1);
 	}
 	return (0);
