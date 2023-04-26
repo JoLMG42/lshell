@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 19:42:22 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 17:31:08 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 16:23:13 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,7 +243,6 @@ int	check_name(char *str)
 			return (0);
 	}
 	return (1);
-
 }
 
 void	export_arg(char **tab, t_env **exp, t_env **env)
@@ -270,6 +269,11 @@ void	ft_export(char **tab, t_env **env, t_env **exp)
 
 	tmpenv = (*env)->next;
 	tmpexp = (*exp)->next;
+	if (tmpenv == NULL)
+	{
+		tmpenv = (*env);
+		tmpexp = (*exp);
+	}
 	if (tab_len(tab) < 1)
 	{
 		export_no_arg(&tmpexp);

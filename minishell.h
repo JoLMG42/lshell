@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 01:05:13 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 16:06:21 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	tab_len(char **tab);
 int	ft_strcmp(char *s1, char *s2);
 int	ft_strncmp(char *s1, char *s2, size_t len);
 void    setwildcards(t_tree **lst);
-void get_env(t_env **env, char **envi);
+void get_env(t_env **env, char **envi, int mode, t_env **exp);
 t_env   *ft_lstnew_env(char *line, char *name, char *content);
 void    ft_lstclear_env(t_env **lst, void (*del)(void *));
 char    **list_to_tab(t_env **env);
@@ -68,9 +68,9 @@ char    *ft_itoa(int n);
 void    handler_fork(int sig);
 void	ft_putstr_fd(char *str, int fd);
 void	ft_putchar_fd(char c, int fd);
-void	ft_echo(char **tab, t_env **env);
+void	ft_echo(t_cmd *cmd, char **tab, t_env **env);
 int     check_builtins(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell);
-void	ft_env(t_env **env);
+void	ft_env(t_cmd *cmd, t_env **env);
 void    ft_lstdelone_env(t_env *lst, void (*del)(void *));
 void	ft_unset(char **tab, t_env **env);
 int     is_builtins(char *cmd);
@@ -83,7 +83,7 @@ char    *ft_suppr_dq_sq(char *str);
 char    *before_egal(char *str);
 int     len_egal(char *str);
 int     check_name(char *str);
-void    ft_pwd(void);
+void    ft_pwd(t_cmd *cmd);
 t_env   *var_in_exp(char *str, t_env **exp);
 char    *reparse_dol(char *str, t_env **env);
 void    exec_and(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell);

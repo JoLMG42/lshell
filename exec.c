@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 01:47:05 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 15:12:59 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,11 +213,13 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			perror("dup2");
 		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			tmp->pid = 0;
 			free_tab(envtab);
 			free_tab(exectab);
 		}
 		if (tmp->cmd && check_builtins(tmp, env, exp, tree))
 		{
+			tmp->pid = 0;
 			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 				return ;
 			t_tree *t;
@@ -308,11 +310,13 @@ void	middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp, t_env 
 			perror("dup2");
 		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			tmp->pid = 0;
 			free_tab(envtab);
 			free_tab(exectab);
 		}
 		if (tmp->cmd && check_builtins(tmp, env, exp, tree))
 		{
+			tmp->pid = 0;
 			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 				return ;
 			t_tree *t;
@@ -400,11 +404,13 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			perror("dup2");
 		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			tmp->pid = 0;
 			free_tab(envtab);
 			free_tab(exectab);
 		}
 		if (tmp->cmd && check_builtins(tmp, env, exp, tree))
 		{
+			tmp->pid = 0;
 			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 				return ;
 			t_tree *t;
@@ -456,15 +462,8 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 	tmp = *cmd;
 	envtab = NULL;
 	exectab = NULL;
-	if (!tmp || !tmp->cmd)
+	if (!tmp)
 		return ;
-	ft_suppr_dq_sq(tmp->cmd);
-	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
-	if (tmp->cmd)
-	{
-		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
-		envtab = list_to_tab(env);
-	}
 	if (tmp->name_out)
 	{
 		if (tmp->mode_open == 1)
@@ -476,13 +475,22 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	if (tmp->cmd)
 	{
+		ft_suppr_dq_sq(tmp->cmd);
+		tmp->cmd = recup_cmd(tmp->cmd, env, 0);
+		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
+		envtab = list_to_tab(env);
+	}
+	if (tmp->cmd)
+	{
 		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			tmp->pid = 0;
 			free_tab(envtab);
 			free_tab(exectab);
 		}
 		if (check_builtins(tmp, env, exp, shell))
 		{
+			tmp->pid = 0;
 			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 				return ;
 			free_tab(exectab);

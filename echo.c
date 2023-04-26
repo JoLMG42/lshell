@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 12:48:20 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 17:37:54 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 15:05:31 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,7 @@ char	*reparse_dol(char *str, t_env **env)
 		if (truc[ft_strlen(truc) - 1] == '\'')
 			truc[ft_strlen(truc) - 1] = 0;
 		res = ft_strdup(truc);
+		free(truc);
 	}
 	tmp = var_in_exp(res, env);
 	free(res);
@@ -173,7 +174,7 @@ int	dol_check(char *str)
 	return (0);
 }
 
-void	ft_echo(char **tab, t_env **env)
+void	ft_echo(t_cmd *cmd, char **tab, t_env **env)
 {
 	int		i;
 	int		j;
@@ -193,11 +194,11 @@ void	ft_echo(char **tab, t_env **env)
 			reparse_dol(tab[i], env);
 		}
 			
-		putstr_fd_echo(tab[i], 1);
+		putstr_fd_echo(tab[i], cmd->fd_out);
 		i++;
 		if (tab[i])
-			ft_putchar_fd(' ', 1);
+			ft_putchar_fd(' ', cmd->fd_out);
 	}
 	if (!j)
-		ft_putchar_fd('\n', 1);
+		ft_putchar_fd('\n', cmd->fd_out);
 }

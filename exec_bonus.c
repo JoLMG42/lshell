@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 17:04:44 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 01:45:11 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 15:13:27 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,29 +22,34 @@ void	exec_and(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell)
 	tmp = *cmd;
 	if (!tmp || !tmp->cmd)
 		return ;
-	ft_suppr_dq_sq(tmp->cmd);
-	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
-	tmp->fd_in = 0;
-	tmp->fd_out = 1;
-	if (tmp->cmd)
-	{
-		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
-		envtab = list_to_tab(env);
-	}
 	if (tmp->name_out)
-		tmp->fd_out = open(tmp->name_out, O_CREAT | O_RDONLY | O_WRONLY, 0644);
+	{
+		if (tmp->mode_open == 1)
+			tmp->fd_out = open(tmp->name_out, O_CREAT | O_RDONLY | O_WRONLY | O_TRUNC, 0644);
+		else if (tmp->mode_open == 2)
+			tmp->fd_out = open(tmp->name_out, O_CREAT | O_RDONLY | O_WRONLY | O_APPEND, 0644);
+	}
 	if (tmp->name_in)
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	if (tmp->cmd)
 	{
+		ft_suppr_dq_sq(tmp->cmd);
+		tmp->cmd = recup_cmd(tmp->cmd, env, 0);
+		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
+		envtab = list_to_tab(env);
+	}
+	if (tmp->cmd)
+	{
 		if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 		{
+			tmp->pid = 0;
 			free_tab(envtab);
 			free_tab(exectab);
 		}
 
 		if (check_builtins(tmp, env, exp, shell))
 		{
+			tmp->pid = 0;
 			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 				return ;
 			free_tab(exectab);

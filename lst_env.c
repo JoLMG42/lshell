@@ -213,7 +213,39 @@ char *checkafteregal(char *str, char c)
     return 0;
 }
 
-void get_env(t_env **env, char **envi)
+void	add_little_env(t_env **env, int mode, t_env **exp)
+{
+	char	*pwd;
+	char	*line;
+	char	**tab;
+
+	pwd = getcwd(NULL, 0);
+	line = ft_strjoin2("PWD=", pwd);
+	tab = malloc(4);
+	tab[0] = ft_strdup(line);
+	free(line);
+	line = ft_strdup("SHLVL=1");
+	tab[1] = ft_strdup(line);
+	free(line);
+	line = ft_strdup("OLDPWD");
+	tab[2] = ft_strdup(line);
+	tab[3] = 0;
+	//tab[1] = ft_strdup(line);
+
+    	*env = ft_lstnew_env(NULL, NULL, NULL);
+    	*exp = ft_lstnew_env(NULL, NULL, NULL);
+	ft_export(tab, env, exp);
+	/*pwd = getcwd(NULL, 0);
+	line = ft_strjoin2("PWD=", pwd);
+        ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup("SHLVL=1"), ft_strdup("SHLVL"), ft_strdup("1")));
+        ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(line), ft_strdup("PWD"), ft_strdup(pwd)));
+	free(pwd);
+	free(line);
+	if (mode == 1)
+        	ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup("OLDPWD"), ft_strdup("OLDPWD"), NULL));*/
+}
+
+void get_env(t_env **env, char **envi, int mode, t_env **exp)
 {
     t_env   *tmp;
     char *name;
@@ -222,12 +254,19 @@ void get_env(t_env **env, char **envi)
     int i = 0;
 
 
+    if (!envi[i])
+    {
+	   add_little_env(env, mode, exp);
+	   return ;
+    }
     *env = ft_lstnew_env(NULL, NULL, NULL);
+    *exp = ft_lstnew_env(NULL, NULL, NULL);
     while (envi[i])
     {
         name = checkegal(envi[i], '=');
         content = checkafteregal(envi[i], '=');
         ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(envi[i]), ft_strdup(name), ft_strdup(content)));
+        ft_lstadd_back_env(exp, ft_lstnew_env(ft_strdup(envi[i]), ft_strdup(name), ft_strdup(content)));
         free(name);
         free(content);
 	i++;

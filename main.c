@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 23:05:57 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 16:06:49 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -474,8 +474,16 @@ void	ouverturefirstcmd(t_tree **lst)
 		}
 		if (ft_strcmp(tab[i], ">>") == 0)
 		{
-			free(tmp->cmd_left->cmd);
-			tmp->cmd_left->cmd = ft_strdup(tab[i - 1]);
+			if (i > 0)
+			{
+				free(tmp->cmd_left->cmd);
+				tmp->cmd_left->cmd = ft_strdup(tab[i - 1]);
+			}
+			if (i == 0)
+			{
+				free(tmp->cmd_left->cmd);
+				tmp->cmd_left->cmd = NULL;
+			}
 			tmp->cmd_left->name_out = ft_strdup(tab[i + 1]);
 			tmp->cmd_left->mode_open = 2;
 		}
@@ -544,6 +552,8 @@ void	ouvertureredir(t_tree **lst)
 				{
 					tmp->cmd_right->name_out = ft_strdup(tab[i + 1]);
 					tmp->cmd_right->mode_open = 2;
+					free(tmp->cmd_right->cmd);
+					tmp->cmd_right->cmd = ft_strdup(tab[i - 1]);
 				}
 				if (ft_strcmp(tab[i], "<<") == 0)
 				{
@@ -836,11 +846,11 @@ char	*addspacedol(char *str)
 	while (str[i])
 	{
 		check_sq_dq(&s_s, str[i]);
-		if (str[i] == '"' && s_s.sq_opened == 0 && s_s.dq_opened == 1)
+		/*if (str[i] == '"' && s_s.sq_opened == 0 && s_s.dq_opened == 1)
 		{
 			ft_suppr_dq_sq(str);
 			ft_suppr_dq_sq(res);
-		}
+		}*/
 		if (str[i] == '$' && s_s.sq_opened == 0 && s_s.dq_opened == 0)
 		{
 			res[j] = ' ';
@@ -942,7 +952,7 @@ void	parseargfirstcmd(t_tree **lst, t_env **env)
 				if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") == 0)
 				{
 				//	int test = recuppid(env);
-					tmp->cmd_left->arg[i] = ft_strjoin(tmp->cmd_left->arg[i], "999");
+					tmp->cmd_left->arg[i] = ft_strjoin(tmp->cmd_left->arg[i], "$$");
 				}
 				else if (tab[j + 1] && ft_strcmp(tab[j + 1], "?") == 0)
 				{
@@ -1001,7 +1011,7 @@ void	parsearg(t_tree **lst, t_env **env)
 					if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") == 0)
 					{
 					//	int test = recuppid(env);
-						tmp->cmd_right->arg[i] = ft_strjoin(tmp->cmd_right->arg[i], "999");
+						tmp->cmd_right->arg[i] = ft_strjoin(tmp->cmd_right->arg[i], "$$");
 					}
 					else if (tab[j + 1] && ft_strcmp(tab[j + 1], "?") == 0)
 					{
@@ -1046,19 +1056,22 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 	tmp = (*lst)->next;
 	if (!tmp || !tmp->cmd_left->cmd)
 		return ;
+	printf("CMD before dol space = %s\n", tmp->cmd_left->cmd);
 	tmp->cmd_left->cmd = addspacedol(tmp->cmd_left->cmd);
+	printf("CMD = %s\n", tmp->cmd_left->cmd);
 	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
 	free(tmp->cmd_left->cmd);
 	tmp->cmd_left->cmd = NULL;
 	j = 0;
 	while (tab && tab[j])
 	{
+		printf("TAB[j] = %s\n", tab[j]);
 		//tab[j] = reparse_dol(tab[j], env);
 		if (ft_strcmp(tab[j], "$") == 0)
 		{
 			if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") == 0)
 			{
-				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, "999");
+				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, "$$");
 			}
 			else if (tab[j + 1] && ft_strcmp(tab[j + 1], "?") == 0)
 			{
@@ -1083,9 +1096,12 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 			j++;
 		}
 		else
+		{
 			tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, tab[j]);
-		tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
+		}
 		j++;
+		if (j == 1 || (tab[j] && tab[j][0] != '$'))
+			tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
 	}
 	free_tab(tab);
 }
@@ -1380,8 +1396,8 @@ int	main(int ac, char **av, char **envp)
 	t_env	*env;
 	t_env	*exp;
 	
-	get_env(&env, envp);
-	get_env(&exp, envp);
+	get_env(&env, envp, 0, &exp);
+	//get_env(&exp, envp, 1);
 	while (1)
 	{
 		signal(SIGINT, handler);

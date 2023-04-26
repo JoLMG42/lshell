@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 16:36:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 01:44:37 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 15:53:58 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,19 +26,28 @@ char	*recup_content_env(char *find, t_env **env)
 	return (NULL);
 }
 
-void	create_oldpwd(t_env **env)
+void	create_oldpwd(t_env **env, int mode)
 {
 	char	*str;
 	char	*line;
 	char	*name;
 
-	str = recup_content_env("PWD", env);
-	if (!str)
-		str = getcwd(NULL, 0);
-	name = ft_strdup("PWD=");
+	if (mode == 0)
+	{
+		str = recup_content_env("PWD", env);
+		if (!str)
+			str = getcwd(NULL, 0);
+		name = ft_strdup("PWD=");
+	}
+	else if (mode == 1)
+	{
+		str = recup_content_env("OLDPWD", env);
+		if (!str)
+			str = getcwd(NULL, 0);
+		name = ft_strdup("OLDPWD=");
+	}
 	line = ft_strjoin(name, str);
 	ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(line), ft_strdup(name), ft_strdup(str)));
-	ft_env(env);
 }
 
 void	update_pwd_oldpwd(t_env **env, char *newpath, int mode)
@@ -46,12 +55,12 @@ void	update_pwd_oldpwd(t_env **env, char *newpath, int mode)
 	t_env	*tmp;
 	char	*str;
 
-	if (recup_content_env("OLDPWD", env) == NULL)
-		create_oldpwd(env);
+//	if (recup_content_env("OLDPWD", env) == NULL)
+//		create_oldpwd(env, 1);
 	tmp = (*env)->next;
 	while (tmp->next)
 	{
-		if (ft_strcmp(tmp->name, "OLDPWD") == 0)
+		if (ft_strcmp(tmp->name, "OLDPWD=") == 0)
 		{
 			free(tmp->content);
 			tmp->content = recup_content_env("PWD", env);
@@ -61,7 +70,7 @@ void	update_pwd_oldpwd(t_env **env, char *newpath, int mode)
 	tmp = (*env)->next;
 	while (tmp->next)
 	{
-		if (ft_strcmp(tmp->name, "PWD") == 0)
+		if (ft_strcmp(tmp->name, "PWD=") == 0)
 		{
 			if (mode == 1)
 			{
@@ -128,8 +137,17 @@ void	cd_moins(t_env **env)
 	return ;
 }
 
+void	check_pwd_oldpwd(t_env **env)
+{
+	if (recup_content_env("PWD", env) == NULL)
+		create_oldpwd(env, 0);
+	if (recup_content_env("OLDPWD", env) == NULL)
+		create_oldpwd(env, 1);
+}
+
 void	cd_arg(char *str, t_env **env)
 {
+	check_pwd_oldpwd(env);
 	if (ft_strcmp(str, "~") == 0)
 	{
 		cd_tild(env);
