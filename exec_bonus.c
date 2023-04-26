@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 17:04:44 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 15:13:27 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 00:40:38 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	exec_and(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell)
 	{
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
-		if (execve(tmp->cmd, exectab, envtab) == -1)
+		if (!tmp->cmd || execve(tmp->cmd, exectab, envtab) == -1)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);

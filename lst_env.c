@@ -219,12 +219,12 @@ void	add_little_env(t_env **env, int mode, t_env **exp)
 	char	*line;
 	char	**tab;
 
-	pwd = getcwd(NULL, 0);
-	line = ft_strjoin2("PWD=", pwd);
 	tab = malloc(4);
+	line = ft_strdup("SHLVL=1");
 	tab[0] = ft_strdup(line);
 	free(line);
-	line = ft_strdup("SHLVL=1");
+	pwd = getcwd(NULL, 0);
+	line = ft_strjoin2("PWD=", pwd);
 	tab[1] = ft_strdup(line);
 	free(line);
 	line = ft_strdup("OLDPWD");
@@ -232,8 +232,6 @@ void	add_little_env(t_env **env, int mode, t_env **exp)
 	tab[3] = 0;
 	//tab[1] = ft_strdup(line);
 
-    	*env = ft_lstnew_env(NULL, NULL, NULL);
-    	*exp = ft_lstnew_env(NULL, NULL, NULL);
 	ft_export(tab, env, exp);
 	/*pwd = getcwd(NULL, 0);
 	line = ft_strjoin2("PWD=", pwd);
@@ -254,13 +252,13 @@ void get_env(t_env **env, char **envi, int mode, t_env **exp)
     int i = 0;
 
 
+    *env = ft_lstnew_env(NULL, NULL, NULL);
+    *exp = ft_lstnew_env(NULL, NULL, NULL);
     if (!envi[i])
     {
 	   add_little_env(env, mode, exp);
 	   return ;
     }
-    *env = ft_lstnew_env(NULL, NULL, NULL);
-    *exp = ft_lstnew_env(NULL, NULL, NULL);
     while (envi[i])
     {
         name = checkegal(envi[i], '=');

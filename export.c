@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 19:42:22 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 16:23:13 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 23:19:43 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	export_no_arg(t_env **exp)
 {
 	t_env *tmp;
 
-	tmp = (*exp)->next;
+	tmp = (*exp);
 	while (tmp)
 	{
 		if (!check_egal(tmp->line))
@@ -156,8 +156,7 @@ void	join_content(char *content, char *name, t_env **env, t_env **exp)
 	join = ft_strjoin(join, content);
 	if (recup)
 	{
-		ft_unset(&recup->name, env);
-		ft_unset(&recup->name, exp);
+		ft_unset(&recup->name, env, exp);
 	}
 	ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(join), ft_strdup(tmp), ft_strdup(content)));
 	if (recup)
@@ -192,7 +191,9 @@ void	export_both(char *str, t_env **env, t_env **exp)
 	char	*content;
 	char	*tmp;
 	t_env	*recup;
+	char	**tab;
 	
+	tab = malloc(sizeof(char *) * 2);
 	tmp = before_egal(str);
 	if (!check_name(tmp))
 	{
@@ -211,13 +212,14 @@ void	export_both(char *str, t_env **env, t_env **exp)
 		free(content);
 		return ;
 	}
-	recup = var_in_exp(tmp, exp);
+	tab[0] = ft_strdup(tmp);
+	tab[1] = 0;
+	ft_unset(tab, env, exp);
+	free_tab(tab);
+	/*recup = var_in_exp(tmp, exp);
 	if (recup && recup->content != NULL)
 	{
-		ft_unset(&recup->name, env);
-		ft_unset(&recup->name, exp);
-	}
-	content = ft_strdup(str + len_egal(str));
+	}*/
 	name = ft_strdup(tmp);
 	free(tmp);
 	ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(str), ft_strdup(name), ft_strdup(content)));
@@ -254,7 +256,9 @@ void	export_arg(char **tab, t_env **exp, t_env **env)
 	{
 		ft_suppr_dq_sq(tab[i]);
 		if (!check_egal(tab[i]))
+		{
 			export_exp(tab[i], exp);
+		}
 		else
 			export_both(tab[i], env, exp);
 		i++;

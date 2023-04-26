@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 16:06:49 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 00:42:22 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -456,13 +456,17 @@ void	ouverturefirstcmd(t_tree **lst)
 	if (!tmp || !tmp->cmd_left || !tmp->cmd_left->cmd)
 		return ;
 	i = 0;
+	printf("AAAAAAAAAAA = %s\n", tmp->cmd_left->cmd);
 	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
 	while (tab[i])
 	{
 		if (ft_strcmp(tab[i], ">") == 0)
 		{
 			free(tmp->cmd_left->cmd);
-			tmp->cmd_left->cmd = ft_strdup(tab[i - 1]);
+			if (i > 0)
+				tmp->cmd_left->cmd = ft_strdup(tab[i - 1]);
+			else
+				tmp->cmd_left->cmd = NULL;
 			tmp->cmd_left->name_out = ft_strdup(tab[i + 1]);
 			tmp->cmd_left->mode_open = 1;
 		}
@@ -489,7 +493,7 @@ void	ouverturefirstcmd(t_tree **lst)
 		}
 		if (ft_strcmp(tab[i], "<<") == 0)
 		{
-			if (tab[i + 2])
+			if (tab[i + 1] && tab[i + 2])
 				tmp->cmd_left->cmd = ft_strdup(tab[i + 2]);
 			else
 				tmp->cmd_left->cmd = NULL;
@@ -1052,13 +1056,19 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 	char	**tab;
 	int	j;
 	char	*str;
+	int	flag = 0;
+	char	**recup;
 
 	tmp = (*lst)->next;
 	if (!tmp || !tmp->cmd_left->cmd)
 		return ;
-	printf("CMD before dol space = %s\n", tmp->cmd_left->cmd);
+	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
+	recup = dup_tab(tab + 1);
+//	tmp->cmd_left->cmd = addspacedol(tmp->cmd_left->cmd);
+	free(tmp->cmd_left->cmd);
+	tmp->cmd_left->cmd = ft_strdup(tab[0]);
 	tmp->cmd_left->cmd = addspacedol(tmp->cmd_left->cmd);
-	printf("CMD = %s\n", tmp->cmd_left->cmd);
+	free_tab(tab);
 	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
 	free(tmp->cmd_left->cmd);
 	tmp->cmd_left->cmd = NULL;
@@ -1069,9 +1079,10 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 		//tab[j] = reparse_dol(tab[j], env);
 		if (ft_strcmp(tab[j], "$") == 0)
 		{
+			flag = 1;
 			if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") == 0)
 			{
-				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, "$$");
+				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, "$");
 			}
 			else if (tab[j + 1] && ft_strcmp(tab[j + 1], "?") == 0)
 			{
@@ -1093,16 +1104,30 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 			}
 			if (!tab[j + 1])
 				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, tab[j]);
-			j++;
+		//	j++;
+			//if (tab[j] == NULL)
+			//	break ;
 		}
 		else
 		{
 			tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, tab[j]);
 		}
-		j++;
-		if (j == 1 || (tab[j] && tab[j][0] != '$'))
+		if (tab[j] && tab[j][0] != '$' && flag == 0)
+		{
 			tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
+		}
+		j++;
+		flag = 0;
 	}
+	j = 0;
+	while (recup[j])
+	{
+		if (recup[j + 1])
+			tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
+		tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, recup[j]);
+		j++;
+	}
+	free_tab(recup);
 	free_tab(tab);
 }
 
@@ -1231,7 +1256,6 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 		ft_lstadd_backtree(&tree, ft_lstnewtree(NULL,
 			ft_lstnew(t), ft_lstnew(NULL)));
 		free(t);
-
 	}
 	while (tab && tab[i])
 	{

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 16:06:21 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 00:36:23 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,10 @@ void	ft_echo(t_cmd *cmd, char **tab, t_env **env);
 int     check_builtins(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell);
 void	ft_env(t_cmd *cmd, t_env **env);
 void    ft_lstdelone_env(t_env *lst, void (*del)(void *));
-void	ft_unset(char **tab, t_env **env);
+void	ft_unset(char **tab, t_env **env, t_env **exp);
 int     is_builtins(char *cmd);
 void    putstr_fd_echo(char *str, int fd);
-void    ft_cd(char **tab, t_env **env);
+void    ft_cd(char **tab, t_env **env, t_env **exp);
 void    ft_lstadd_back_env(t_env **alst, t_env *new);
 t_env   *ft_lstlast_env(t_env *lst);
 void    ft_export(char **tab, t_env **env, t_env **exp);
@@ -97,6 +97,7 @@ int     pars_prompt(char *str, t_env *env, t_env *exp);
 void	ft_exit(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell);
 char    *rejoinstr(char **tab);
 int     ft_isalpha(char c);
+char	**dup_tab(char **tab);
 
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 16:36:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 15:53:58 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/26 20:21:09 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char	*recup_content_env(char *find, t_env **env)
 	t_env	*tmp;
 
 	tmp = (*env)->next;
-	while (tmp->next)
+	while (tmp)
 	{
 		if (ft_strcmp(find, tmp->name) == 0)
 			return (ft_strdup(tmp->content));
@@ -34,64 +34,55 @@ void	create_oldpwd(t_env **env, int mode)
 
 	if (mode == 0)
 	{
-		str = recup_content_env("PWD", env);
-		if (!str)
-			str = getcwd(NULL, 0);
-		name = ft_strdup("PWD=");
+		str = getcwd(NULL, 0);
+		name = ft_strdup("PWD");
 	}
 	else if (mode == 1)
 	{
-		str = recup_content_env("OLDPWD", env);
-		if (!str)
-			str = getcwd(NULL, 0);
-		name = ft_strdup("OLDPWD=");
+		str = getcwd(NULL, 0);
+		name = ft_strdup("OLDPWD");
 	}
-	line = ft_strjoin(name, str);
+	line = ft_strjoin(name, "=");
+	line = ft_strjoin(line, str);
+
 	ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(line), ft_strdup(name), ft_strdup(str)));
 }
 
-void	update_pwd_oldpwd(t_env **env, char *newpath, int mode)
+void	update_pwd_oldpwd(t_env **env, char *newpath, int mode, t_env **exp)
 {
 	t_env	*tmp;
 	char	*str;
+	int	flag;
+	char	**tab;
+	char	*line;
 
-//	if (recup_content_env("OLDPWD", env) == NULL)
-//		create_oldpwd(env, 1);
-	tmp = (*env)->next;
-	while (tmp->next)
+	tab = malloc(sizeof(char *) * 3);
+	flag = 0;
+	line = ft_strdup("PWD=");
+	if (mode == 1)
+		line = ft_strjoin(line, newpath);
+	else
 	{
-		if (ft_strcmp(tmp->name, "OLDPWD=") == 0)
-		{
-			free(tmp->content);
-			tmp->content = recup_content_env("PWD", env);
-		}
-		tmp = tmp->next;
+		str = getcwd(NULL, 0);
+		line = ft_strjoin(line, str);
+		free(str);
 	}
-	tmp = (*env)->next;
-	while (tmp->next)
-	{
-		if (ft_strcmp(tmp->name, "PWD=") == 0)
-		{
-			if (mode == 1)
-			{
-				free(tmp->content);
-				tmp->content = ft_strdup(newpath);
-			}
-			else if (mode == 2)
-			{
-				
-				free(tmp->content);
-				str = getcwd(NULL, 0);
-				tmp->content = ft_strdup(str);
-				free(str);
-
-			}
-		}
-		tmp = tmp->next;
-	}
+	tab[0] = ft_strdup(line);
+	free(line);
+	line = ft_strdup("OLDPWD=");
+	str = recup_content_env("PWD", env);
+	if (!str)
+		str = getcwd(NULL, 0);
+	line = ft_strjoin(line, str);
+	free(str);
+	tab[1] = ft_strdup(line);
+	free(line);
+	tab[2] = 0;
+	ft_export(tab, env, exp);
+	free_tab(tab);
 }
 
-void	cd_no_arg(t_env **env)
+void	cd_no_arg(t_env **env, t_env **exp)
 {
 	char	*str;
 	
@@ -103,7 +94,7 @@ void	cd_no_arg(t_env **env)
 		free(str);
 		return ;
 	}
-	update_pwd_oldpwd(env, str, 1);
+	update_pwd_oldpwd(env, str, 1, exp);
 	free(str);
 }
 
@@ -140,14 +131,20 @@ void	cd_moins(t_env **env)
 void	check_pwd_oldpwd(t_env **env)
 {
 	if (recup_content_env("PWD", env) == NULL)
+	{
+		printf("111\n");
 		create_oldpwd(env, 0);
+	}
 	if (recup_content_env("OLDPWD", env) == NULL)
+	{
+		printf("222\n");
 		create_oldpwd(env, 1);
+	}
 }
 
-void	cd_arg(char *str, t_env **env)
+void	cd_arg(char *str, t_env **env, t_env **exp)
 {
-	check_pwd_oldpwd(env);
+	//check_pwd_oldpwd(env);
 	if (ft_strcmp(str, "~") == 0)
 	{
 		cd_tild(env);
@@ -156,6 +153,7 @@ void	cd_arg(char *str, t_env **env)
 	else if (ft_strcmp(str, "-") == 0)
 	{
 		cd_moins(env);
+		update_pwd_oldpwd(env, str, 2, exp);
 		return ;
 	}
 	else if (chdir(str) == -1)
@@ -165,18 +163,18 @@ void	cd_arg(char *str, t_env **env)
 		putstr_fd_echo(": No such file or directory\n", 2);
 		return ;
 	}
-	update_pwd_oldpwd(env, str, 2);
+	update_pwd_oldpwd(env, str, 2, exp);
 }
 
 
-void	ft_cd(char **tab, t_env **env)
+void	ft_cd(char **tab, t_env **env, t_env **exp)
 {
 	if (tab_len(tab) == 0)
-		cd_no_arg(env);
+		cd_no_arg(env, exp);
 	else if (tab_len(tab) > 1)
 	{
 		putstr_fd_echo("minishell: cd: too many arguments\n", 2);
 	}
 	else
-		cd_arg(tab[0], env);
+		cd_arg(tab[0], env, exp);
 }
