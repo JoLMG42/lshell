@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 14:50:25 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 23:18:47 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 17:45:41 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	ft_unset(char **tab, t_env **env, t_env **exp)
 	if (!tab)
 		return ;
 	i = 0;
-	while (tab[i])
+	while (tab && tab[i])
 	{
 		tmp = (*env)->next;
 		while (tmp)

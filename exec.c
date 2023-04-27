@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/27 00:17:02 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 23:43:28 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,13 @@ char	**recover_path(char **envp)
 	return (NULL);
 }
 
+int	check_dot(char *str)
+{
+	if (access(str, X_OK) == 0)
+		return (1);
+	return (0);
+}
+
 char	*recup_cmd(char *cmd, t_env **env, int i)
 {
 	t_env *tmpenv = (*env)->next;
@@ -81,9 +88,12 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 		return (cmd);
 	if (cmd[0] == '/')
 		return (check_slash(cmd, 0));
+	if (cmd[0] == '.' && check_dot(cmd))
+		return (cmd);
 	tab = list_to_tab(env);
 	newpath = recover_path(tab);
 	free_tab(tab);
+	recover = NULL;
 	while (newpath && newpath[i++])
 	{
 		tmp = ft_strjoin2(newpath[i], "/");
@@ -100,7 +110,8 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 	printf("%s : command not found\n", cmd);
 	//g_rvalue = 127;
 	free(cmd);
-	free(recover);
+	if (recover)
+		free(recover);
 	free_tab(newpath);
 	return (NULL);
 }
@@ -125,7 +136,7 @@ void	ft_wait_all(t_tree *to_wait, t_tree *end, int first)
 {
 	t_tree *tmp;
 
-	printf("WAIT ALL\n");
+//	printf("WAIT ALL\n");
 	tmp = to_wait;
 	while (tmp != end)
 	{
@@ -153,6 +164,12 @@ void	handler_fork(int sig)
 	{
 		g_rvalue = 130;
 		printf("\n");
+		return ;
+	}
+	if (sig == 3)
+	{
+		g_rvalue = 131;
+		printf("Quit (core dumped)\n");
 		return ;
 	}
 }
@@ -187,6 +204,9 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 	{
 		if (tmp->cmd)
 		{
+			ft_suppr_dq_sq(tmp->cmd);
+			tmp->cmd = reparse_dol(tmp->cmd, env);
+			tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 			exectab = fusioncmdarg(tmp->cmd, tmp->arg);
 			envtab = list_to_tab(env);
 		}
@@ -281,6 +301,9 @@ void	middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp, t_env 
 	{
 		if (tmp->cmd)
 		{
+			ft_suppr_dq_sq(tmp->cmd);
+			tmp->cmd = reparse_dol(tmp->cmd, env);
+			tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 			exectab = fusioncmdarg(tmp->cmd, tmp->arg);
 			envtab = list_to_tab(env);
 		}
@@ -379,6 +402,9 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 	{
 		if (tmp->cmd)
 		{
+			ft_suppr_dq_sq(tmp->cmd);
+			tmp->cmd = reparse_dol(tmp->cmd, env);
+			tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 			exectab = fusioncmdarg(tmp->cmd, tmp->arg);
 			envtab = list_to_tab(env);
 		}
@@ -476,9 +502,13 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 	if (tmp->cmd)
 	{
 		ft_suppr_dq_sq(tmp->cmd);
+		tmp->cmd = reparse_dol(tmp->cmd, env);
 		tmp->cmd = recup_cmd(tmp->cmd, env, 0);
-		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
-		envtab = list_to_tab(env);
+		if (tmp->cmd)
+		{
+			exectab = fusioncmdarg(tmp->cmd, tmp->arg);
+			envtab = list_to_tab(env);
+		}
 	}
 	if (tmp->cmd)
 	{
@@ -564,6 +594,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	pipe(shell->pipefd);
 	(*tree)->next->in_exec = 1;
 	signal(SIGINT, handler_fork);
+	signal(SIGQUIT, handler_fork);
 	int	flag = 0;
 	to_wait = NULL;
 	first_to_wait = 1;
@@ -589,10 +620,16 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				if (ft_strcmp(tmp->ope, "|") == 0)
 				{
 					if (tmp->cmd_left->bracelvl)
+					{
 						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+						break ;
+					}
 					first_execute(&tmp->cmd_left, env, shell, exp);
-					if (tmp->cmd_left->bracelvl)
+					if (tmp->cmd_right->bracelvl)
+					{
 						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						break ;
+					}
 					last_execute(&tmp->cmd_right, env, shell, exp);
 					ft_wait(&(tmp->cmd_left));
 					ft_wait(&(tmp->cmd_right));
@@ -600,28 +637,49 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				else if (ft_strcmp(tmp->ope, "&&") == 0)
 				{
 					if (tmp->cmd_left->bracelvl)
+					{
 						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
-					exec_and(&tmp->cmd_left, env, exp, shell);
-					ft_wait(&(tmp->cmd_left));
+					}
+					else
+					{
+						exec_and(&tmp->cmd_left, env, exp, shell);
+						ft_wait(&(tmp->cmd_left));
+					}
 					if (g_rvalue == 0)
 					{
 						if (tmp->cmd_right->bracelvl)
 						{
 							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
-							break ;
 						}
-						exec_and(&tmp->cmd_right, env, exp, shell);
-						ft_wait(&(tmp->cmd_right));
+						else
+						{
+							exec_and(&tmp->cmd_right, env, exp, shell);
+							ft_wait(&(tmp->cmd_right));
+						}
 					}
 				}
 				else if (ft_strcmp(tmp->ope, "||") == 0)
 				{
-					exec_and(&tmp->cmd_left, env, exp, shell);
-					ft_wait(&(tmp->cmd_left));
+					if (tmp->cmd_left->bracelvl)
+					{
+						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+					}
+					else
+					{
+						exec_and(&tmp->cmd_left, env, exp, shell);
+						ft_wait(&(tmp->cmd_left));
+					}
 					if (g_rvalue != 0)
 					{
-						exec_and(&tmp->cmd_right, env, exp, shell);
-						ft_wait(&(tmp->cmd_right));
+						if (tmp->cmd_right->bracelvl)
+						{
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						}
+						else
+						{
+							exec_and(&tmp->cmd_right, env, exp, shell);
+							ft_wait(&(tmp->cmd_right));
+						}
 					}
 				}
 			}
@@ -629,42 +687,93 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			{
 				if (ft_strcmp(tmp->next->ope, "|") == 0)
 				{
-					first_execute(&tmp->cmd_left, env, shell, exp);
-					//ft_wait(&(tmp->cmd_left));
-					tmpfd = shell->pipefd[0];
-					pipe(shell->pipefd);
-					middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
-					//ft_wait(&(tmp->cmd_right));
-					to_wait = tmp;
+					if (tmp->cmd_left->bracelvl)
+					{
+						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+					}
+					else
+					{
+						first_execute(&tmp->cmd_left, env, shell, exp);
+						//ft_wait(&(tmp->cmd_left));
+						tmpfd = shell->pipefd[0];
+						pipe(shell->pipefd);
+					}
+					if (tmp->cmd_right->bracelvl)
+					{
+						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						continue ;
+					}
+					else
+					{
+						middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
+						//ft_wait(&(tmp->cmd_right));
+						to_wait = tmp;
+					}
 				}
 				else
 				{
-					first_execute(&tmp->cmd_left, env, shell, exp);
-					last_execute(&tmp->cmd_right, env, shell, exp);
-					ft_wait(&(tmp->cmd_left));
-					ft_wait(&(tmp->cmd_right));
+					if (tmp->cmd_left->bracelvl)
+					{
+						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+						//break ;
+					}
+					else
+						first_execute(&tmp->cmd_left, env, shell, exp);
+					if (tmp->cmd_right->bracelvl)
+					{
+						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						//break ;
+					}
+					else
+					{
+						last_execute(&tmp->cmd_right, env, shell, exp);
+					}
+					if (!tmp->cmd_left->bracelvl)
+						ft_wait(&(tmp->cmd_left));
+					if (!tmp->cmd_right->bracelvl)
+						ft_wait(&(tmp->cmd_right));
 				}
 			}
 			else if (ft_strcmp(tmp->ope, "&&") == 0) //premier groupe + et + next
 			{
 				//printf("PREMIER GROUPE\n");
 				if (tmp->cmd_left->bracelvl)
+				{
 					pars_prompt(tmp->cmd_left->cmd, *env, *exp);
-				exec_and(&tmp->cmd_left, env, exp, shell);
-				ft_wait(&(tmp->cmd_left));
+				}
+				else
+				{
+					exec_and(&tmp->cmd_left, env, exp, shell);
+					ft_wait(&(tmp->cmd_left));
+				}
 				if (g_rvalue == 0)
 				{
 					if (ft_strcmp(tmp->next->ope, "|") == 0)
 					{
-						first_execute(&tmp->cmd_right, env, shell, exp);
-						to_wait = tmp;
-						first_to_wait = 0;
-						//ft_wait(&(tmp->cmd_right));
+
+						if (tmp->cmd_right->bracelvl)
+						{
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						}
+						else
+						{
+							first_execute(&tmp->cmd_right, env, shell, exp);
+							to_wait = tmp;
+							first_to_wait = 0;
+							//ft_wait(&(tmp->cmd_right));
+						}
 					}
 					else
 					{
-						exec_and(&tmp->cmd_right, env, exp, shell);
-						ft_wait(&(tmp->cmd_right));
+						if (tmp->cmd_right->bracelvl)
+						{
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						}
+						else
+						{
+							exec_and(&tmp->cmd_right, env, exp, shell);
+							ft_wait(&(tmp->cmd_right));
+						}
 					}
 				}
 				else
@@ -678,21 +787,42 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			}
 			else if (ft_strcmp(tmp->ope, "||") == 0) //premier groupe + ou + next
 			{
-				exec_and(&tmp->cmd_left, env, exp, shell);
-				ft_wait(&(tmp->cmd_left));
+				if (tmp->cmd_left->bracelvl)
+				{
+					pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+				}
+				else
+				{
+					exec_and(&tmp->cmd_left, env, exp, shell);
+					ft_wait(&(tmp->cmd_left));
+				}
 				if (g_rvalue != 0)
 				{
 					if (ft_strcmp(tmp->next->ope, "|") == 0)
 					{
-						printf("OUIOUOI OU PUIS PIPE \n");
-						first_execute(&tmp->cmd_right, env, shell, exp);
-						to_wait = tmp;
-						first_to_wait = 0;
+						if (tmp->cmd_right->bracelvl)
+						{
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						}
+						else
+						{
+				//			printf("OUIOUOI OU PUIS PIPE \n");
+							first_execute(&tmp->cmd_right, env, shell, exp);
+							to_wait = tmp;
+							first_to_wait = 0;
+						}
 					}
 					else
 					{
-						exec_and(&tmp->cmd_right, env, exp, shell);
-						ft_wait(&(tmp->cmd_right));
+						if (tmp->cmd_right->bracelvl)
+						{
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						}
+						else
+						{
+							exec_and(&tmp->cmd_right, env, exp, shell);
+							ft_wait(&(tmp->cmd_right));
+						}
 					}
 				}
 				else
@@ -711,20 +841,32 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				&& ft_strcmp(tmp->next->ope, "|") == 0)
 			{
 	//			printf("CMD 1 = %s\n", tmp->cmd_right->cmd);
-				printf("CMD iciii = %s\n", tmp->cmd_right->cmd);
+	//			printf("CMD iciii = %s\n", tmp->cmd_right->cmd);
 				tmpfd = shell->pipefd[0];
 				pipe(shell->pipefd);
-				middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
+				if (tmp->cmd_right->bracelvl)
+				{
+					pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+				}
+				else
+					middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
 				//ft_wait(&(tmp->cmd_right));
 			}
 			else if (ft_strcmp(shell->saveope, "|") == 0 && ft_strcmp(tmp->ope, "|") == 0) // fin de la serie de pipe
 			{
 	//			printf("CMD 2 = %s\n", tmp->cmd_right->cmd);
-				printf("FIN DE PIPE 1\n");
-				last_execute(&tmp->cmd_right, env, shell, exp);
-				//ft_wait(&(tmp->cmd_right));
-				ft_wait_all(to_wait, tmp, first_to_wait);
-				to_wait = NULL;
+	//			printf("FIN DE PIPE 1\n");
+				if (tmp->cmd_right->bracelvl)
+				{
+					pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+				}
+				else
+				{
+					last_execute(&tmp->cmd_right, env, shell, exp);
+					//ft_wait(&(tmp->cmd_right));
+					ft_wait_all(to_wait, tmp, first_to_wait);
+					to_wait = NULL;
+				}
 			}
 			else if (ft_strcmp(tmp->ope, "&&") == 0)
 			{
@@ -734,16 +876,30 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					{
 		//				printf("CMD 5 = %s\n", tmp->cmd_right->cmd);
 						pipe(shell->pipefd);
-						first_execute(&tmp->cmd_right, env, shell, exp);
-						to_wait = tmp;
-						first_to_wait = 0;
+						if (tmp->cmd_right->bracelvl)
+						{
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						}
+						else
+						{
+							first_execute(&tmp->cmd_right, env, shell, exp);
+							to_wait = tmp;
+							first_to_wait = 0;
+						}
 					}
 					else
 					{
 		//				printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
-						exec_and(&tmp->cmd_right, env, exp, shell);
+						if (tmp->cmd_right->bracelvl)
+						{
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						}
+						else
+						{
+							exec_and(&tmp->cmd_right, env, exp, shell);
+							ft_wait(&(tmp->cmd_right));
+						}
 						//last_execute(&tmp->cmd_right, env, shell, exp);
-						ft_wait(&(tmp->cmd_right));
 					}
 				}
 				else
@@ -763,16 +919,30 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					{
 		//				printf("CMD 5 = %s\n", tmp->cmd_right->cmd);
 						pipe(shell->pipefd);
-						first_execute(&tmp->cmd_right, env, shell, exp);
-						to_wait = tmp;
-						first_to_wait = 0;
+						if (tmp->cmd_right->bracelvl)
+						{
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						}
+						else
+						{
+							first_execute(&tmp->cmd_right, env, shell, exp);
+							to_wait = tmp;
+							first_to_wait = 0;
+						}
 					}
 					else
 					{
 		//				printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
-						exec_and(&tmp->cmd_right, env, exp, shell);
-						//last_execute(&tmp->cmd_right, env, shell, exp);
-						ft_wait(&(tmp->cmd_right));
+						if (tmp->cmd_right->bracelvl)
+						{
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						}
+						else
+						{
+							exec_and(&tmp->cmd_right, env, exp, shell);
+							//last_execute(&tmp->cmd_right, env, shell, exp);
+							ft_wait(&(tmp->cmd_right));
+						}
 					}
 				}
 				else
@@ -788,18 +958,30 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			{
 				if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
 				{
-					printf("ON CONTINUE LES PIPES\n");
+		//			printf("ON CONTINUE LES PIPES\n");
 					tmpfd = shell->pipefd[0];
 					pipe(shell->pipefd);
-					middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
+					if (tmp->cmd_right->bracelvl)
+					{
+						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+					}
+					else
+						middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
 				}
 				else
 				{
-					printf("FIN DE PIPE 2\n");
+		//			printf("FIN DE PIPE 2\n");
 					//exec_and(&tmp->cmd_right, env, exp, shell);
-					last_execute(&tmp->cmd_right, env, shell, exp);
-					ft_wait_all(to_wait, tmp, first_to_wait);
-					to_wait = NULL;
+					if (tmp->cmd_right->bracelvl)
+					{
+						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+					}
+					else
+					{
+						last_execute(&tmp->cmd_right, env, shell, exp);
+						ft_wait_all(to_wait, tmp, first_to_wait);
+						to_wait = NULL;
+					}
 				}
 			}
 			/*else if (tmp->next && ft_strcmp(tmp->ope, "&&") == 0 && ft_strcmp(tmp->next->ope, "|") == 0)

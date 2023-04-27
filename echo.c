@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 12:48:20 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 15:05:31 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 20:17:18 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,8 @@ char	*reparse_dol(char *str, t_env **env)
 		truc = ft_strdup(res + 1);
 		if (truc[ft_strlen(truc) - 1] == '\'')
 			truc[ft_strlen(truc) - 1] = 0;
+		if (res)
+			free(res);
 		res = ft_strdup(truc);
 		free(truc);
 	}
@@ -155,6 +157,7 @@ char	*reparse_dol(char *str, t_env **env)
 	res = ft_strjoin(res, "'");
 	res = ft_strjoin(res, tmp->content);
 	res = ft_strjoin(res, "'");
+	free(str);
 	return (res);
 }
 
@@ -191,7 +194,7 @@ void	ft_echo(t_cmd *cmd, char **tab, t_env **env)
 	{
 		if (dol_check(tab[i]))
 		{
-			reparse_dol(tab[i], env);
+			tab[i] = reparse_dol(tab[i], env);
 		}
 			
 		putstr_fd_echo(tab[i], cmd->fd_out);

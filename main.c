@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/27 00:42:22 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 23:55:38 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ char	*add_spaces(char *str)
 	int	sq;
 	int	space;
 	char *res;
+	int	in_quote = 0;
 
 	i = 0;
 	c = 0;
@@ -113,8 +114,13 @@ char	*add_spaces(char *str)
 			j++;
 			i++;
 		}*/
+		if ((str[i] == '\'' || str[i] == '\"') && in_quote == 0)
+			in_quote++;
+		else if ((str[i] == '\'' || str[i] == '\"') && in_quote)
+			in_quote--;
 		if ((str[i] == '|' && str[i + 1] == '|') || (str[i] == '&' && str[i + 1] == '&')
-			|| (str[i] == '<' && str[i + 1] == '<') || (str[i] == '>' && str[i + 1] == '>'))
+			|| (str[i] == '<' && str[i + 1] == '<') || (str[i] == '>' && str[i + 1] == '>')
+			&& in_quote == 0)
 		{
 			res[j] = ' ';
 			j++;
@@ -127,7 +133,7 @@ char	*add_spaces(char *str)
 			res[j] = ' ';
 			j++;
 		}
-		else if (str[i] == '|' || str[i] == '<' || str[i] == '>')
+		else if ((str[i] == '|' || str[i] == '<' || str[i] == '>') && in_quote == 0)
 		{
 			res[j] = ' ';
 			j++;
@@ -137,7 +143,7 @@ char	*add_spaces(char *str)
 			j++;
 			i++;
 		}
-		else if (str[i] == '(' || str[i] == ')')
+		else if ((str[i] == '(' || str[i] == ')') && in_quote == 0)
 		{
 			res[j] = ' ';
 			j++;
@@ -220,6 +226,26 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
+int	check_brace(char *str)
+{
+	int	i;
+	int	in_brace;
+
+	i = 0;
+	in_brace = 0;
+	while (str[i])
+	{
+		if (str[i] == '(')
+			in_brace++;
+		if (str[i] == ')')
+			in_brace--;
+		i++;
+	}
+	if (in_brace != 0)
+		return (0);
+	return (1);
+}
+
 int	check_syntax(char **tab)
 {
 	int	i;
@@ -298,6 +324,8 @@ int	check_syntax(char **tab)
 				j++;
 			}
 		}
+		if (!check_brace(tab[i]))
+			return (0);
 		i++;
 	}
 	if (dq == 1 || sq == 1)
@@ -435,7 +463,7 @@ char	*recalculcmd(char *cmd, char *str, char *ope)
 		i = 0;
 		while (tab[i])
 		{
-			if (ft_strcmp(tab[i], str) && ft_strcmp(tab[i], ope))
+			if (str && ft_strcmp(tab[i], str) && ft_strcmp(tab[i], ope))
 				res = ft_strdup(tab[i]);
 			i++;
 		}
@@ -456,7 +484,6 @@ void	ouverturefirstcmd(t_tree **lst)
 	if (!tmp || !tmp->cmd_left || !tmp->cmd_left->cmd)
 		return ;
 	i = 0;
-	printf("AAAAAAAAAAA = %s\n", tmp->cmd_left->cmd);
 	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
 	while (tab[i])
 	{
@@ -543,7 +570,10 @@ void	ouvertureredir(t_tree **lst)
 				if (ft_strcmp(tab[i], ">") == 0)
 				{
 					free(tmp->cmd_right->cmd);
-					tmp->cmd_right->cmd = ft_strdup(tab[i - 1]);
+					if (i > 0)
+						tmp->cmd_right->cmd = ft_strdup(tab[i - 1]);
+					else
+						tmp->cmd_right->cmd = NULL;
 					tmp->cmd_right->name_out = ft_strdup(tab[i + 1]);
 					tmp->cmd_right->mode_open = 1;
 				}
@@ -554,10 +584,18 @@ void	ouvertureredir(t_tree **lst)
 				}
 				if (ft_strcmp(tab[i], ">>") == 0)
 				{
+					if (i > 0)
+					{
+						free(tmp->cmd_right->cmd);
+						tmp->cmd_right->cmd = ft_strdup(tab[i - 1]);
+					}
+					if (i == 0)
+					{
+						free(tmp->cmd_right->cmd);
+						tmp->cmd_right->cmd = NULL;
+					}
 					tmp->cmd_right->name_out = ft_strdup(tab[i + 1]);
 					tmp->cmd_right->mode_open = 2;
-					free(tmp->cmd_right->cmd);
-					tmp->cmd_right->cmd = ft_strdup(tab[i - 1]);
 				}
 				if (ft_strcmp(tab[i], "<<") == 0)
 				{
@@ -570,7 +608,8 @@ void	ouvertureredir(t_tree **lst)
 						tmp->cmd_right->cmd = NULL;
 					tmp->cmd_right->limiter = ft_strdup(tab[i + 1]);
 					tmp->cmd_right->is_hd = 1;
-					tmp->cmd_right->name_in = ft_strdup(tab[i + 1]);
+					//tmp->cmd_right->name_in = ft_strdup(tab[i + 1]);
+					tmp->cmd_right->name_in = NULL;
 					if (tmp->cmd_right->cmd)
 						tmp->cmd_right->cmd = recalculcmd(tmp->cmd_right->cmd, tmp->cmd_right->name_in, "<<");
 				}
@@ -598,7 +637,7 @@ void	setbracelvl(t_tree **lst)
 	char	**tab;
 	int	i;
 	int	j;
-	int	count;
+	int	in_brace;
 
 	tmp = (*lst)->next;
 	if (!tmp)
@@ -610,7 +649,7 @@ void	setbracelvl(t_tree **lst)
 			return ;
 		tab = ft_supersplit2(tmp->cmd_right->cmd, ' ');
 		i = 0;
-		count = 0;
+		in_brace = 0;
 		while (tab && tab[i])
 		{
 			if (ft_strcmp(tab[i], "(") == 0)
@@ -618,20 +657,20 @@ void	setbracelvl(t_tree **lst)
 				j = i + 1;
 				free(tmp->cmd_right->cmd);
 				tmp->cmd_right->cmd = NULL;
-				tmp->cmd_right->bracelvl++;
-				count++;
-				while (tab[j])
+				tmp->cmd_right->bracelvl = 1;
+				in_brace++;
+				while (tab[j] && in_brace)
 				{
 					if (ft_strcmp(tab[j], "(") == 0)
-						count--;
+						in_brace++;
 					if (ft_strcmp(tab[j], ")") == 0)
-						count--;
-					else
-					{
-						tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, tab[j]);
-							tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, " ");
-					}
+						in_brace--;
+					tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, tab[j]);
+					tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, " ");
 					j++;
+					if (ft_strcmp(tab[j], ")") == 0 && in_brace == 1)
+						break ;
+					i++;
 				}
 	
 			}
@@ -766,7 +805,7 @@ void	setargfirstcmd(t_tree **lst)
 	int	j;
 
 	tmp = (*lst)->next;
-	if (!tmp)
+	if (!tmp || !tmp->cmd_left->cmd)
 		return ;
 	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
 	tmp->cmd_left->arg = malloc(sizeof(char *) * (tab_len(tab) + 1));
@@ -815,6 +854,12 @@ void	setargfirstcmd(t_tree **lst)
 		i++;
 	}
 	tmp->cmd_left->arg[j] = 0;
+	/*i = 0;
+	while (tmp->cmd_left->arg[i])
+	{
+		printf("JJJJJJ = %s\n", tmp->cmd_left->arg[i]);
+		i++;
+	}*/
 	free_tab(tab);
 }
 
@@ -939,8 +984,11 @@ void	parseargfirstcmd(t_tree **lst, t_env **env)
 	int	j;
 	char	**tab;
 	char	*str;
+	int	flag = 0;
 
 	tmp = (*lst)->next;
+	if (!tmp || !tmp->cmd_left->arg)
+		return ;
 	i = 0;
 	while (tmp->cmd_left->arg[i])
 	{
@@ -953,6 +1001,7 @@ void	parseargfirstcmd(t_tree **lst, t_env **env)
 		{
 			if (ft_strcmp(tab[j], "$") == 0)
 			{
+				flag = 1;
 				if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") == 0)
 				{
 				//	int test = recuppid(env);
@@ -980,11 +1029,18 @@ void	parseargfirstcmd(t_tree **lst, t_env **env)
 					
 			}
 			else
+			{
 				tmp->cmd_left->arg[i] = ft_strjoin(tmp->cmd_left->arg[i], tab[j]);
+			}
+			if (tab[j + 1])// && tab[j][0] != '$' && flag == 0)
+			{
+				tmp->cmd_left->arg[i] = ft_strjoin(tmp->cmd_left->arg[i], " ");
+			}
 			j++;
 		}
-		free_tab(tab);
-		i++;
+	flag = 0;
+	free_tab(tab);
+	i++;
 	}
 }
 
@@ -1064,7 +1120,6 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 		return ;
 	tab = ft_supersplit(tmp->cmd_left->cmd, ' ');
 	recup = dup_tab(tab + 1);
-//	tmp->cmd_left->cmd = addspacedol(tmp->cmd_left->cmd);
 	free(tmp->cmd_left->cmd);
 	tmp->cmd_left->cmd = ft_strdup(tab[0]);
 	tmp->cmd_left->cmd = addspacedol(tmp->cmd_left->cmd);
@@ -1075,13 +1130,14 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 	j = 0;
 	while (tab && tab[j])
 	{
-		printf("TAB[j] = %s\n", tab[j]);
+		//printf("TAB[j] = %s\n", tab[j]);
 		//tab[j] = reparse_dol(tab[j], env);
 		if (ft_strcmp(tab[j], "$") == 0)
 		{
 			flag = 1;
 			if (tab[j + 1] && ft_strcmp(tab[j + 1], "$") == 0)
 			{
+				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, "$");
 				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, "$");
 			}
 			else if (tab[j + 1] && ft_strcmp(tab[j + 1], "?") == 0)
@@ -1102,9 +1158,11 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 					tmpenv = tmpenv->next;
 				}
 			}
-			if (!tab[j + 1])
+			else
 				tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, tab[j]);
-		//	j++;
+			j++;
+			if (!tab[j] || !tab[j + 1])
+				break ;
 			//if (tab[j] == NULL)
 			//	break ;
 		}
@@ -1122,10 +1180,11 @@ void	parsefirstcmd(t_tree **lst, t_env **env)
 	j = 0;
 	while (recup[j])
 	{
-		if (recup[j + 1])
-			tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
+		//if (recup[j + 1])
 		tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, recup[j]);
 		j++;
+		if (recup[j])
+			tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, " ");
 	}
 	free_tab(recup);
 	free_tab(tab);
@@ -1217,7 +1276,9 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 	}
 	if (!check_syntax(tab))
 	{
+		g_rvalue = 2;
 		free(shell);
+		free_tab(tab);
 		return (0);
 	}
 	/*int j = 0;
@@ -1322,7 +1383,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 		setwildcards(&tree);
 		parsearg(&tree, &env);
 	}
-	while (test)
+	/*while (test)
 	{
 		printf("			OPERATOR: %s\n", test->ope);
 		printf("CMD LEFT: %s\n", test->cmd_left->cmd);
@@ -1348,7 +1409,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 		}
 		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\nBRACE LVL: %d\n\n\n\n", test->cmd_right->name_in, test->cmd_right->name_out, test->cmd_right->is_hd, test->cmd_right->limiter, test->cmd_right->bracelvl);
 		test = test->next;
-	}
+	}*/
 	recup_struct(&tree, 0);
 	shell->tree = tree;
 	shell->env = env;

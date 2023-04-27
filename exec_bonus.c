@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 17:04:44 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/27 00:40:38 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 20:24:19 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void	exec_and(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell)
 	if (tmp->cmd)
 	{
 		ft_suppr_dq_sq(tmp->cmd);
+		tmp->cmd = reparse_dol(tmp->cmd, env);
 		tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
 		envtab = list_to_tab(env);

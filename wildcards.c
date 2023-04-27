@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/14 15:30:58 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 23:22:01 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 18:06:49 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -394,6 +394,8 @@ void	setwildcardsfirstcmd(t_tree **lst)
 	int	f;
 
 	tmp = (*lst)->next;
+	if (!tmp || !tmp->cmd_left->cmd)
+		return ;
 	if (tmp->cmd_left->cmd)
 		check_wildcards_first_cmd(lst);
 	tab = malloc(sizeof(char *) * (tab_len(tmp->cmd_left->arg) + 1));

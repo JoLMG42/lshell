@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 19:42:22 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 23:19:43 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 18:03:17 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,7 @@ void	join_content(char *content, char *name, t_env **env, t_env **exp)
 	t_env	*recup;
 	t_env	*recupenv;
 	char	*join;
+	char	**tab;
 	
 	tmp = ft_strdup(name);
 	if (!check_name(tmp))
@@ -156,13 +157,19 @@ void	join_content(char *content, char *name, t_env **env, t_env **exp)
 	join = ft_strjoin(join, content);
 	if (recup)
 	{
-		ft_unset(&recup->name, env, exp);
+		tab = malloc(sizeof(char *) * 3);
+		tab[0] = ft_strdup(recup->name);
+		tab[1] = 0;
+		ft_unset(tab, env, exp);
+		free_tab(tab);
 	}
 	ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(join), ft_strdup(tmp), ft_strdup(content)));
 	if (recup)
 		ft_lstadd_back_env(exp, ft_lstnew_env(ft_strdup(join), ft_strdup(tmp), ft_strdup(join + ft_strlen(name))));
 	else
 		ft_lstadd_back_env(exp, ft_lstnew_env(ft_strdup(join), ft_strdup(tmp), ft_strdup(content)));
+	free(tmp);
+	free(join);
 	/*if (recup)
 	{
 		recupenv = var_in_exp(tmp, env);
@@ -193,7 +200,6 @@ void	export_both(char *str, t_env **env, t_env **exp)
 	t_env	*recup;
 	char	**tab;
 	
-	tab = malloc(sizeof(char *) * 2);
 	tmp = before_egal(str);
 	if (!check_name(tmp))
 	{
@@ -212,6 +218,7 @@ void	export_both(char *str, t_env **env, t_env **exp)
 		free(content);
 		return ;
 	}
+	tab = malloc(sizeof(char *) * 2);
 	tab[0] = ft_strdup(tmp);
 	tab[1] = 0;
 	ft_unset(tab, env, exp);

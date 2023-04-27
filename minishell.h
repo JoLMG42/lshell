@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/27 00:36:23 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/27 15:27:24 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ void	ft_exit(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell);
 char    *rejoinstr(char **tab);
 int     ft_isalpha(char c);
 char	**dup_tab(char **tab);
+char *parse_string(char *str, t_env **env);
 
 
 #endif
