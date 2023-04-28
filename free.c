@@ -1,29 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/19 14:44:25 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 19:39:53 by jtaravel         ###   ########.fr       */
+/*   Created: 2023/04/28 18:58:24 by jtaravel          #+#    #+#             */
+/*   Updated: 2023/04/28 19:01:22 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_env(t_cmd *cmd, t_env **env)
+void	free_all(t_env **env, t_env **exp, t_shell *shell)
 {
-	t_env	*tmp;
+	t_tree	*tree;
 
-	tmp = (*env)->next;
-	while (tmp)
-	{
-		if (tmp->line)
-		{
-			putstr_fd_echo(tmp->line, cmd->fd_out);
-			ft_putchar_fd('\n', cmd->fd_out);
-		}
-		tmp = tmp->next;
-	}
+	ft_lstclear_env(env, del);
+	ft_lstclear_env(exp, del);
+	free(shell->saveope);
+	free(shell);
+	tree = recup_struct(NULL, 1);
+	ft_lstcleartree(&tree, del);
 }

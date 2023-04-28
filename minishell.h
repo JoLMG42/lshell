@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 17:59:29 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/28 19:42:21 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,36 @@ char	*cut_add_space_while2(char *res, char *str, int i, int j);
 char	*cut_add_space_while(char *res, char *str, int i, int j);
 int	add_space_quote(int in_quote, char *str, int i);
 int	check_syntax(char **tab);
+char	**rejointab(char **tab);
+void	parsefirstcmd(t_tree **lst, t_env **env);
+void	parsearg(t_tree **lst, t_env **env);
+char    *reparse_dol(char *str, t_env **env);;
+int     check_parse_sq_dq(char *str, char c);;
+void	parseargfirstcmd(t_tree **lst, t_env **env);
+void	parsearg(t_tree **lst, t_env **env);
+void	parsecmd(t_tree **lst, t_env **env);
+void	setwildcardsfirstcmd(t_tree **lst);
+void	setwildcards(t_tree **lst);
+void	setbracelvl(t_tree **lst);
+void	setbracelvlfirstcmd(t_tree **lst);
+void	setarg(t_tree **lst);
+void	setargfirstcmd(t_tree **lst);
+void	ouverturefirstcmd(t_tree **lst);
+void	ouvertureredir(t_tree **lst);
+char    *reparse_dol(char *str, t_env **env);
+void	ft_putchar_fd(char c, int fd);
+char	*ft_suppr_dq_sq(char *str);
+void	ft_suppr(char **tab, t_env **env);
+int	ft_check_options(char **tab);
+void	putstr_fd_echo(char *str, int fd);
+char	*cut_sds(char *str, t_s *s, int i, int c);
+void    free_all(t_env **env, t_env **exp, t_shell *shell);
+void    cut_exit(t_env **env, t_env **exp, t_shell *shell, t_cmd *cmd);
+int     ft_mega_atoi(char *str);
+void    ft_exit_error_1(char **split, char *line, char *tmp, int mode);
+void    ft_error_exit_2(char **split, char *tmp);
+void     ft_exit_2(char **split, int valeur, char *tmp);
+void    export_both(char *str, t_env **env, t_env **exp);
 
 
 #endif

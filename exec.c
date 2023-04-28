@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 17:47:04 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/28 19:03:30 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,13 +242,7 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			tmp->pid = 0;
 			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 				return ;
-			t_tree *t;
-			t = recup_struct(NULL, 1);
-			ft_lstcleartree(&t, del);
-			free(tree->saveope);
-			free(tree);
-			ft_lstclear_env(env, del);
-			ft_lstclear_env(exp, del);
+			free_all(env, exp, tree);
 			free_tab(envtab);
 			free_tab(exectab);
 			exit(0);
@@ -257,17 +251,7 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
-			t_tree *t;
-			t = recup_struct(NULL, 1);
-			ft_lstcleartree(&t, del);
-			free(tree->saveope);
-			free(tree);
-			ft_lstclear_env(env, del);
-			ft_lstclear_env(exp, del);
-			//if (envtab)
-			//	free_tab(envtab);
-			//if (exectab)
-			//	free_tab(exectab);
+			free_all(env, exp, tree);
 			exit(127);
 		}
 		exit(0);
@@ -342,13 +326,7 @@ void	middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp, t_env 
 			tmp->pid = 0;
 			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 				return ;
-			t_tree *t;
-			t = recup_struct(NULL, 1);
-			ft_lstcleartree(&t, del);
-			free(tree->saveope);
-			free(tree);
-			ft_lstclear_env(env, del);
-			ft_lstclear_env(exp, del);
+			free_all(env, exp, tree);
 			free_tab(envtab);
 			free_tab(exectab);
 			exit(0);
@@ -357,13 +335,7 @@ void	middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp, t_env 
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
-			t_tree *t;
-			t = recup_struct(NULL, 1);
-			ft_lstcleartree(&t, del);
-			free(tree->saveope);
-			free(tree);
-			ft_lstclear_env(env, del);
-			ft_lstclear_env(exp, del);
+			free_all(env, exp, tree);
 			free_tab(envtab);
 			free_tab(exectab);
 			exit(127);
@@ -439,13 +411,7 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 			tmp->pid = 0;
 			if (tmp->cmd && ft_strcmp(tmp->cmd, "exit") == 0)
 				return ;
-			t_tree *t;
-			t = recup_struct(NULL, 1);
-			ft_lstcleartree(&t, del);
-			free(tree->saveope);
-			free(tree);
-			ft_lstclear_env(env, del);
-			ft_lstclear_env(exp, del);
+			free_all(env, exp, tree);
 			free_tab(envtab);
 			free_tab(exectab);
 			exit(0);
@@ -454,13 +420,7 @@ void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
-			t_tree *t;
-			t = recup_struct(NULL, 1);
-			ft_lstcleartree(&t, del);
-			free(tree->saveope);
-			free(tree);
-			ft_lstclear_env(env, del);
-			ft_lstclear_env(exp, del);
+			free_all(env, exp, tree);
 			//free_tab(envtab);
 			//free_tab(exectab);
 			exit(127);
@@ -540,12 +500,7 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 		{
 			if (tmp->cmd)
 				check_slash(tmp->cmd, 1);
-			t_tree *t;
-			t = recup_struct(NULL, 1);
-			ft_lstcleartree(&t, del);
-			free(shell);
-			ft_lstclear_env(env, del);
-			ft_lstclear_env(exp, del);
+			free_all(env, exp, shell);
 			free_tab(envtab);
 			free_tab(exectab);
 			exit(127);
@@ -605,7 +560,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	(*tree)->next->in_exec = 1;
 	signal(SIGINT, handler_fork);
 	signal(SIGQUIT, handler_fork);
-	signal(SIGPIPE, SIG_IGN);
+	//signal(SIGPIPE, SIG_IGN);
 	int	flag = 0;
 	tmpfd = 0;
 	to_wait = NULL;

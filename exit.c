@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/25 11:42:39 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 01:47:50 by jtaravel         ###   ########.fr       */
+/*   Created: 2023/04/28 19:38:19 by jtaravel          #+#    #+#             */
+/*   Updated: 2023/04/28 19:38:21 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,6 @@ void	ft_exit_error_1(char **split, char *line, char *tmp, int mode)
 	{
 		printf("Minishell: exit: %s: numeric argument required\n", split[0]);
 		printf("Bye! 👋\n");
-		//ft_lstclear(&v->list, &free);
-		//ft_free(v);
 		free(line);
 		free_tab(split);
 		exit(2);
@@ -54,9 +52,12 @@ void	ft_exit_error_1(char **split, char *line, char *tmp, int mode)
 	{
 		printf("exit\nMinishell: exit: too many arguments\n");
 		free(line);
+		line = NULL;
 		g_rvalue = 1;
 		free_tab(split);
+		split = NULL;
 		free(tmp);
+		tmp = NULL;
 	}
 }
 
@@ -65,41 +66,29 @@ void	ft_error_exit_2(char **split, char *tmp)
 	printf("Bye! 👋\n");
 	printf("Minishell: exit: %s: numeric argument required\n", split[0]);
 	g_rvalue = 1;
-	//ft_lstclear(&v->list, &free);
 	free_tab(split);
-	//ft_free(v);
 	if (tmp)
 		free(tmp);
 	exit (2);
 }
 
-static void	ft_exit_2(char **split, int valeur, char *tmp)
+void	ft_exit_2(char **split, int valeur, char *tmp)
 {
 	printf("Bye! 👋\n");
 	free(tmp);
 	free_tab(split);
-	//ft_lstclear(&v->list, &free);
-	//ft_free(v);
 	exit(valeur);
 }
 
 void	ft_exit(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
 {
-	long long	valeur;
-	char		*tmp;
 	char		**split;
 	int			i;
 	char		*line;
-	t_tree 		*tree;
-	
+
 	if (!cmd->arg[0])
 	{
-		ft_lstclear_env(env, del);
-		ft_lstclear_env(exp, del);
-		free(shell->saveope);
-		free(shell);
-		tree = recup_struct(NULL, 1);
-		ft_lstcleartree(&tree, del);
+		free_all(env, exp, shell);
 		exit(g_rvalue);
 	}
 	line = rejoinstr(cmd->arg);
@@ -109,30 +98,13 @@ void	ft_exit(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
 	{
 		if (ft_isalpha(split[0][i]))
 		{
-			ft_lstclear_env(env, del);
-			ft_lstclear_env(exp, del);
-			free(shell->saveope);
-			free(shell);
-			tree = recup_struct(NULL, 1);
-			ft_lstcleartree(&tree, del);
+			free_all(env, exp, shell);
 			ft_exit_error_1(split, line, NULL, 0);
 		}
 	}
-	valeur = ft_mega_atoi(line);
-	tmp = ft_itoa(valeur);
-	if (split[1] != NULL)
-		ft_exit_error_1(split, line, tmp, 0);
-	else if (ft_strcmp(line, tmp))
-		ft_error_exit_2(split, tmp);
-	else
-	{
-		ft_lstclear_env(env, del);
-		ft_lstclear_env(exp, del);
-		free(shell->saveope);
-		free(shell);
-		tree = recup_struct(NULL, 1);
-		ft_lstcleartree(&tree, del);
+	if (split)
+		free_tab(split);
+	if (line)
 		free(line);
-		ft_exit_2(split, valeur, tmp);
-	}
-} 
+	cut_exit(env, exp, shell, cmd);
+}

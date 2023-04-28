@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 17:59:01 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/28 18:44:22 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ char	**pars_first_check(char *recup, char **tab)
 		g_rvalue = 2;
 		return (0);
 	}
-	tab = NULL;
 	tab = ft_supersplit(recup, ' ');
 	free(recup);
 	if (!tab[0])
 	{
+		g_rvalue = 667;
 		free_tab(tab);
 		return (0);
 	}
@@ -35,14 +35,89 @@ char	**pars_first_check(char *recup, char **tab)
 	}
 	return (tab);
 }
-
-void	pars_recup_ope(t_tree **tree, char **tab, int i, char *t)
+void	parse_while(char **tab, t_tree **tree)
 {
+	int	i = 1;
+	char	*t, *o, *p;
+	while (tab && tab[i])
+	{
+
+		if (ft_strcmp(tab[i], "&&") == 0)
+		{
+			t = ft_strdup("&&");
+			o = ft_strdup(tab[i - 1]);
+			p = ft_strdup(tab[i + 1]);
+			ft_lstadd_backtree(tree, ft_lstnewtree(t,
+				ft_lstnew(o), ft_lstnew(p)));
+			i += 2;
+			free(t);
+			free(o);
+			free(p);
+		}
+		else if (ft_strcmp(tab[i], "||") == 0)
+		{
+			t = ft_strdup("||");
+			o = ft_strdup(tab[i - 1]);
+			p = ft_strdup(tab[i + 1]);
+			ft_lstadd_backtree(tree, ft_lstnewtree(t,
+				ft_lstnew(o), ft_lstnew(p)));
+			i += 2;
+			free(t);
+			free(o);
+			free(p);
+		}
+		else if (ft_strcmp(tab[i], "|") == 0)
+		{
+			t = ft_strdup("|");
+			o = ft_strdup(tab[i - 1]);
+			p = ft_strdup(tab[i + 1]);
+			ft_lstadd_backtree(tree, ft_lstnewtree(t,
+				ft_lstnew(o), ft_lstnew(p)));
+			i += 2;
+			free(t);
+			free(o);
+			free(p);
+		}
+		else
+		{
+			o = ft_strdup(tab[i]);
+			ft_lstadd_backtree(tree, ft_lstnewtree(NULL,
+				ft_lstnew(o), ft_lstnew(NULL)));
+			i++;
+			free(o);
+		}
+	}
+}
+
+int	pars_prompt(char *str, t_env *env, t_env *exp)
+{
+	char	*recup;
+	char	**tab;
+	t_cmd	*l_cmd;
+	t_tree	*tree;
+	t_shell	*shell;
+
+	shell = malloc(sizeof(struct s_shell));
+	shell->env = NULL;
+	shell->exp = NULL;
+	shell->tree = NULL;
+	recup = add_spaces(str, 0, 0);
+	tab = pars_first_check(recup, NULL);
+	if (!tab)
+	{
+		free(shell);
+		if (g_rvalue == 667)
+			return (1);
+		return (0);
+	}
+	int	i = 0;
+	int	c = 0;
+	tab = rejointab(tab);
+	i = 1;
+	tree = ft_lstnewtree(NULL, NULL, NULL);
+	char	*t;
 	char	*o;
 	char	*p;
-
-	o = NULL;
-	p = NULL;
 	if (!tab[1])
 	{
 		t = ft_strdup(tab[0]);
@@ -50,8 +125,10 @@ void	pars_recup_ope(t_tree **tree, char **tab, int i, char *t)
 			ft_lstnew(t), ft_lstnew(NULL)));
 		free(t);
 	}
+	//parse_while(tab, &tree);
 	while (tab && tab[i])
 	{
+
 		if (ft_strcmp(tab[i], "&&") == 0)
 		{
 			t = ft_strdup("&&");
@@ -97,29 +174,6 @@ void	pars_recup_ope(t_tree **tree, char **tab, int i, char *t)
 			free(o);
 		}
 	}
-}
-
-int	pars_prompt(char *str, t_env *env, t_env *exp)
-{
-	char	*recup;
-	char	**tab;
-	t_cmd	*l_cmd;
-	t_tree	*tree;
-	t_shell	*shell;
-
-	recup = add_spaces(str, -1, 0);
-	tab = pars_first_check(recup, tab);
-	if (!tab)
-		return (0);
-	shell = malloc(sizeof(struct s_shell));
-	shell->env = NULL;
-	shell->exp = NULL;
-	shell->tree = NULL;
-	int	i = 0;
-	int	c = 0;
-	tab = rejointab(tab);
-	tree = ft_lstnewtree(NULL, NULL, NULL);
-	pars_recup_ope(&tree, tab, 1, NULL);
 	free_tab(tab);
 	t_env	*tmp_env = env;
 	t_tree	*test = tree->next;
@@ -138,7 +192,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 		setwildcards(&tree);
 		parsearg(&tree, &env);
 	}
-	while (test)
+	/*while (test)
 	{
 		printf("			OPERATOR: %s\n", test->ope);
 		printf("CMD LEFT: %s\n", test->cmd_left->cmd);
@@ -164,7 +218,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 		}
 		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\nBRACE LVL: %d\n\n\n\n", test->cmd_right->name_in, test->cmd_right->name_out, test->cmd_right->is_hd, test->cmd_right->limiter, test->cmd_right->bracelvl);
 		test = test->next;
-	}
+	}*/
 	recup_struct(&tree, 0);
 	shell->tree = tree;
 	shell->env = env;
@@ -174,7 +228,9 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 
 	ft_lstcleartree(&tree, del);
 	recup_struct(NULL, 3);
+	//ft_lstclear_env(&env, del);
 	free(shell);
 	return (1);
 }
+
 
