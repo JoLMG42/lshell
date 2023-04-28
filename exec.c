@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/27 23:43:28 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/28 17:47:04 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -578,6 +578,16 @@ void	init_heredoc(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	}
 }
 
+void	init_hd(t_tree *tmp, t_env **env, t_env **exp,t_shell *shell)
+{
+	if (tmp && tmp->cmd_left && tmp->cmd_left->is_hd)
+		heredoc(&tmp->cmd_left, env, exp, shell);
+	if (tmp && tmp->cmd_right && tmp->cmd_right->is_hd)
+		heredoc(&tmp->cmd_right, env, exp, shell);
+
+	
+}
+
 void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 {
 	t_tree	*tmp;
@@ -595,12 +605,13 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	(*tree)->next->in_exec = 1;
 	signal(SIGINT, handler_fork);
 	signal(SIGQUIT, handler_fork);
+	signal(SIGPIPE, SIG_IGN);
 	int	flag = 0;
+	tmpfd = 0;
 	to_wait = NULL;
 	first_to_wait = 1;
 	while (tmp)
 	{
-
 		if (tmp->cmd_right->cmd == NULL)
 		{
 			if (tmp->cmd_left->bracelvl)
@@ -609,6 +620,11 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			{
 				executeone(&tmp->cmd_left, env, shell, exp);
 				ft_wait(&(tmp->cmd_left));
+			}
+			if (tmp->cmd_left->is_hd)
+			{
+				if (tmp->cmd_left->name_in)
+					unlink(tmp->cmd_left->name_in);
 			}
 			break ;
 		}
@@ -874,7 +890,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (tmp->next && ft_strcmp(tmp->next->ope, "|") == 0)
 					{
-		//				printf("CMD 5 = %s\n", tmp->cmd_right->cmd);
+	//					printf("CMD 5 = %s\n", tmp->cmd_right->cmd);
 						pipe(shell->pipefd);
 						if (tmp->cmd_right->bracelvl)
 						{
@@ -979,6 +995,8 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					else
 					{
 						last_execute(&tmp->cmd_right, env, shell, exp);
+						if (!to_wait)
+							to_wait = tmp;
 						ft_wait_all(to_wait, tmp, first_to_wait);
 						to_wait = NULL;
 					}
@@ -1131,6 +1149,16 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			}
 		}*/
 		i++;
+		if (tmp->cmd_left->is_hd)
+		{
+			if (tmp->cmd_left->name_in)
+				unlink(tmp->cmd_left->name_in);
+		}
+		if (tmp->cmd_right->is_hd)
+		{
+			if (tmp->cmd_right->name_in)
+				unlink(tmp->cmd_right->name_in);
+		}
 		if (shell->saveope)
 		{
 			free(shell->saveope);

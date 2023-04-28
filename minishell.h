@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/27 15:27:24 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/28 17:59:29 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,19 @@ char    *rejoinstr(char **tab);
 int     ft_isalpha(char c);
 char	**dup_tab(char **tab);
 char *parse_string(char *str, t_env **env);
+int     check_brace(char *str);
+int     check_parse_sq_dq(char *str, char c);
+void    cd_no_arg(t_env **env, t_env **exp);
+char    *recup_content_env(char *find, t_env **env);
+void    create_oldpwd(t_env **env, int mode);
+void    update_pwd_oldpwd(t_env **env, char *newpath, int mode, t_env **exp);
+char    *add_spaces(char *str, int i, int j);
+char	*add_space_malloc(char *str);
+char	*cut_add_space_while3(char *res, char *str, int i, int j);
+char	*cut_add_space_while2(char *res, char *str, int i, int j);
+char	*cut_add_space_while(char *res, char *str, int i, int j);
+int	add_space_quote(int in_quote, char *str, int i);
+int	check_syntax(char **tab);
 
 
 #endif

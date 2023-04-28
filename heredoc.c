@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 14:10:05 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/27 00:38:21 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/28 13:35:48 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ int	create_fd_hd(t_cmd *cmd)
 	read(dev, random, 10);
 	random[10] = 0;
 	name = ft_strdup(".tmp_file");
+	if (cmd->name_in)
+		free(cmd->name_in);
 	cmd->name_in = ft_strjoin(name, random);
 	fd = open(cmd->name_in, O_CREAT | O_WRONLY, 0644);
 	if (fd == -1)

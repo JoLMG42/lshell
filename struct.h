@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:23:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/25 23:28:11 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/04/28 17:09:20 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@ typedef struct s_syntax
 	int			sq_opened;
 	int			dq_opened;
 	int			braces;
+	int			in_quote;
+	int			i;
+	int			j;
 }	t_s;
 
 typedef	struct	s_cmd
