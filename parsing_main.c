@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 18:44:22 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/01 23:42:56 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,19 +89,49 @@ void	parse_while(char **tab, t_tree **tree)
 	}
 }
 
-int	pars_prompt(char *str, t_env *env, t_env *exp)
+t_shell	*recup_shell(t_shell *shell)
+{
+	static	t_shell *tmp;
+
+	if (!shell)
+		return (tmp);
+	if (shell)
+		tmp = shell;
+	return (NULL);
+}
+
+int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 {
 	char	*recup;
 	char	**tab;
+	static	int	flag;
 	t_cmd	*l_cmd;
 	t_tree	*tree;
 	t_shell	*shell;
 
-	shell = malloc(sizeof(struct s_shell));
-	shell->env = NULL;
-	shell->exp = NULL;
-	shell->tree = NULL;
+	if (mode == 5)
+		flag = 1;
+	/*if (mode == 2)
+	{
+		tree = recup_struct(NULL, 1);
+		shell = recup_shell(NULL);
+	//	free(shell);
+		ft_lstcleartree(&tree, del);
+	//	shell = NULL;
+		tree = NULL;
+		flag = 0;
+	}*/
+//	if (mode != 2)
+//	{
+		shell = malloc(sizeof(struct s_shell));
+		shell->env = NULL;
+		shell->exp = NULL;
+		shell->tree = NULL;
+		recup_shell(shell);
+//	}
 	recup = add_spaces(str, 0, 0);
+	if (mode == 2)
+		free(str);
 	tab = pars_first_check(recup, NULL);
 	if (!tab)
 	{
@@ -226,10 +256,13 @@ int	pars_prompt(char *str, t_env *env, t_env *exp)
 	exec(&tree, &env, &exp, shell);
 
 
-	ft_lstcleartree(&tree, del);
-	recup_struct(NULL, 3);
-	//ft_lstclear_env(&env, del);
-	free(shell);
+	if (flag == 1)
+	{
+	//	ft_lstcleartree(&tree, del);
+	//	recup_struct(NULL, 3);
+		//ft_lstclear_env(&env, del);
+	//	free(shell);
+	}
 	return (1);
 }
 

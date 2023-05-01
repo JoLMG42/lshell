@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 17:58:08 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/01 23:27:32 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1097,8 +1097,30 @@ void	handler(int sig)
 
 void	free_stuff(t_env **env, t_env **exp)
 {
+	t_tree	*tmp;
+	t_shell	*shell;
+
+	tmp = recup_struct(NULL, 1);
+	shell = recup_shell(NULL);
+	free(shell);
 	ft_lstclear_env(env, del);
 	ft_lstclear_env(exp, del);
+	ft_lstcleartree(&tmp, del);
+}
+
+t_tree	*dup_tree(t_tree **adup)
+{
+	t_tree	*tmp;
+	t_tree	*ret;
+
+	tmp = (*adup);
+	ret = ft_lstnewtree(NULL, NULL, NULL);
+	while (tmp)
+	{
+		ft_lstadd_backtree(&ret, ft_lstnewtree(ft_strdup(tmp->ope), ft_lstnew(tmp->cmd_left->cmd), ft_lstnew(tmp->cmd_right->cmd)));
+		tmp = tmp->next;
+	}
+	return (ret->next);
 }
 
 int	main(int ac, char **av, char **envp)
@@ -1116,7 +1138,7 @@ int	main(int ac, char **av, char **envp)
 		str = readline("ft_containers$ ");
 		if (!str)
 			break ;
-		if (!pars_prompt(str, env, exp))
+		if (!pars_prompt(str, env, exp, 5))
 			printf("INVALID SYNTAX\n");
 		if (str[0])
 			add_history(str);

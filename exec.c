@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 19:03:30 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/01 23:39:29 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,8 @@ void	ft_wait(t_cmd **cmd)
 	//printf("on wait = %s\n", (*cmd)->cmd);
 	value = 0;
 	t_cmd *cmd_lst = *cmd;
+	if (!cmd_lst)
+		return ;
 	waitpid(cmd_lst->pid, &value, 0);
 	if (WIFSIGNALED(value))
 	{
@@ -196,7 +198,7 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 	exectab = NULL;
 	envtab = NULL;
 	tmp = *cmd;
-	if (!tmp->cmd)
+	if (!tmp || !tmp->cmd)
 		return ;
 	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 	tmp->pid = fork();
@@ -562,6 +564,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	signal(SIGQUIT, handler_fork);
 	//signal(SIGPIPE, SIG_IGN);
 	int	flag = 0;
+	char	*ttt;
 	tmpfd = 0;
 	to_wait = NULL;
 	first_to_wait = 1;
@@ -570,7 +573,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 		if (tmp->cmd_right->cmd == NULL)
 		{
 			if (tmp->cmd_left->bracelvl)
-				pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+				pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
 			else
 			{
 				executeone(&tmp->cmd_left, env, shell, exp);
@@ -592,13 +595,15 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (tmp->cmd_left->bracelvl)
 					{
-						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+						pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
 						break ;
 					}
 					first_execute(&tmp->cmd_left, env, shell, exp);
 					if (tmp->cmd_right->bracelvl)
 					{
-						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						ttt = ft_strdup(tmp->cmd_right->cmd);
+						pars_prompt(ttt, *env, *exp, 2);
+						//free(ttt);
 						break ;
 					}
 					last_execute(&tmp->cmd_right, env, shell, exp);
@@ -609,7 +614,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (tmp->cmd_left->bracelvl)
 					{
-						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+						pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
 					}
 					else
 					{
@@ -620,7 +625,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					{
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -633,7 +638,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (tmp->cmd_left->bracelvl)
 					{
-						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+						pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
 					}
 					else
 					{
@@ -644,7 +649,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					{
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -660,7 +665,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (tmp->cmd_left->bracelvl)
 					{
-						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+						pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
 					}
 					else
 					{
@@ -671,8 +676,8 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					}
 					if (tmp->cmd_right->bracelvl)
 					{
-						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
-						continue ;
+						pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
+					//	continue ;
 					}
 					else
 					{
@@ -685,15 +690,14 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				{
 					if (tmp->cmd_left->bracelvl)
 					{
-						pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+						pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
 						//break ;
 					}
 					else
 						first_execute(&tmp->cmd_left, env, shell, exp);
 					if (tmp->cmd_right->bracelvl)
 					{
-						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
-						//break ;
+						pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 					}
 					else
 					{
@@ -710,7 +714,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				//printf("PREMIER GROUPE\n");
 				if (tmp->cmd_left->bracelvl)
 				{
-					pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+					pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
 				}
 				else
 				{
@@ -724,7 +728,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -738,7 +742,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					{
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -760,7 +764,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			{
 				if (tmp->cmd_left->bracelvl)
 				{
-					pars_prompt(tmp->cmd_left->cmd, *env, *exp);
+					pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
 				}
 				else
 				{
@@ -773,7 +777,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					{
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -787,7 +791,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					{
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -817,7 +821,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 				pipe(shell->pipefd);
 				if (tmp->cmd_right->bracelvl)
 				{
-					pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+					pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 				}
 				else
 					middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
@@ -829,7 +833,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	//			printf("FIN DE PIPE 1\n");
 				if (tmp->cmd_right->bracelvl)
 				{
-					pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+					pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 				}
 				else
 				{
@@ -849,7 +853,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 						pipe(shell->pipefd);
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -863,7 +867,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 		//				printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -892,7 +896,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 						pipe(shell->pipefd);
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -906,7 +910,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 		//				printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 						}
 						else
 						{
@@ -934,7 +938,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					pipe(shell->pipefd);
 					if (tmp->cmd_right->bracelvl)
 					{
-						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 					}
 					else
 						middle_execute(&tmp->cmd_right, env, shell, tmpfd, exp);
@@ -945,7 +949,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					//exec_and(&tmp->cmd_right, env, exp, shell);
 					if (tmp->cmd_right->bracelvl)
 					{
-						pars_prompt(tmp->cmd_right->cmd, *env, *exp);
+						pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 					}
 					else
 					{
@@ -1122,13 +1126,13 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 		shell->saveope = ft_strdup(tmp->ope);
 		tmp = tmp->next;
 	}
-	if (shell->saveope)
+	if (shell && shell->saveope)
 	{
 		free(shell->saveope);
 		shell->saveope = NULL;
 	}
 //	signal(SIGINT, handler);
-	(*tree)->next->in_exec = 0;
+//	(*tree)->next->in_exec = 0;
 	/*tmp = (*tree)->next;
 	int j = 0;
 	while (tmp)
