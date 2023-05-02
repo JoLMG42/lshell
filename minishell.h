@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/01 23:20:04 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/02 18:11:00 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,7 @@ void     ft_exit_2(char **split, int valeur, char *tmp);
 void    export_both(char *str, t_env **env, t_env **exp);
 t_shell *recup_shell(t_shell *shell);
 t_tree  *dup_tree(t_tree **adup);
+char    *recalculcmd(char *cmd, char *str, char *ope);
 
 
 #endif

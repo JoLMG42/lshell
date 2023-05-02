@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/01 23:42:56 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/02 17:07:11 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,16 +111,16 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 
 	if (mode == 5)
 		flag = 1;
-	/*if (mode == 2)
+	if (mode == 2)
 	{
-		tree = recup_struct(NULL, 1);
-		shell = recup_shell(NULL);
-	//	free(shell);
-		ft_lstcleartree(&tree, del);
-	//	shell = NULL;
-		tree = NULL;
+	//	tree = recup_struct(NULL, 1);
+	//	shell = recup_shell(NULL);
+//		free(shell);
+		//ft_lstcleartree(&tree, del);
+//		shell = NULL;
+//		tree = NULL;
 		flag = 0;
-	}*/
+	}
 //	if (mode != 2)
 //	{
 		shell = malloc(sizeof(struct s_shell));
@@ -222,7 +222,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 		setwildcards(&tree);
 		parsearg(&tree, &env);
 	}
-	/*while (test)
+	while (test)
 	{
 		printf("			OPERATOR: %s\n", test->ope);
 		printf("CMD LEFT: %s\n", test->cmd_left->cmd);
@@ -248,21 +248,23 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 		}
 		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\nBRACE LVL: %d\n\n\n\n", test->cmd_right->name_in, test->cmd_right->name_out, test->cmd_right->is_hd, test->cmd_right->limiter, test->cmd_right->bracelvl);
 		test = test->next;
-	}*/
+	}
 	recup_struct(&tree, 0);
+	//recup_struct(NULL, 11);
 	shell->tree = tree;
 	shell->env = env;
 	shell->exp = exp;
 	exec(&tree, &env, &exp, shell);
 
 
-	if (flag == 1)
-	{
-	//	ft_lstcleartree(&tree, del);
-	//	recup_struct(NULL, 3);
-		//ft_lstclear_env(&env, del);
-	//	free(shell);
-	}
+//	if (flag == 1)
+//	{
+		ft_lstcleartree(&tree, del);
+		t_tree *u = recup_struct(NULL, 10);
+		ft_lstcleartree(&u, del);
+		recup_struct(NULL, 3);
+		free(shell);
+//	}
 	return (1);
 }
 

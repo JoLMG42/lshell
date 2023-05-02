@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/25 13:37:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 16:12:45 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/02 17:11:02 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	len_space(char *str)
 	while (str[i])
 	{
 		if (str[i] == ' ')
-			break;
+			break ;
 		i++;
 	}
 	return (i);
@@ -49,13 +49,13 @@ char	*resjoin(char **tab)
 	char	*res;
 
 	i = 1;
-	res = ft_strdup(tab[0]);;
+	res = ft_strdup(tab[0]);
 	while (tab[i])
 	{
 		res = ft_strjoin(res, tab[i]);
 		i++;
 	}
-	return res;
+	return (res);
 }
 
 int	ft_strcmp(char *s1, char *s2)
@@ -67,5 +67,3 @@ int	ft_strcmp(char *s1, char *s2)
 		i++;
 	return (s1[i] - s2[i]);
 }
-
-

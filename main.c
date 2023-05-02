@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/01 23:27:32 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/02 18:01:40 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,270 +27,7 @@
 
 int	g_rvalue = 0;
 
-
-void    init_syntax_struct(t_s *s)
-{
-        s->dq_opened = 0;
-        s->sq_opened = 0;
-	s->braces = 0;
-	s->in_quote = 0;
-	s->i = 0;
-	s->j = 0;
-}
-
-int	check_parse_sq_dq(char *str, char c)
-{
-	int	i;
-	int	count;
-	int	opo;
-	int	in_opo;
-	int	in_actu;
-
-	opo = '\'';
-	if (c == '\'')
-		opo = '\"';
-	i = 0;
-	count = 0;
-	in_opo = 0;
-	in_actu = 0;
-	while (str[i])
-	{
-		if (str[i] == opo && !in_opo && !in_actu)
-			in_opo = 1;
-		else if (str[i] == opo && in_opo)
-			in_opo = 0;
-		if (str[i] == c && !in_opo && !in_actu)
-		{
-			count++;
-			in_actu = 1;
-
-		}
-		else if (str[i] == c && in_actu)
-		{
-			count++;
-			in_actu = 0;
-		}
-		i++;
-	}
-	if (count % 2 != 0)
-		return (0);
-	return (1);
-}
-
-int	check_brace(char *str)
-{
-	int	i;
-	int	in_brace;
-
-	i = 0;
-	in_brace = 0;
-	while (str[i])
-	{
-		if (str[i] == '(')
-			in_brace++;
-		if (str[i] == ')')
-			in_brace--;
-		i++;
-	}
-	if (in_brace != 0)
-		return (0);
-	return (1);
-}
-
-int	check_syntax(char **tab)
-{
-	int	i;
-	int	j;
-	int	sq;
-	int	dq;
-
-	i = 0;
-	sq = 0;
-	dq = 0;
-	while (tab[i])
-	{
-		if ((ft_strcmp(tab[i], "||") == 0 || ft_strcmp(tab[i], "|") == 0 || ft_strcmp(tab[i], "<") == 0
-			|| ft_strcmp(tab[i], "&&") == 0 || ft_strcmp(tab[i], ">") == 0 || ft_strcmp(tab[i], "<<") == 0
-			|| ft_strcmp(tab[i], ">>") == 0) && !tab[i + 1])
-			return (0);
-		if (ft_strcmp(tab[i], "||") == 0)
-		{
-			if (ft_strcmp(tab[i + 1], "|") == 0)
-				return (0);
-		}
-		if (ft_strcmp(tab[i], "|") == 0)
-		{
-			if (ft_strcmp(tab[i + 1], "||") == 0)
-				return (0);
-		}
-		if (ft_strcmp(tab[i], "|") == 0)
-		{
-			if (ft_strcmp(tab[i + 1], "&&") == 0)
-				return (0);
-		}
-		if (ft_strcmp(tab[i], "&&") == 0)
-		{
-			if (ft_strcmp(tab[i + 1], "|") == 0)
-				return (0);
-		}
-		if (ft_strcmp(tab[i], "||") == 0)
-		{
-			if (ft_strcmp(tab[i + 1], "&&") == 0)
-				return (0);
-		}
-		if (ft_strcmp(tab[i], "&&") == 0)
-		{
-			if (ft_strcmp(tab[i + 1], "||") == 0)
-				return (0);
-		}
-		if (ft_strcmp(tab[i], "|") == 0)
-		{
-			if (ft_strcmp(tab[i + 1], "|") == 0)
-				return (0);
-		}
-		if (ft_strcmp(tab[i], "&&") == 0)
-		{
-			if (ft_strcmp(tab[i + 1], "&&") == 0)
-				return (0);
-		}
-		if (!check_brace(tab[i]))
-			return (0);
-		if (!check_parse_sq_dq(tab[i], '\''))
-			return (0);
-		if (!check_parse_sq_dq(tab[i], '\"'))
-			return (0);
-		i++;
-	}
-	if (dq == 1 || sq == 1)
-		return (0);
-	return (1);
-}
-
-void	free_tab(char **tab)
-{
-	int	i;
-
-	i = 0;
-	while (tab && tab[i])
-	{
-		if (tab[i])
-			free(tab[i]);
-		i++;
-	}
-	if (tab)
-		free(tab);
-}
-int	ft_lstsize(t_cmd *lst)
-{
-	int	i;
-
-	i = 0;
-	while (lst)
-	{
-		lst = lst->next;
-		i++;
-	}
-	return (i);
-}
-
-char	**rejointab(char **tab)
-{
-	int	i;
-	int	j;
-	int	h;
-	char	**res;
-
-	i = 0;
-	j = 0;
-	h = 0;
-	res = malloc(sizeof(char *) * (10000));
-	//res[0] = ft_strdup(tab[0]);
-	//j++;
-	while (tab[h])
-	{
-		if (tab[h + 1] && ft_strcmp(tab[h], "|") == 0 || ft_strcmp(tab[h], "&&") == 0 || ft_strcmp(tab[h], "||") == 0)
-			//|| ft_strcmp(tab[h], "<") == 0 || ft_strcmp(tab[h], "<<") == 0 || ft_strcmp(tab[h], ">") == 0
-			//|| ft_strcmp(tab[h], ">>") == 0)
-		{
-			j++;
-			res[j] = NULL;
-			res[j] = ft_strjoin(res[j], tab[h]);
-			if (tab[h + 1] && ft_strcmp(tab[h + 1], "|") == 0 || ft_strcmp(tab[h + 1], "&&") == 0 || ft_strcmp(tab[h + 1], "||") == 0)
-				//|| ft_strcmp(tab[h + 1], "<") == 0 || ft_strcmp(tab[h + 1], "<<") == 0 || ft_strcmp(tab[h + 1], ">") == 0
-				//|| ft_strcmp(tab[h + 1], ">>") == 0)
-				;
-			else
-			{
-				j++;
-				res[j] = NULL;
-			}
-		}
-		else
-		{
-			if (j == 0 && h == 0)
-			{
-				res[j] = NULL;
-				res[j] = ft_strdup(tab[h]);
-				if (tab[h + 1])
-					res[j] = ft_strjoin(res[j], " ");
-
-			}
-			else
-			{
-				res[j] = ft_strjoin(res[j], tab[h]);
-				res[j] = ft_strjoin(res[j], " ");
-			}
-		}
-		h++;
-	}
-	free_tab(tab);
-	res[j + 1] = 0;
-	/*i = 0;
-	while (res[i])
-	{
-		printf("LUNA LPB = %s\n\n\n\n\n", res[i]);
-		i++;
-	}*/
-	return res;
-}
-
 int	len_space(char *str);
-
-char	*recalculcmd(char *cmd, char *str, char *ope)
-{
-	char	**tab;
-	char	*res;
-	int	i;
-
-	res = NULL;
-	if (ft_strcmp(ope, "<") == 0)
-	{
-		tab = ft_supersplit(cmd, ' ');
-		i = 0;
-		while (tab[i])
-		{
-			if (str && ft_strcmp(tab[i], str) && ft_strcmp(tab[i], ope))
-				res = ft_strdup(tab[i]);
-			i++;
-		}
-		free_tab(tab);
-	}
-	if (ft_strcmp(ope, "<<") == 0)
-	{
-		tab = ft_supersplit(cmd, ' ');
-		i = 0;
-		while (tab[i])
-		{
-			if (str && ft_strcmp(tab[i], str) && ft_strcmp(tab[i], ope))
-				res = ft_strdup(tab[i]);
-			i++;
-		}
-		free_tab(tab);
-	}
-	free(cmd);
-	return (res);
-
-}
 
 void	ouverturefirstcmd(t_tree **lst)
 {
@@ -1054,6 +791,8 @@ void	parsecmd(t_tree **lst, t_env **env)
 t_tree	*recup_struct(t_tree **tree, int mode)
 {
 	static t_tree *tmp;
+	static t_tree *toto;
+
 	if (mode == 3)
 		tmp = NULL;
 	if (tree != NULL)
@@ -1062,6 +801,12 @@ t_tree	*recup_struct(t_tree **tree, int mode)
 		return (tmp->next);
 	if (tree == NULL && tmp && mode == 1)
 		return (tmp);
+	if (mode == 9)
+		toto = *tree;
+	if (mode == 10)
+		return (toto);
+	//if (mode == 11)
+	//	toto = NULL;
 	return NULL;
 }
 
@@ -1097,15 +842,15 @@ void	handler(int sig)
 
 void	free_stuff(t_env **env, t_env **exp)
 {
-	t_tree	*tmp;
+	/*t_tree	*tmp;
 	t_shell	*shell;
 
 	tmp = recup_struct(NULL, 1);
 	shell = recup_shell(NULL);
 	free(shell);
+	ft_lstcleartree(&tmp, del);*/
 	ft_lstclear_env(env, del);
 	ft_lstclear_env(exp, del);
-	ft_lstcleartree(&tmp, del);
 }
 
 t_tree	*dup_tree(t_tree **adup)
@@ -1120,7 +865,7 @@ t_tree	*dup_tree(t_tree **adup)
 		ft_lstadd_backtree(&ret, ft_lstnewtree(ft_strdup(tmp->ope), ft_lstnew(tmp->cmd_left->cmd), ft_lstnew(tmp->cmd_right->cmd)));
 		tmp = tmp->next;
 	}
-	return (ret->next);
+	return (ret);
 }
 
 int	main(int ac, char **av, char **envp)

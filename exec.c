@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/01 23:39:29 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/02 17:07:31 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -553,6 +553,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	int	pipefd[2];
 	t_tree	*to_wait;
 	int	first_to_wait;
+	t_tree *toto;
 
 	i = 0;
 	shell->saveope = NULL;
@@ -864,10 +865,14 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					}
 					else
 					{
-		//				printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
+						printf("CMD 3 = %s\n", tmp->cmd_right->cmd);
 						if (tmp->cmd_right->bracelvl)
 						{
-							pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
+						//	toto = dup_tree(&tmp);
+						//	recup_struct(&toto, 9);
+							pars_prompt(ft_strdup(tmp->cmd_right->cmd), *env, *exp, 2);
+						//	tmp = toto;
+						//	flag = 998;
 						}
 						else
 						{
@@ -1108,12 +1113,12 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 			}
 		}*/
 		i++;
-		if (tmp->cmd_left->is_hd)
+		if (tmp && tmp->cmd_left->is_hd)
 		{
 			if (tmp->cmd_left->name_in)
 				unlink(tmp->cmd_left->name_in);
 		}
-		if (tmp->cmd_right->is_hd)
+		if (tmp && tmp->cmd_right->is_hd)
 		{
 			if (tmp->cmd_right->name_in)
 				unlink(tmp->cmd_right->name_in);
