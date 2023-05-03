@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 18:31:50 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/03 23:26:23 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,25 @@ void	init_hd(t_tree *tmp, t_env **env, t_env **exp,t_shell *shell)
 	
 }
 
+void	exec_one_only(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
+{
+	if (tmp->cmd_right->cmd == NULL)
+	{
+		if (tmp->cmd_left->bracelvl)
+			pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
+		else
+		{
+			executeone(&tmp->cmd_left, env, shell, exp);
+			ft_wait(&(tmp->cmd_left));
+		}
+		if (tmp->cmd_left->is_hd)
+		{
+			if (tmp->cmd_left->name_in)
+				unlink(tmp->cmd_left->name_in);
+		}
+	}
+}
+
 void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 {
 	t_tree	*tmp;
@@ -79,21 +98,10 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	first_to_wait = 1;
 	while (tmp)
 	{
-		if (tmp->cmd_right->cmd == NULL)
+		if (!tmp->cmd_right->cmd)
 		{
-			if (tmp->cmd_left->bracelvl)
-				pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
-			else
-			{
-				executeone(&tmp->cmd_left, env, shell, exp);
-				ft_wait(&(tmp->cmd_left));
-			}
-			if (tmp->cmd_left->is_hd)
-			{
-				if (tmp->cmd_left->name_in)
-					unlink(tmp->cmd_left->name_in);
-			}
-			break ;
+			exec_one_only(tmp, env, exp, shell);
+			return ;
 		}
 		if (i == 0)
 		{
@@ -105,19 +113,21 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					if (tmp->cmd_left->bracelvl)
 					{
 						pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
-						break ;
 					}
-					first_execute(&tmp->cmd_left, env, shell, exp);
+					else
+						first_execute(&tmp->cmd_left, env, shell, exp);
 					if (tmp->cmd_right->bracelvl)
 					{
 						ttt = ft_strdup(tmp->cmd_right->cmd);
 						pars_prompt(ttt, *env, *exp, 2);
 						free(ttt);
-						break ;
 					}
-					last_execute(&tmp->cmd_right, env, shell, exp);
-					ft_wait(&(tmp->cmd_left));
-					ft_wait(&(tmp->cmd_right));
+					else
+					{
+						last_execute(&tmp->cmd_right, env, shell, exp);
+						ft_wait(&(tmp->cmd_left));
+						ft_wait(&(tmp->cmd_right));
+					}
 				}
 				else if (ft_strcmp(tmp->ope, "&&") == 0)
 				{
@@ -474,6 +484,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 					}
 				}
 			}
+		}
 		i++;
 		if (tmp && tmp->cmd_left->is_hd)
 		{

@@ -6,25 +6,11 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/24 13:51:38 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 15:25:37 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/03 22:20:05 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <sys/wait.h>
-# include <fcntl.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <signal.h>
-# include <sys/types.h>
-# include <sys/stat.h>
-# include <linux/random.h>
-
-#include "struct.h"
 #include "minishell.h"
-
 
 static int	ft_check_charset(const char str, char c, t_s *s_s)
 {

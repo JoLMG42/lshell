@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute_one.c                                      :+:      :+:    :+:   */
+/*   exec_bonux.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 18:08:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 21:22:10 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/03 22:22:53 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_cmd	*cut_exec_one_in_out(t_cmd *tmp)
+static t_cmd	*cut_exec_one_in_out(t_cmd *tmp)
 {
 	if (tmp->name_out)
 	{
@@ -28,7 +28,7 @@ t_cmd	*cut_exec_one_in_out(t_cmd *tmp)
 	return (tmp);
 }
 
-void	cut_execone_fork(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
+void	cut_exeb_fork(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
 {
 	tmp->pid = fork();
 	if (tmp->pid == 0)
@@ -57,7 +57,7 @@ void	cut_execone_fork(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
 	free_tab(envtab);
 }
 
-void	cut_exec_one_b(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
+void	cut_exec_b_b(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
 {
 	if (tmp->cmd)
 	{
@@ -80,7 +80,7 @@ void	cut_exec_one_b(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
 	}
 }
 
-void	cut_executone(t_cmd *tmp, t_shell *shell, t_env **env, t_env **exp)
+static void	cut_executone(t_cmd *tmp, t_shell *shell, t_env **env, t_env **exp)
 {
 	char	**envtab;
 	char	**exectab;
@@ -100,16 +100,16 @@ void	cut_executone(t_cmd *tmp, t_shell *shell, t_env **env, t_env **exp)
 	}
 	if (tmp->cmd && is_builtins(tmp->cmd))
 	{
-		cut_exec_one_b(tmp, envtab, exectab, shell);
+		cut_exec_b_b(tmp, envtab, exectab, shell);
 		return ;
 	}
 	if (tmp->cmd)
 		del_sq_dq_arg(exectab);
 	g_rvalue = 0;
-	cut_execone_fork(tmp, envtab, exectab, shell);
+	cut_exeb_fork(tmp, envtab, exectab, shell);
 }
 
-void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
+void	exec_and(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell)
 {
 	t_cmd	*tmp;
 	int		frk;
