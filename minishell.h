@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/02 18:11:00 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/03 18:28:10 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,13 +113,13 @@ char	*cut_add_space_while(char *res, char *str, int i, int j);
 int	add_space_quote(int in_quote, char *str, int i);
 int	check_syntax(char **tab);
 char	**rejointab(char **tab);
-void	parsefirstcmd(t_tree **lst, t_env **env);
+void	parsefirstcmd(t_tree **lst, t_env **env, char *str);
 void	parsearg(t_tree **lst, t_env **env);
 char    *reparse_dol(char *str, t_env **env);;
 int     check_parse_sq_dq(char *str, char c);;
 void	parseargfirstcmd(t_tree **lst, t_env **env);
 void	parsearg(t_tree **lst, t_env **env);
-void	parsecmd(t_tree **lst, t_env **env);
+void	parsecmd(t_tree **lst, t_env **env, char *str);
 void	setwildcardsfirstcmd(t_tree **lst);
 void	setwildcards(t_tree **lst);
 void	setbracelvl(t_tree **lst);
@@ -145,6 +145,27 @@ void    export_both(char *str, t_env **env, t_env **exp);
 t_shell *recup_shell(t_shell *shell);
 t_tree  *dup_tree(t_tree **adup);
 char    *recalculcmd(char *cmd, char *str, char *ope);
+char    *addspacedol(char *str);
+t_tree  *cut_parseargfirstcmd_2(t_tree *tmp, char **tab, t_s *s, char *str);
+t_tree  *cut_parseargfirstcmd_3(t_tree *tmp, char **tab, t_s *s, char *str);
+t_tree  *cut_parseargfirstcmd(t_tree *tmp, char **tab, t_s *s, char *str);
+t_env   *recup_struct_env(t_env **env, int mode);
+t_tree  *cut_parsfirstcmd_3(t_tree *tmp, t_s *s, char **recup);
+t_tree  *cut_parsfirstcmd_2(t_tree *tmp, t_s *s, char **tab, char *str);
+t_tree  *cut_parsfirstcmd(t_tree *tmp, t_s *s, char **tab, char *str);
+t_tree  *cut_parsecmd_2(t_tree *tmp, t_s *s, char **tab, char *str);
+t_tree  *cut_parsecmd_env(t_tree *tmp, t_s *s, char **tab, t_env *env);
+t_tree  *cut_parsecmd(t_tree *tmp, t_s *s, char **tab, char *str);
+void    free_stuff(t_env **env, t_env **exp);
+int     check_dot(char *str);
+void    ft_wait(t_cmd **cmd);
+void    ft_wait_all(t_tree *to_wait, t_tree *end, int first);
+void    last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp);
+t_env   **recup_struct_env2(t_env **env, int mode);
+void    middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp);
+void    cut_middle_execute_free(char **et, char **ext);
+void    first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp);
+void    executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp);
 
 
 #endif

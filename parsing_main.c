@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/02 17:07:11 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/03 16:02:20 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,8 +130,8 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 		recup_shell(shell);
 //	}
 	recup = add_spaces(str, 0, 0);
-	if (mode == 2)
-		free(str);
+	//if (mode == 2)
+	//	free(str);
 	tab = pars_first_check(recup, NULL);
 	if (!tab)
 	{
@@ -207,7 +207,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 	free_tab(tab);
 	t_env	*tmp_env = env;
 	t_tree	*test = tree->next;
-	parsefirstcmd(&tree, &env);
+	parsefirstcmd(&tree, &env, NULL);
 	setargfirstcmd(&tree);
 	ouverturefirstcmd(&tree);
 	setbracelvlfirstcmd(&tree);
@@ -215,7 +215,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 	parseargfirstcmd(&tree, &env);
 	if (i > 1)
 	{
-		parsecmd(&tree, &env);
+		parsecmd(&tree, &env, NULL);
 		setarg(&tree);
 		ouvertureredir(&tree);
 		setbracelvl(&tree);

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 16:12:51 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/02 17:10:10 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/03 17:18:13 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,20 @@ void	check_sq_dq(t_s *s_s, char c)
 		cop--;
 		s_s->braces--;
 	}
+}
+
+t_env	**recup_struct_env2(t_env **env, int mode)
+{
+	static t_env	**tmp;
+	static t_env	**tmpexp;
+
+	if (mode == 1)
+		tmp = env;
+	if (mode == 2)
+		return (tmp);
+	if (mode == 5)
+		tmpexp = env;
+	if (mode == 6)
+		return (tmpexp);
+	return (NULL);
 }

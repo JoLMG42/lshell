@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/02 17:14:19 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/02 17:36:04 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/03 10:56:34 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int	in_opo_check(char c, int opo, int in_opo, int in_actu)
 		return (1);
 	else if (c == opo && in_opo)
 		return (0);
+	return (0);
 }
 
 /*int	check_parse_sq_dq(char *str, char c)
