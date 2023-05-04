@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 14:39:12 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 15:13:38 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,19 @@ void    executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp);
 int     lst_tree_size(t_tree **tree);
 void    exec_no_next(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell);
 void    exec_one_only(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell);
+t_tree  *exec_pp(t_tree *tmp, t_tree *to_wait, t_env **exp, t_shell *shell);
+t_tree  *exec_ee(t_tree *tmp, t_tree *to_wait, t_env **exp, t_shell *shell);
+t_tree  *exec_ou(t_tree *tmp, t_tree *to_wait, t_env **exp, t_shell *shell);
+t_tree  *exec_sec_pp_end(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell);
+t_tree  *exec_sec_grp_pp_2(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell);
+void    exec_sec_grp_pp(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell);
+t_tree  *exec_sec_grp_ee(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell);
+t_tree  *ex_sec_grp_ee(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell);
+t_tree  *little_cut(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell);
+t_tree  *exec_sec_grp_ou(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell);
+void    init_hd(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell);
+t_tree  *skip_pipe(t_tree *tmp, t_shell *shell);
+void    init_heredoc(t_tree **tree, t_env **env, t_env **exp, t_shell *shell);
 
 
 #endif
