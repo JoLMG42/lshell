@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 16:12:51 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 12:42:49 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 16:35:56 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,21 @@ int	ft_strlen(char *str)
 	while (str[i])
 		i++;
 	return (i);
+}
+
+int	check_sq_dq_2(t_s *s_s, char c)
+{
+	if (c == '(')
+	{
+		s_s->braces++;
+		return (1);
+	}
+	if (c == ')' && s_s->braces)
+	{
+		s_s->braces--;
+		return (-1);
+	}
+	return (0);
 }
 
 void	check_sq_dq(t_s *s_s, char c)
@@ -41,16 +56,7 @@ void	check_sq_dq(t_s *s_s, char c)
 		else
 			s_s->dq_opened = 0;
 	}
-	if (c == '(')
-	{
-		cop++;
-		s_s->braces++;
-	}
-	if (c == ')' && s_s->braces)
-	{
-		cop--;
-		s_s->braces--;
-	}
+	cop += check_sq_dq_2(s_s, c);
 }
 
 t_env	**recup_struct_env2(t_env **env, int mode)

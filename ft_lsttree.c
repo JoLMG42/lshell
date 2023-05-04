@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/01 22:53:47 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 16:04:05 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ t_tree	*ft_lstlasttree(t_tree *lst)
 	t_tree	*tmp;
 
 	if (!lst)
-		return lst;
+		return (lst);
 	while (lst)
 	{
 		tmp = lst;

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/11 11:26:47 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/11 11:27:26 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 16:36:59 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,3 +32,7 @@ char	*ft_strdup(char *s)
 	return (cpy);
 }
 
+void	del(void *data)
+{
+	free(data);
+}

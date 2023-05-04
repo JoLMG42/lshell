@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/02 17:14:19 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 10:56:34 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 16:46:28 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,83 +31,42 @@ int	in_opo_check(char c, int opo, int in_opo, int in_actu)
 	return (0);
 }
 
-/*int	check_parse_sq_dq(char *str, char c)
+void	cut_check_parse_sq_dq(t_s *s, int opo, char c, char *str)
 {
-	int	i;
-	int	count;
-	int	opo;
-	int	in_opo;
-	int	in_actu;
-
-	opo = '\'';
-	if (c == '\'')
-		opo = '\"';
-	i = 0;
-	count = 0;
-	in_opo = 0;
-	in_actu = 0;
-	while (str[i])
-	{
-		if (!in_opo_check(str[i], opo, in_opo, in_actu))
-			in_opo = 0;
-		else
-			in_opo = 1;
-		if (str[i] == c && !in_opo && !in_actu)
-		{
-			count++;
-			in_actu = 1;
-		}
-		else if (str[i] == c && in_actu)
-		{
-			count++;
-			in_actu = 0;
-		}
-		i++;
-	}
-	if (count % 2 != 0)
-		return (0);
-	return (1);
-}*/
+	if (str[s->i] == opo && !s->dq_opened && !s->sq_opened)
+		s->dq_opened = 1;
+	else if (str[s->i] == opo && s->dq_opened)
+		s->dq_opened = 0;
+}
 
 int	check_parse_sq_dq(char *str, char c)
 {
-	int	i;
-	int	count;
+	t_s	s;
 	int	opo;
-	int	in_opo;
-	int	in_actu;
 
 	opo = '\'';
 	if (c == '\'')
 		opo = '\"';
-	i = 0;
-	count = 0;
-	in_opo = 0;
-	in_actu = 0;
-	while (str[i])
+	init_syntax_struct(&s);
+	while (str[s.i])
 	{
-		if (str[i] == opo && !in_opo && !in_actu)
-			in_opo = 1;
-		else if (str[i] == opo && in_opo)
-			in_opo = 0;
-		if (str[i] == c && !in_opo && !in_actu)
+		cut_check_parse_sq_dq(&s, opo, c, str);
+		if (str[s.i] == c && !s.dq_opened && !s.sq_opened)
 		{
-			count++;
-			in_actu = 1;
-
+			s.braces++;
+			s.sq_opened = 1;
 		}
-		else if (str[i] == c && in_actu)
+		else if (str[s.i] == c && s.sq_opened)
 		{
-			count++;
-			in_actu = 0;
+			s.braces++;
+			s.sq_opened = 0;
 		}
-		i++;
+		s.i++;
 	}
-	if (count % 2 != 0)
+	if (s.braces % 2 != 0)
 		return (0);
 	return (1);
 }
-
 
 int	check_brace(char *str)
 {
