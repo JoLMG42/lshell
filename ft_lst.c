@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 16:42:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/24 22:32:37 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 16:36:30 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,6 @@ void	ft_lstadd_back(t_cmd **alst, t_cmd *new)
 	{
 		*alst = new;
 	}
-}
-
-void	del(void *data)
-{
-	free(data);
 }
 
 t_cmd	*ft_lstlast(t_cmd *lst)

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:44:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 16:44:54 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 16:14:18 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 void	ft_wait(t_cmd **cmd)
 {
-	int	value;
+	int		value;
+	t_cmd	*cmd_lst;
 
 	value = 0;
-	t_cmd *cmd_lst = *cmd;
+	cmd_lst = *cmd;
 	if (!cmd_lst)
 		return ;
 	waitpid(cmd_lst->pid, &value, 0);
@@ -29,7 +30,7 @@ void	ft_wait(t_cmd **cmd)
 
 void	ft_wait_all(t_tree *to_wait, t_tree *end, int first)
 {
-	t_tree *tmp;
+	t_tree	*tmp;
 
 	tmp = to_wait;
 	while (tmp != end)
@@ -43,4 +44,3 @@ void	ft_wait_all(t_tree *to_wait, t_tree *end, int first)
 		ft_wait(&(tmp->cmd_left));
 	ft_wait(&(tmp->cmd_right));
 }
-
