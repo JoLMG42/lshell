@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:45:15 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 15:56:53 by lcalvie          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,5 +188,7 @@ int     cut_hd_no_cmd(char *limiter);
 void    heredoc_cmd(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell);
 int     create_fd_hd(t_cmd *cmd);
 
+void	init_shell_and_tab(char *str, t_shell **shell, char ***tab);
+void	debug_print(t_tree *tree);
 
 #endif
