@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:13:38 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 15:56:53 by lcalvie          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,6 +182,7 @@ t_tree  *exec_sec_grp_ou(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell);
 void    init_hd(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell);
 t_tree  *skip_pipe(t_tree *tmp, t_shell *shell);
 void    init_heredoc(t_tree **tree, t_env **env, t_env **exp, t_shell *shell);
-
+void	init_shell_and_tab(char *str, t_shell **shell, char ***tab);
+void	debug_print(t_tree *tree);
 
 #endif
