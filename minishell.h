@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:56:53 by lcalvie          ###   ########.fr       */
+/*   Updated: 2023/05/04 18:49:24 by lcalvie          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,5 +190,20 @@ int     create_fd_hd(t_cmd *cmd);
 
 void	init_shell_and_tab(char *str, t_shell **shell, char ***tab);
 void	debug_print(t_tree *tree);
+int	find_count_wildcards(char *recup, char *file, int count, int count2);
+char	*ft_strstr(char *str, char *to_find);
+int	ft_cmpend(char *s1, char *s2);
+void	check_all_files(char *str, char **res, int *i, int *count);
+int	checkfile(char *file, char *flag);
+int	checkfile_all_in(char *file, char *flag);
+char	*init_recup(char *file, char *flag, int *count, int *count2);
+void	cut_setwildcardsfirstcmd(int f, t_tree *tmp, char **tab);
+void	setwildcardsfirstcmd(t_tree **lst);
+char	**dup_tab(char **tab);
+void	setwildcards(t_tree **lst);
+char	**recreatearg(char **tab, char *str);
+int	checkstar(char *str);
+void	check_wildcards_first_cmd(t_tree **lst);
+int	count_size_dir(void);
 
 #endif
