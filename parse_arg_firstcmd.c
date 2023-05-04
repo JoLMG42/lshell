@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:42:39 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:48:04 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 00:46:11 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,24 @@
 
 t_tree	*cut_parseargfirstcmd_3(t_tree *tmp, char **tab, t_s *s, char *str)
 {
+	int	f;
+
+	f = 0;
 	if (ft_strcmp(tab[s->j], "$") == 0)
+	{
 		tmp = cut_parseargfirstcmd_2(tmp, tab, s, str);
+		f = 1;
+	}
 	else
 		tmp->cmd_left->arg[s->i] = ft_strjoin(tmp->cmd_left->arg[s->i],
 				tab[s->j]);
-	if (tab[s->j] && tab[s->j + 1])
-		tmp->cmd_left->arg[s->i] = ft_strjoin(tmp->cmd_left->arg[s->i], " ");
+	if (tab[s->j] && tab[s->j + 1] && f == 0)
+	{
+		if (s->j > 0 && ft_strcmp(tab[s->j - 1], "$") != 0)
+			tmp->cmd_left->arg[s->i]
+				= ft_strjoin(tmp->cmd_left->arg[s->i], " ");
+	}
+	f = 0;
 	return (tmp);
 }
 
