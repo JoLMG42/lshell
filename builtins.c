@@ -6,40 +6,35 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 12:54:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/26 23:19:24 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 15:59:07 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "minishell.h"
+#include "minishell.h"
 
 char	*rejoinstr(char **tab)
 {
-	int	i;
-	int	j;
-	int	c;
+	int		i;
+	int		j;
+	int		c;
 	char	*res;
 
-	i = 0;
+	i = -1;
 	c = 0;
-	while (tab[i])
+	while (tab[++i])
 	{
-		j = 0;
-		while (tab[i][j])
-		{
+		j = -1;
+		while (tab[i][++j])
 			c++;
-			j++;
-		}
 		c++;
-		i++;
 	}
 	res = NULL;
-	i = 0;
-	while (tab[i])
+	i = -1;
+	while (tab[++i])
 	{
 		res = ft_strjoin(res, tab[i]);
 		if (tab[i + 1])
 			res = ft_strjoin(res, " ");
-		i++;
 	}
 	return (res);
 }
@@ -63,10 +58,33 @@ int	is_builtins(char *cmd)
 	return (0);
 }
 
+int	check_builtins_2(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
+{
+	if (ft_strcmp(cmd->cmd, "pwd") == 0)
+	{
+		ft_pwd(cmd);
+		g_rvalue = 0;
+		return (1);
+	}
+	if (ft_strcmp(cmd->cmd, "cd") == 0)
+	{
+		ft_cd(cmd->arg, env, exp);
+		if (g_rvalue != 1)
+			g_rvalue = 0;
+		return (1);
+	}
+	if (ft_strcmp(cmd->cmd, "export") == 0)
+	{
+		ft_export(cmd->arg, env, exp);
+		if (g_rvalue != 1)
+			g_rvalue = 0;
+		return (1);
+	}
+	return (0);
+}
+
 int	check_builtins(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
 {
-	char	*str;
-
 	if (ft_strcmp(cmd->cmd, "echo") == 0)
 	{
 		ft_echo(cmd, cmd->arg, env);
@@ -86,30 +104,10 @@ int	check_builtins(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
 			g_rvalue = 0;
 		return (1);
 	}
-	if (ft_strcmp(cmd->cmd, "cd") == 0)
-	{
-		ft_cd(cmd->arg, env, exp);
-		if (g_rvalue != 1)
-			g_rvalue = 0;
-		return (1);
-	}
-	if (ft_strcmp(cmd->cmd, "export") == 0)
-	{
-		ft_export(cmd->arg, env, exp);
-		if (g_rvalue != 1)
-			g_rvalue = 0;
-		return (1);
-	}
-	if (ft_strcmp(cmd->cmd, "pwd") == 0)
-	{
-		ft_pwd(cmd);
-		g_rvalue = 0;
-		return (1);
-	}
 	if (ft_strcmp(cmd->cmd, "exit") == 0)
 	{
 		ft_exit(cmd, env, exp, shell);
 		return (1);
 	}
-	return (0);
+	return (check_builtins_2(cmd, env, exp, shell));
 }
