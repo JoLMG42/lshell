@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 16:12:51 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 17:18:13 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 12:42:49 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,19 @@ t_env	**recup_struct_env2(t_env **env, int mode)
 	if (mode == 6)
 		return (tmpexp);
 	return (NULL);
+}
+
+int	lst_tree_size(t_tree **tree)
+{
+	int		i;
+	t_tree	*tmp;
+
+	tmp = (*tree)->next;
+	i = 0;
+	while (tmp)
+	{
+		tmp = tmp->next;
+		i++;
+	}
+	return (i);
 }

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:23:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 17:09:20 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 13:51:34 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,9 @@ typedef struct	s_shell
 {
 	int	pid;
 	int	pipefd[2];
+	int	tmpfd;
+	int	skip;
+	int	first_to_wait;
 	char	*saveope;
 	t_tree *tree;
 	t_env *env;

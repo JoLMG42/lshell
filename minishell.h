@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 18:28:10 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 14:39:12 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,6 +166,9 @@ void    middle_execute(t_cmd **cmd, t_env **env, t_shell *tree, int fd_temp);
 void    cut_middle_execute_free(char **et, char **ext);
 void    first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp);
 void    executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp);
+int     lst_tree_size(t_tree **tree);
+void    exec_no_next(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell);
+void    exec_one_only(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell);
 
 
 #endif

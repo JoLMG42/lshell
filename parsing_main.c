@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 16:02:20 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 14:08:33 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,17 @@ t_shell	*recup_shell(t_shell *shell)
 	return (NULL);
 }
 
+void	init_shell_struct(t_shell *shell)
+{
+	shell->tmpfd = 0;
+	shell->skip = 0;
+	shell->saveope = NULL;
+	shell->first_to_wait = 1;
+	shell->env = NULL;
+	shell->exp = NULL;
+	shell->tree = NULL;
+}
+
 int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 {
 	char	*recup;
@@ -124,9 +135,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 //	if (mode != 2)
 //	{
 		shell = malloc(sizeof(struct s_shell));
-		shell->env = NULL;
-		shell->exp = NULL;
-		shell->tree = NULL;
+		init_shell_struct(shell);
 		recup_shell(shell);
 //	}
 	recup = add_spaces(str, 0, 0);
