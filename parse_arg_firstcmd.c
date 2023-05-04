@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:42:39 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 15:05:45 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:48:04 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,9 @@ t_tree	*cut_parseargfirstcmd(t_tree *tmp, char **tab, t_s *s, char *str)
 	return (tmp);
 }
 
-void	parseargfirstcmd(t_tree **lst, t_env **env)
+void	parseargfirstcmd(t_tree **lst, char **tab, char *str)
 {
 	t_tree	*tmp;
-	char	**tab;
-	char	*str;
 	t_s		s;
 
 	tmp = (*lst)->next;

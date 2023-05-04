@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:46:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 17:00:14 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:06:26 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 	char	*recover;
 	char	**tab;
 
+	tmp = NULL;
 	if (is_builtins(cmd))
 		return (cmd);
 	if (cmd[0] == '/')

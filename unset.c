@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 14:50:25 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 19:39:21 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:14:18 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void	mini_unset(char *str, t_env *tmp)
 {
 	t_env	*tempo;
 
+	(void)str;
 	if (tmp->name)
 		free(tmp->name);
 	if (tmp->content)

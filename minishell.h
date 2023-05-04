@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 17:46:12 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:48:39 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void	parsefirstcmd(t_tree **lst, t_env **env, char *str);
 void	parsearg(t_tree **lst, t_env **env);
 char	*reparse_dol(char *str, t_env **env);;
 int		check_parse_sq_dq(char *str, char c);;
-void	parseargfirstcmd(t_tree **lst, t_env **env);
+void	parseargfirstcmd(t_tree **lst, char **tab, char *str);
 void	parsearg(t_tree **lst, t_env **env);
 void	parsecmd(t_tree **lst, t_env **env, char *str);
 void	setwildcardsfirstcmd(t_tree **lst);

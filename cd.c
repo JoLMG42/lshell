@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 16:36:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 16:09:25 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:01:53 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void	update_pwd_oldpwd2(t_env **env, char *line, char **tab, t_env **exp)
 
 void	update_pwd_oldpwd(t_env **env, char *newpath, int mode, t_env **exp)
 {
-	t_env	*tmp;
 	char	*str;
 	char	**tab;
 	char	*line;

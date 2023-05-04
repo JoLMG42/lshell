@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:55:55 by lcalvie          ###   ########.fr       */
+/*   Updated: 2023/05/04 18:49:26 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	parse_first_cmd(t_tree *tree, t_env *env)
 	ouverturefirstcmd(&tree);
 	setbracelvlfirstcmd(&tree);
 	setwildcardsfirstcmd(&tree);
-	parseargfirstcmd(&tree, &env);
+	parseargfirstcmd(&tree, NULL, NULL);
 }
 
 void	parse_other_cmd(t_tree *tree, t_env *env)

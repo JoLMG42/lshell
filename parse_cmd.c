@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 15:50:39 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 16:03:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:11:46 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ t_tree	*cut_parsecmd(t_tree *tmp, t_s *s, char **tab, char *str)
 {
 	t_env	*tmpenv;
 
+	tmpenv = NULL;
 	if (tab[s->j + 1] && ft_strcmp(tab[s->j + 1], "$") == 0)
 		tmp->cmd_right->cmd = ft_strjoin(tmp->cmd_right->cmd, "999");
 	else if (tab[s->j + 1] && ft_strcmp(tab[s->j + 1], "?") == 0)
@@ -61,11 +62,11 @@ t_tree	*cut_parsecmd(t_tree *tmp, t_s *s, char **tab, char *str)
 
 void	parsecmd(t_tree **lst, t_env **env, char *str)
 {
-	t_env	*tmpenv;
 	t_tree	*tmp;
 	char	**tab;
 	t_s		s;
 
+	(void)env;
 	init_syntax_struct(&s);
 	tmp = (*lst)->next;
 	while (tmp)

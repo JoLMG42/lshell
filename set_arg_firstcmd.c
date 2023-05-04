@@ -6,13 +6,13 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 11:43:57 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 14:34:11 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:44:46 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_tree	*cut_setargfirstcmd_2(t_tree *tmp, t_s *s, char **tab, int n)
+t_tree	*cut_setargfirstcmd_2(t_tree *tmp, char **tab, int n)
 {
 	while (tab[++n])
 	{
@@ -76,7 +76,7 @@ void	setargfirstcmd(t_tree **lst)
 	tmp->cmd_left->cmd = ft_strdup(tab[0]);
 	s.i = 1;
 	tmp = cut_setargfirstcmd(tmp, &s, tab);
-	tmp = cut_setargfirstcmd_2(tmp, &s, tab, 0);
+	tmp = cut_setargfirstcmd_2(tmp, tab, 0);
 	tmp->cmd_left->arg[s.j] = 0;
 	free_tab(tab);
 }

@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/02 17:24:55 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 10:56:22 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:02:04 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ int	cut_check_syntax_3(char **tab, int i)
 int	check_syntax(char **tab)
 {
 	int	i;
-	int	j;
 	int	sq;
 	int	dq;
 

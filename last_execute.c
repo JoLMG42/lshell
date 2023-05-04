@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:51:46 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 17:20:13 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:08:22 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void	cut_last_execute(t_cmd *tmp, t_shell *tree, t_env **env, t_env **exp)
 	char	**envtab;
 	char	**exectab;
 
+	(void)exp;
 	exectab = NULL;
 	envtab = NULL;
 	if (tmp->cmd)
@@ -87,7 +88,6 @@ void	cut_last_execute(t_cmd *tmp, t_shell *tree, t_env **env, t_env **exp)
 void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 {
 	t_cmd	*tmp;
-	int		frk;
 
 	tmp = *cmd;
 	if (!tmp || !tmp->cmd)

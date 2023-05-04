@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:49:06 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:47:27 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,30 @@ void	handler(int sig)
 	}
 }
 
-int	main(int ac, char **av, char **envp)
+int	main_while(t_env *env, t_env *exp)
 {
 	char	*str;
-	t_shell	*shell;
+
+	signal(SIGINT, handler);
+	signal(SIGQUIT, SIG_IGN);
+	str = readline("ft_containers$ ");
+	if (!str)
+		return (0);
+	if (!pars_prompt(str, env, exp, 5))
+		printf("INVALID SYNTAX\n");
+	if (str[0])
+		add_history(str);
+	free(str);
+	return (1);
+}
+
+int	main(int ac, char **av, char **envp)
+{
 	t_env	*env;
 	t_env	*exp;
 
+	(void)ac;
+	(void)av;
 	get_env(&env, envp, 0, &exp);
 	recup_struct_env(&env, 0);
 	recup_struct_env(&exp, 5);
@@ -55,16 +72,8 @@ int	main(int ac, char **av, char **envp)
 	recup_struct_env2(&exp, 5);
 	while (1)
 	{
-		signal(SIGINT, handler);
-		signal(SIGQUIT, SIG_IGN);
-		str = readline("ft_containers$ ");
-		if (!str)
+		if (!main_while(env, exp))
 			break ;
-		if (!pars_prompt(str, env, exp, 5))
-			printf("INVALID SYNTAX\n");
-		if (str[0])
-			add_history(str);
-		free(str);
 	}
 	printf("\n");
 	free_stuff(&env, &exp);

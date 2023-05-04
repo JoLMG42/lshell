@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 17:21:15 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 17:36:55 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:09:25 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,6 @@ void	cut_middle_execute(t_cmd *tmp, t_shell *tree, t_env **env, int fd_temp)
 void	middle_execute(t_cmd **cmd, t_env **env, t_shell *t, int f)
 {
 	t_cmd	*tmp;
-	int		frk;
 
 	tmp = *cmd;
 	if (!tmp->cmd)

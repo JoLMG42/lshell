@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 15:20:29 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 15:49:58 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:12:29 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ t_tree	*cut_parsfirstcmd_3(t_tree *tmp, t_s *s, char **recup)
 {
 	int	j;
 
+	(void)s;
 	j = 0;
 	while (recup[j])
 	{
@@ -62,6 +63,7 @@ t_tree	*cut_parsfirstcmd(t_tree *tmp, t_s *s, char **tab, char *str)
 {
 	t_env	*tmpenv;
 
+	tmpenv = NULL;
 	if (tab[s->j + 1] && ft_strcmp(tab[s->j + 1], "$") == 0)
 		tmp->cmd_left->cmd = ft_strjoin(tmp->cmd_left->cmd, "$$");
 	else if (tab[s->j + 1] && ft_strcmp(tab[s->j + 1], "?") == 0)
@@ -86,6 +88,7 @@ void	parsefirstcmd(t_tree **lst, t_env **env, char *str)
 	t_s		s;
 	char	**recup;
 
+	(void)env;
 	tmp = (*lst)->next;
 	if (!tmp || !tmp->cmd_left->cmd)
 		return ;

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 16:14:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 17:27:53 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:08:55 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ char	*checkegal(char *str, char c)
 char	*checkafteregal(char *str, char c)
 {
 	int		i;
-	char	**tab;
 
 	i = 0;
 	while (str && str[i])
@@ -56,6 +55,7 @@ void	add_little_env(t_env **env, int mode, t_env **exp)
 	char	*line;
 	char	**tab;
 
+	(void)mode;
 	tab = malloc(4);
 	line = ft_strdup("SHLVL=1");
 	tab[0] = ft_strdup(line);
@@ -72,10 +72,8 @@ void	add_little_env(t_env **env, int mode, t_env **exp)
 
 void	get_env(t_env **env, char **envi, int mode, t_env **exp)
 {
-	t_env	*tmp;
 	char	*name;
 	char	*content;
-	char	*str;
 	int		i;
 
 	i = -1;

@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 12:54:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:59:07 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:01:07 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ int	is_builtins(char *cmd)
 
 int	check_builtins_2(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
 {
+	(void)shell;
 	if (ft_strcmp(cmd->cmd, "pwd") == 0)
 	{
 		ft_pwd(cmd);

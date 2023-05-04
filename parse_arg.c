@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 15:07:27 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 16:39:28 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:10:00 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,9 @@ void	parsearg(t_tree **lst, t_env **env)
 	char	**tab;
 	char	*str;
 
+	(void)env;
+	tab = NULL;
+	str = NULL;
 	init_syntax_struct(&s);
 	tmp = (*lst)->next;
 	while (tmp)

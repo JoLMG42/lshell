@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 17:38:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 18:07:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:07:43 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,8 @@ void	cut_first_execute(t_cmd *tmp, t_shell *tree, t_env **env)
 void	first_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 {
 	t_cmd	*tmp;
-	int		frk;
 
+	(void)exp;
 	tmp = *cmd;
 	if (!tmp->cmd)
 		return ;

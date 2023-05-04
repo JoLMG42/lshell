@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:02:15 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:31:16 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:42:11 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ void	exec_ou_ee(t_tree *tmp, t_tree *to_wait, t_env **exp, t_shell *shell)
 {
 	t_env	**env;
 
+	(void)to_wait;
 	env = recup_struct_env2(NULL, 2);
 	if (tmp->cmd_left->bracelvl)
 		pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 18:08:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 21:22:10 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:44:05 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	cut_exec_one_b(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
 	}
 }
 
-void	cut_executone(t_cmd *tmp, t_shell *shell, t_env **env, t_env **exp)
+void	cut_executone(t_cmd *tmp, t_shell *shell, t_env **env)
 {
 	char	**envtab;
 	char	**exectab;
@@ -112,11 +112,10 @@ void	cut_executone(t_cmd *tmp, t_shell *shell, t_env **env, t_env **exp)
 void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 {
 	t_cmd	*tmp;
-	int		frk;
 
 	tmp = *cmd;
 	if (!tmp)
 		return ;
 	tmp = cut_exec_one_in_out(tmp);
-	cut_executone(tmp, shell, env, exp);
+	cut_executone(tmp, shell, env);
 }

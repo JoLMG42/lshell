@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/02 17:14:19 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 16:46:28 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:14:06 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ int	in_opo_check(char c, int opo, int in_opo, int in_actu)
 
 void	cut_check_parse_sq_dq(t_s *s, int opo, char c, char *str)
 {
+	(void)c;
 	if (str[s->i] == opo && !s->dq_opened && !s->sq_opened)
 		s->dq_opened = 1;
 	else if (str[s->i] == opo && s->dq_opened)

@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 19:42:22 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 17:35:37 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:07:21 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 void	export_exp(char *str, t_env **exp)
 {
 	char	*name;
-	char	*tmp;
 
 	if (var_in_exp(str, exp) != NULL)
 		return ;
@@ -57,10 +56,8 @@ void	cut_export_both(t_env **env, t_env **exp, char *content, char *str)
 
 void	export_both(char *str, t_env **env, t_env **exp)
 {
-	char	*name;
 	char	*content;
 	char	*tmp;
-	t_env	*recup;
 
 	tmp = before_egal(str);
 	if (!check_name(tmp))

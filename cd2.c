@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 16:08:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 16:10:52 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:01:42 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ void	create_oldpwd(t_env **env, int mode)
 	char	*line;
 	char	*name;
 
+	name = NULL;
+	str = NULL;
 	if (mode == 0)
 	{
 		str = getcwd(NULL, 0);

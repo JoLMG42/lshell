@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pars_syntax.c                                      :+:      :+:    :+:   */
+/*   add_spaces.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 16:22:42 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 17:48:45 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:41:57 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ int	first_condition(char *str, int i, int in_quote)
 	if ((str[i] == '|' && str[i + 1] == '|')
 		|| (str[i] == '&' && str[i + 1] == '&')
 		|| (str[i] == '<' && str[i + 1] == '<')
-		|| (str[i] == '>' && str[i + 1] == '>')
-		&& in_quote == 0)
+		|| ((str[i] == '>' && str[i + 1] == '>')
+			&& in_quote == 0))
 		return (1);
 	return (0);
 }
@@ -66,6 +66,8 @@ char	*add_spaces(char *str, int i, int j)
 	char	*res;
 	t_s		s;
 
+	(void)i;
+	(void)j;
 	init_syntax_struct(&s);
 	res = add_space_malloc(str);
 	while (str && str[s.i])

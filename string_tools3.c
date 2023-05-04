@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/02 17:41:19 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 16:56:50 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:45:37 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,9 @@ char	**cut_rejointab_2(char **tab, int h, t_s *s, char **res)
 	s->j++;
 	res[s->j] = NULL;
 	res[s->j] = ft_strjoin(res[s->j], tab[h]);
-	if (tab[h + 1] && ft_strcmp(tab[h + 1], "|") == 0
-		|| ft_strcmp(tab[h + 1], "&&") == 0
-		|| ft_strcmp(tab[h + 1], "||") == 0);
+	if (tab[h + 1] && (ft_strcmp(tab[h + 1], "|") == 0
+			|| ft_strcmp(tab[h + 1], "&&") == 0
+			|| ft_strcmp(tab[h + 1], "||") == 0));
 	else
 	{
 		s->j++;
@@ -84,8 +84,9 @@ char	**rejointab(char **tab)
 	res = malloc(sizeof(char *) * (tab_len(tab) + 100));
 	while (tab[++h])
 	{
-		if (tab[h + 1] && ft_strcmp(tab[h], "|") == 0
-			|| ft_strcmp(tab[h], "&&") == 0 || ft_strcmp(tab[h], "||") == 0)
+		if (tab[h + 1] && (ft_strcmp(tab[h], "|") == 0
+				|| ft_strcmp(tab[h], "&&") == 0
+				|| ft_strcmp(tab[h], "||") == 0))
 		{
 			res = cut_rejointab_2(tab, h, &s, res);
 		}
