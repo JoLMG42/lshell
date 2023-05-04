@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 18:51:21 by lcalvie           #+#    #+#             */
-/*   Updated: 2023/05/04 18:51:31 by lcalvie          ###   ########.fr       */
+/*   Updated: 2023/05/04 18:58:52 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ int	checkfile_all_in(char *file, char *flag)
 
 int	checkfile(char *file, char *flag)
 {
-	char	**tab;
 	char	*recup;
 	int		count;
 	int		count2;

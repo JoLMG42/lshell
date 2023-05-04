@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/14 15:30:58 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:50:58 by lcalvie          ###   ########.fr       */
+/*   Updated: 2023/05/04 18:58:07 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ void	check_wildcards_first_cmd(t_tree **lst)
 	char	**split;
 
 	tmp = (*lst)->next;
+	split = NULL;
 	if (tmp->cmd_left->cmd)
 		split = ft_supersplit(tmp->cmd_left->cmd, ' ');
 	i = 0;

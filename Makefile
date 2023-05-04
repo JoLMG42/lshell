@@ -6,7 +6,7 @@
 #    By: lguillau <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/14 14:27:36 by lguillau          #+#    #+#              #
-#    Updated: 2023/05/04 17:59:25 by jtaravel         ###   ########.fr        #
+#    Updated: 2023/05/04 18:58:37 by jtaravel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -78,6 +78,9 @@ FILES	=	add_sapce_dol.c\
 			unset.c \
 			wait.c \
 			wildcards.c \
+			wildcards_2.c \
+			wildcards_3.c \
+			wildcards_4.c \
 
 
 
