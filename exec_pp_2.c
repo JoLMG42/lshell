@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:07:07 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:07:50 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:02:57 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@ void	exec_sec_grp_pp(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 	if (tmp->cmd_right->bracelvl)
 		pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
 	else
+	{
 		middle_execute(&tmp->cmd_right, env, shell, shell->tmpfd);
+	}
 }
 
 /* exec 2nd group end pipe serie */

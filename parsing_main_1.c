@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 00:44:43 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 10:07:49 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void	parse_first_cmd(t_tree *tree, t_env *env)
 {
 	parsefirstcmd(&tree, &env, NULL);
 	setargfirstcmd(&tree);
+	printf("cmd = %s\n", tree->next->cmd_left->cmd);
 	ouverturefirstcmd(&tree);
 	setbracelvlfirstcmd(&tree);
 	setwildcardsfirstcmd(&tree);

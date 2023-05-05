@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:03:37 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:11:34 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	i = mini_init(shell, to_wait);
 	while (tmp)
 	{
-		if (!tmp->cmd_right->cmd)
+		if (i == 0 && !tmp->cmd_right->cmd && !tmp->next)
 			return (exec_one_only(tmp, env, exp, shell));
 		if (i == 0)
 			to_wait = exec_first_pass(tmp, to_wait, exp, shell);

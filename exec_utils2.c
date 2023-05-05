@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:46:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:06:26 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:18:16 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ char	*cut_recup_cmd(char **newpath, char *cmd, char *tmp, int i)
 		recover = NULL;
 	}
 	printf("%s : command not found\n", cmd);
-	free(cmd);
 	if (recover)
 		free(recover);
 	free_tab(newpath);
@@ -57,4 +56,14 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 	free_tab(tab);
 	recover = NULL;
 	return (cut_recup_cmd(newpath, cmd, tmp, i));
+}
+
+void	cut_middle_error(char *str, t_shell *tree)
+{
+	putstr_fd_echo("minishell: ", 2);
+	putstr_fd_echo(str, 2);
+	putstr_fd_echo(": No such file or directory\n", 2);
+	free_all(recup_struct_env2(NULL, 2),
+		recup_struct_env2(NULL, 6), tree);
+	exit(1);
 }

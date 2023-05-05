@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 11:10:53 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 11:18:11 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 10:10:13 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,14 @@ t_tree	*cut_ouvertureredir(t_tree *tmp, char **tab, int i)
 	{
 		tmp->cmd_right->name_in = ft_strdup(tab[i + 1]);
 		tmp->cmd_right->mode_open = 1;
-		tmp->cmd_right->cmd = recalculcmd(tmp->cmd_right->cmd,
-				tmp->cmd_right->name_in, "<");
+		if (tab[i + 2])
+			tmp->cmd_right->cmd = recalculcmd(tmp->cmd_right->cmd,
+					tmp->cmd_right->name_in, "<");
+		else
+		{
+			free(tmp->cmd_right->cmd);
+			tmp->cmd_right->cmd = NULL;
+		}
 	}
 	return (tmp);
 }

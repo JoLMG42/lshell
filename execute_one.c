@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 18:08:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:57:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:22:17 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,10 @@ t_cmd	*cut_exec_one_in_out(t_cmd *tmp)
 
 void	cut_execone_fork(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
 {
-	tmp->pid = fork();
 	if (tmp->pid == 0)
 	{
+		if (tmp->fd_in == -1)
+			exit (1);
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
 		if (!tmp->cmd || execve(tmp->cmd, exectab, envtab) == -1)
@@ -53,8 +54,7 @@ void	cut_execone_fork(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
 		if (tmp->fd_out != 1)
 			close(tmp->fd_out);
 	}
-	free_tab(exectab);
-	free_tab(envtab);
+	cut_middle_execute_free(envtab, exectab);
 }
 
 void	cut_exec_one_b(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
@@ -99,13 +99,11 @@ void	cut_executone(t_cmd *tmp, t_shell *shell, t_env **env)
 		}
 	}
 	if (tmp->cmd && is_builtins(tmp->cmd))
-	{
-		cut_exec_one_b(tmp, envtab, exectab, shell);
-		return ;
-	}
+		return (cut_exec_one_b(tmp, envtab, exectab, shell));
 	if (tmp->cmd)
 		del_sq_dq_arg(exectab);
 	g_rvalue = 0;
+	tmp->pid = fork();
 	cut_execone_fork(tmp, envtab, exectab, shell);
 }
 
@@ -119,4 +117,11 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 		return ;
 	tmp = cut_exec_one_in_out(tmp);
 	cut_executone(tmp, shell, env);
+	if (tmp->fd_in == -1)
+	{
+		putstr_fd_echo("minishell: ", 2);
+		putstr_fd_echo(tmp->name_in, 2);
+		putstr_fd_echo(": No such file or directory\n", 2);
+		g_rvalue = 1;
+	}
 }

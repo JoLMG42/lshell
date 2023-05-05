@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 00:43:48 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:17:42 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,5 +211,6 @@ void	export_no_arg(t_env **exp);
 void	join_content(char *content, char *name, t_env **env, t_env **exp);
 void	cut_export_join_error(char *tmp);
 void	cut_export_join_unset(t_env **env, t_env **exp, t_env *recup);
+void	cut_middle_error(char *str, t_shell *tree);
 
 #endif

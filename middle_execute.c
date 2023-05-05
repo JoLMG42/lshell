@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 17:21:15 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:09:25 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:17:47 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,9 @@ void	cut_middle_execute(t_cmd *tmp, t_shell *tree, t_env **env, int fd_temp)
 
 	envtab = NULL;
 	exectab = NULL;
+	tmp = check_middle_in_out(tmp, tree, fd_temp);
+	if (tmp->fd_in == -1)
+		cut_middle_error(tmp->name_in, tree);
 	if (tmp->cmd)
 	{
 		ft_suppr_dq_sq(tmp->cmd);
@@ -87,7 +90,6 @@ void	cut_middle_execute(t_cmd *tmp, t_shell *tree, t_env **env, int fd_temp)
 		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
 		envtab = list_to_tab(env);
 	}
-	tmp = check_middle_in_out(tmp, tree, fd_temp);
 	if (tmp->cmd)
 		del_sq_dq_arg(exectab);
 	if (dup2(tmp->fd_in, 0) == -1)
@@ -103,9 +105,10 @@ void	middle_execute(t_cmd **cmd, t_env **env, t_shell *t, int f)
 	t_cmd	*tmp;
 
 	tmp = *cmd;
-	if (!tmp->cmd)
+	if (!tmp)
 		return ;
-	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
+	if (tmp->cmd)
+		tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 	tmp->pid = fork();
 	if (tmp->pid == 0)
 		cut_middle_execute(tmp, t, env, f);

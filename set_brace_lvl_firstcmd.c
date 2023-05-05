@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 11:28:46 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 11:35:41 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 10:04:09 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	setbracelvlfirstcmd(t_tree **lst)
 	tmp = (*lst)->next;
 	if (!tmp)
 		return ;
-	if (!tmp->cmd_left->cmd)
+	if (!tmp->cmd_left || !tmp->cmd_left->cmd)
 		return ;
 	init_syntax_struct(&s);
 	tab = ft_supersplit2(tmp->cmd_left->cmd, ' ');

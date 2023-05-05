@@ -6,7 +6,7 @@
 #    By: lguillau <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/14 14:27:36 by lguillau          #+#    #+#              #
-#    Updated: 2023/05/04 18:58:37 by jtaravel         ###   ########.fr        #
+#    Updated: 2023/05/05 11:25:07 by jtaravel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -116,7 +116,7 @@ ${NAME}:	${OBJS}
 all:		${NAME}
 
 clean:
-		@${RM} ${O_PATH}
+		@${RM} ${OBJS} #${O_PATH}
 		@echo "${SRED}Removing${S} ${IGREY}${O_PATH}${S} 🗑️"
 
 fclean:		clean

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:51:46 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:08:22 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 11:14:13 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,14 @@ t_cmd	*check_in_out(t_cmd *tmp, t_shell *tree)
 		tmp->fd_in = open(tmp->name_in, O_RDONLY, 0644);
 	else
 		tmp->fd_in = tree->pipefd[0];
+	if (tmp->fd_in == -1)
+	{
+		putstr_fd_echo("minishell: ", 2);
+		putstr_fd_echo(tmp->name_in, 2);
+		putstr_fd_echo(": No such file or directory\n", 2);
+		free_all(recup_struct_env2(NULL, 2), recup_struct_env2(NULL, 6), tree);
+		exit(1);
+	}
 	return (tmp);
 }
 
@@ -67,6 +75,7 @@ void	cut_last_execute(t_cmd *tmp, t_shell *tree, t_env **env, t_env **exp)
 	(void)exp;
 	exectab = NULL;
 	envtab = NULL;
+	tmp = check_in_out(tmp, tree);
 	if (tmp->cmd)
 	{
 		ft_suppr_dq_sq(tmp->cmd);
@@ -75,7 +84,6 @@ void	cut_last_execute(t_cmd *tmp, t_shell *tree, t_env **env, t_env **exp)
 		exectab = fusioncmdarg(tmp->cmd, tmp->arg);
 		envtab = list_to_tab(env);
 	}
-	tmp = check_in_out(tmp, tree);
 	if (tmp->cmd)
 		del_sq_dq_arg(exectab);
 	if (dup2(tmp->fd_in, 0) == -1)
@@ -90,12 +98,15 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 	t_cmd	*tmp;
 
 	tmp = *cmd;
-	if (!tmp || !tmp->cmd)
+	if (!tmp)
 		return ;
-	tmp->cmd = recup_cmd(tmp->cmd, env, 0);
+	if (tmp->cmd)
+		tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 	tmp->pid = fork();
 	if (tmp->pid == 0)
+	{
 		cut_last_execute(tmp, tree, env, exp);
+	}
 	else
 	{
 		if (tree->pipefd[0] != 0)
