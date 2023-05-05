@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 16:36:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:01:53 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 18:25:27 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ void	cd_moins(t_env **env)
 	if (!str)
 	{
 		putstr_fd_echo("minishell: cd: OLDPWD not set\n", 2);
+		g_rvalue = 1;
 		return ;
 	}
 	if (chdir(str) == -1)
@@ -63,6 +64,7 @@ void	cd_moins(t_env **env)
 		putstr_fd_echo("minishell: cd: ", 2);
 		putstr_fd_echo(str, 2);
 		putstr_fd_echo(": No such file or directory\n", 2);
+		g_rvalue = 1;
 		free(str);
 		return ;
 	}
@@ -85,6 +87,7 @@ void	cd_arg(char *str, t_env **env, t_env **exp)
 		putstr_fd_echo("minishell: cd: ", 2);
 		putstr_fd_echo(str, 2);
 		putstr_fd_echo(": No such file or directory\n", 2);
+		g_rvalue = 1;
 		return ;
 	}
 	update_pwd_oldpwd(env, str, 2, exp);
@@ -97,6 +100,7 @@ void	ft_cd(char **tab, t_env **env, t_env **exp)
 	else if (tab_len(tab) > 1)
 	{
 		putstr_fd_echo("minishell: cd: too many arguments\n", 2);
+		g_rvalue = 1;
 	}
 	else
 		cd_arg(tab[0], env, exp);

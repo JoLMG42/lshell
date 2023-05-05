@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:43:24 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:45:35 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 15:29:57 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,11 +107,10 @@ void	heredoc_nocmd(char *limiter, t_env **env, t_env **exp, t_shell *shell)
 		ft_lstclear_env(env, del);
 		ft_lstclear_env(exp, del);
 		exit(0);
+		exit(0);
 	}
 	else
-	{
 		waitpid(frk, &value, 0);
-	}
 }
 
 void	handler_heredoc(int sig)

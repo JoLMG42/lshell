@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:44:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 16:14:18 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 18:45:03 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void	ft_wait(t_cmd **cmd)
 	value = 0;
 	cmd_lst = *cmd;
 	if (!cmd_lst)
+		return ;
+	if (cmd_lst->cmd && is_builtins(cmd_lst->cmd))
 		return ;
 	waitpid(cmd_lst->pid, &value, 0);
 	if (WIFSIGNALED(value))

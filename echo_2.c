@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 18:53:31 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 18:56:28 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 15:30:05 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,11 @@ void	ft_suppr(char **tab, t_env **env)
 	int		i;
 	char	*tmp;
 
+	(void)env;
 	i = 0;
 	while (tab[i])
 	{
 		tmp = ft_strdup(tab[i]);
-		tab[i] = reparse_dol(tab[i], env);
 		if (ft_strcmp(tab[i], tmp) == 0)
 			ft_suppr_dq_sq(tab[i]);
 		free(tmp);

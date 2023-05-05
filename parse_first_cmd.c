@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 15:20:29 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:12:29 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 15:25:45 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,14 +81,11 @@ t_tree	*cut_parsfirstcmd(t_tree *tmp, t_s *s, char **tab, char *str)
 	return (tmp);
 }
 
-void	parsefirstcmd(t_tree **lst, t_env **env, char *str)
+void	parsefirstcmd(t_tree **lst, char **recup, char **tab, char *str)
 {
 	t_tree	*tmp;
-	char	**tab;
 	t_s		s;
-	char	**recup;
 
-	(void)env;
 	tmp = (*lst)->next;
 	if (!tmp || !tmp->cmd_left->cmd)
 		return ;
@@ -104,8 +101,11 @@ void	parsefirstcmd(t_tree **lst, t_env **env, char *str)
 	init_syntax_struct(&s);
 	s.j = -1;
 	while (tab && tab[++s.j] && s.j <= tab_len(tab))
+	{
+		if (tab[s.j][0] == '\"')
+			tab[s.j] = little_cut_parse_first(tab, &s);
 		tmp = cut_parsfirstcmd_2(tmp, &s, tab, str);
+	}
 	tmp = cut_parsfirstcmd_3(tmp, &s, recup);
-	free_tab(recup);
-	free_tab(tab);
+	cut_middle_execute_free(recup, tab);
 }

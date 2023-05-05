@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 11:17:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 17:35:39 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ char	*cut_add_space_while(char *res, char *str, int i, int j);
 int		add_space_quote(int in_quote, char *str, int i);
 int		check_syntax(char **tab);
 char	**rejointab(char **tab);
-void	parsefirstcmd(t_tree **lst, t_env **env, char *str);
+void	parsefirstcmd(t_tree **lst, char **recup, char **tab, char *str);
 void	parsearg(t_tree **lst, t_env **env);
 char	*reparse_dol(char *str, t_env **env);;
 int		check_parse_sq_dq(char *str, char c);;
@@ -212,5 +212,7 @@ void	join_content(char *content, char *name, t_env **env, t_env **exp);
 void	cut_export_join_error(char *tmp);
 void	cut_export_join_unset(t_env **env, t_env **exp, t_env *recup);
 void	cut_middle_error(char *str, t_shell *tree);
+char	*little_cut_parse_first(char **tab, t_s *s);
+int	*recup_flag(int *i);
 
 #endif

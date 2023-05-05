@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 10:07:49 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 17:19:44 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ void	parse_while(char **tab, t_tree *tree, int *i)
 
 void	parse_first_cmd(t_tree *tree, t_env *env)
 {
-	parsefirstcmd(&tree, &env, NULL);
+	(void)env;
+	parsefirstcmd(&tree, NULL, NULL, NULL);
 	setargfirstcmd(&tree);
-	printf("cmd = %s\n", tree->next->cmd_left->cmd);
 	ouverturefirstcmd(&tree);
 	setbracelvlfirstcmd(&tree);
 	setwildcardsfirstcmd(&tree);
@@ -61,7 +61,7 @@ void	parse_other_cmd(t_tree *tree, t_env *env)
 
 void	start_exec(t_tree *tree, t_shell *shell, t_env *env, t_env *exp)
 {
-	t_tree		*u;
+	//t_tree		*u;
 
 	recup_struct(&tree, 0);
 	shell->tree = tree;
@@ -69,8 +69,8 @@ void	start_exec(t_tree *tree, t_shell *shell, t_env *env, t_env *exp)
 	shell->exp = exp;
 	exec(&tree, &env, &exp, shell);
 	ft_lstcleartree(&tree, del);
-	u = recup_struct(NULL, 10);
-	ft_lstcleartree(&u, del);
+	//u = recup_struct(NULL, 10);
+	//ft_lstcleartree(&u, del);
 	recup_struct(NULL, 3);
 }
 
@@ -86,9 +86,17 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 		flag = 1;
 	if (mode == 2)
 	{
+		t_shell	*bbb;
+		bbb = recup_shell(NULL);
+		free(bbb);
+		t_tree	*aaa;
+		aaa = recup_struct(NULL, 1);
+		ft_lstcleartree(&aaa, del);
 		flag = 0;
 	}
 	init_shell_and_tab(str, &shell, &tab);
+	if (mode == 2)
+		free(str);
 	if (!tab)
 		return (g_rvalue == 667);
 	tree = ft_lstnewtree(NULL, NULL, NULL);
@@ -97,7 +105,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 	parse_first_cmd(tree, env);
 	if (i > 1)
 		parse_other_cmd(tree, env);
-	debug_print(tree);
+	//debug_print(tree);
 	start_exec(tree, shell, env, exp);
 	free(shell);
 	return (1);

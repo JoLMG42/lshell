@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 18:58:24 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:07:55 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 17:42:13 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,26 @@ t_tree	*dup_tree(t_tree **adup)
 	t_tree	*ret;
 
 	tmp = (*adup);
-	ret = ft_lstnewtree(NULL, NULL, NULL);
+	ret = malloc(sizeof(struct s_tree));
+	ret = ft_lstnewtree((tmp->ope),
+			ft_lstnew(tmp->cmd_left->cmd), ft_lstnew(tmp->cmd_right->cmd));
+	tmp = tmp->next;
 	while (tmp)
 	{
-		ft_lstadd_backtree(&ret, ft_lstnewtree(ft_strdup(tmp->ope),
+		ft_lstadd_backtree(&ret, ft_lstnewtree((tmp->ope),
 				ft_lstnew(tmp->cmd_left->cmd), ft_lstnew(tmp->cmd_right->cmd)));
 		tmp = tmp->next;
 	}
 	return (ret);
+}
+
+int	*recup_flag(int *i)
+{
+	static int *tmp;
+
+	if (i)
+		tmp = i;
+	if (!i)
+		return (tmp);
+	return (0);
 }

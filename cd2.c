@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 16:08:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:01:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 18:24:48 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@ void	cd_no_arg(t_env **env, t_env **exp)
 
 	str = recup_content_env("HOME", env);
 	if (!str)
+	{
 		putstr_fd_echo("minishell: cd: HOME not set\n", 2);
+		g_rvalue = 1;
+	}
 	if (chdir(str) == -1)
 	{
 		free(str);

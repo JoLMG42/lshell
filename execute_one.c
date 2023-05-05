@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 18:08:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 11:22:17 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 18:31:06 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,11 @@ void	cut_execone_fork(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
 	if (tmp->pid == 0)
 	{
 		if (tmp->fd_in == -1)
+		{
+			free_all(recup_struct_env2(NULL, 2),
+				recup_struct_env2(NULL, 6), s);
 			exit (1);
+		}
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
 		if (!tmp->cmd || execve(tmp->cmd, exectab, envtab) == -1)
@@ -115,6 +119,11 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 	tmp = *cmd;
 	if (!tmp)
 		return ;
+	if (tmp->is_hd && !tmp->cmd && ft_strcmp(tmp->limiter, tmp->name_in) == 0)
+	{
+		tmp->pid = 0;
+		return ;
+	}
 	tmp = cut_exec_one_in_out(tmp);
 	cut_executone(tmp, shell, env);
 	if (tmp->fd_in == -1)

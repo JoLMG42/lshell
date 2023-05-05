@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/11 11:26:47 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 16:36:59 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 15:25:41 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,4 +35,14 @@ char	*ft_strdup(char *s)
 void	del(void *data)
 {
 	free(data);
+}
+
+char	*little_cut_parse_first(char **tab, t_s *s)
+{
+	tab[s->j] = ft_suppr_dq_sq(tab[s->j]);
+	if (recup_content_env(tab[s->j] + 1,
+			recup_struct_env2(NULL, 2)) != NULL)
+		tab[s->j] = recup_content_env(tab[s->j] + 1,
+				recup_struct_env2(NULL, 2));
+	return (tab[s->j]);
 }

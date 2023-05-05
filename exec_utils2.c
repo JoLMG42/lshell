@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:46:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 11:18:16 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 13:15:47 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ char	*cut_recup_cmd(char **newpath, char *cmd, char *tmp, int i)
 	printf("%s : command not found\n", cmd);
 	if (recover)
 		free(recover);
+	free(cmd);
+	cmd = NULL;
 	free_tab(newpath);
 	return (NULL);
 }

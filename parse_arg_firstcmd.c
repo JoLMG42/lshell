@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:42:39 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 00:46:11 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/05 15:19:09 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,16 @@ t_tree	*cut_parseargfirstcmd(t_tree *tmp, char **tab, t_s *s, char *str)
 	return (tmp);
 }
 
+char	*little_cut_parse_first_cmd(char **tab, t_s *s)
+{
+	tab[s->j] = ft_suppr_dq_sq(tab[s->j]);
+	if (recup_content_env(tab[s->j] + 1,
+			recup_struct_env2(NULL, 2)) != NULL)
+		tab[s->j] = recup_content_env(tab[s->j] + 1,
+				recup_struct_env2(NULL, 2));
+	return (tab[s->j]);
+}
+
 void	parseargfirstcmd(t_tree **lst, char **tab, char *str)
 {
 	t_tree	*tmp;
@@ -91,6 +101,8 @@ void	parseargfirstcmd(t_tree **lst, char **tab, char *str)
 		s.j = -1;
 		while (tab[++s.j] && s.j <= tab_len(tab))
 		{
+			if (tab[s.j][0] == '\"' && tab[s.j][1] != '\'')
+				tab[s.j] = little_cut_parse_first_cmd(tab, &s);
 			tmp = cut_parseargfirstcmd_3(tmp, tab, &s, str);
 		}
 		s.braces = 0;
