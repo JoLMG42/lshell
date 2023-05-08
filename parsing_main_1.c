@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 16:25:10 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 22:20:44 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,23 +73,12 @@ void	start_exec(t_tree *tree, t_shell *shell, t_env *env, t_env *exp)
 int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 {
 	char		**tab;
-	static int	flag;
 	t_tree		*tree;
 	t_shell		*shell;
 	int			i;
 
-	if (mode == 5)
-		flag = 1;
 	if (mode == 2)
-	{
-		t_shell	*bbb;
-		bbb = recup_shell(NULL);
-		shell = bbb;
-		t_tree	*aaa;
-		aaa = recup_struct(NULL, 1);
-		ft_lstcleartree(&aaa, del);
-		flag = 0;
-	}
+		braces_parsing(&shell);
 	init_shell_and_tab(str, &shell, &tab, mode);
 	if (mode == 2)
 		free(str);
@@ -101,7 +90,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 	parse_first_cmd(tree, env);
 	if (i > 1)
 		parse_other_cmd(tree, env);
-	//debug_print(tree);
+	debug_print(tree);
 	start_exec(tree, shell, env, exp);
 	free(shell);
 	return (1);

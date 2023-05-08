@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/11 11:26:47 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 18:07:45 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 21:53:40 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,15 @@ void	cut_e_one_f_2(t_cmd *tmp, t_shell *s, char **envtab, char **et)
 		recup_struct_env2(NULL, 6), s);
 	cut_middle_execute_free(envtab, et);
 	exit(127);
+}
+
+void	braces_parsing(t_shell **shell)
+{
+	t_shell	*recup;
+	t_tree	*cpy;
+
+	recup = recup_shell(NULL);
+	*shell = recup;
+	cpy = recup_struct(NULL, 1);
+	ft_lstcleartree(&cpy, del);
 }

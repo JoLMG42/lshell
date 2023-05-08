@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/02 18:01:09 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 11:02:21 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 23:17:39 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,19 @@ char	*cut_recalculcmd(char *cmd, char *ope, char *str)
 	char	*res;
 	int		i;
 
+	res = NULL;
+	if (!cmd)
+		return (res);
 	tab = ft_supersplit(cmd, ' ');
 	i = 0;
 	while (tab[i])
 	{
 		if (str && ft_strcmp(tab[i], str) && ft_strcmp(tab[i], ope))
+		{
+			if (res)
+				free(res);
 			res = ft_strdup(tab[i]);
+		}
 		i++;
 	}
 	free_tab(tab);

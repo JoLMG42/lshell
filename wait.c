@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:44:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 18:00:38 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 22:02:07 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ void	ft_wait(t_cmd **cmd)
 	if (!cmd_lst)
 		return ;
 	waitpid(cmd_lst->pid, &value, 0);
+	if (cmd_lst->cmd && is_builtins(cmd_lst->cmd))
+		return ;
 	if (WIFSIGNALED(value))
 		g_rvalue = (WTERMSIG(value) + 128);
 	else

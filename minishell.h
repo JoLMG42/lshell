@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 18:07:26 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 21:54:13 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,5 +217,6 @@ int		*recup_flag(int *i);
 void	braces_enginer(char *cmd, t_env **env, t_env **exp);
 int		recup_status_braces(int i);
 void	cut_e_one_f_2(t_cmd *tmp, t_shell *s, char **envtab, char **et);
+void	braces_parsing(t_shell **shell);
 
 #endif
