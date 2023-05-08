@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 16:36:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 18:25:27 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 17:48:03 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void	update_pwd_oldpwd(t_env **env, char *newpath, int mode, t_env **exp)
 	if (!str)
 		str = getcwd(NULL, 0);
 	line = ft_strjoin(line, str);
-	free(str);
 	update_pwd_oldpwd2(env, line, tab, exp);
 }
 
@@ -70,7 +69,6 @@ void	cd_moins(t_env **env)
 	}
 	putstr_fd_echo(str, 1);
 	putstr_fd_echo("\n", 1);
-	free(str);
 	return ;
 }
 

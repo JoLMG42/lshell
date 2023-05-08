@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:03:39 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:05:21 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 16:21:03 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void	exec_ee_left(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 {
 	if (tmp->cmd_left->bracelvl)
-		pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
+		braces_enginer(tmp->cmd_left->cmd, env, exp);
 	else
 	{
 		exec_and(&tmp->cmd_left, env, exp, shell);
@@ -35,7 +35,7 @@ t_tree	*exec_ee_right(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell)
 	if (ft_strcmp(tmp->next->ope, "|") == 0)
 	{
 		if (tmp->cmd_right->bracelvl)
-			pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
+			braces_enginer(tmp->cmd_right->cmd, env, exp);
 		else
 		{
 			first_execute(&tmp->cmd_right, env, shell, exp);
@@ -46,7 +46,7 @@ t_tree	*exec_ee_right(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell)
 	else
 	{
 		if (tmp->cmd_right->bracelvl)
-			pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
+			braces_enginer(tmp->cmd_right->cmd, env, exp);
 		else
 		{
 			exec_and(&tmp->cmd_right, env, exp, shell);

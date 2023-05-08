@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 18:58:24 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 17:42:13 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 18:00:08 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ t_tree	*dup_tree(t_tree **adup)
 
 int	*recup_flag(int *i)
 {
-	static int *tmp;
+	static int	*tmp;
 
 	if (i)
 		tmp = i;

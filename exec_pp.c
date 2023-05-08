@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:02:15 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 11:05:15 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 16:22:39 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_tree	*exec_pp_pp(t_tree *tmp, t_tree *to_wait, t_env **exp, t_shell *shell)
 
 	env = recup_struct_env2(NULL, 2);
 	if (tmp->cmd_left->bracelvl)
-		pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
+		braces_enginer(tmp->cmd_left->cmd, env, exp);
 	else
 	{
 		first_execute(&tmp->cmd_left, env, shell, exp);
@@ -28,7 +28,7 @@ t_tree	*exec_pp_pp(t_tree *tmp, t_tree *to_wait, t_env **exp, t_shell *shell)
 		pipe(shell->pipefd);
 	}
 	if (tmp->cmd_right->bracelvl)
-		pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
+		braces_enginer(tmp->cmd_right->cmd, env, exp);
 	else
 	{
 		middle_execute(&tmp->cmd_right, env, shell, shell->tmpfd);
@@ -46,11 +46,11 @@ void	exec_ou_ee(t_tree *tmp, t_tree *to_wait, t_env **exp, t_shell *shell)
 	(void)to_wait;
 	env = recup_struct_env2(NULL, 2);
 	if (tmp->cmd_left->bracelvl)
-		pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
+		braces_enginer(tmp->cmd_right->cmd, env, exp);
 	else
 		first_execute(&tmp->cmd_left, env, shell, exp);
 	if (tmp->cmd_right->bracelvl)
-		pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
+		braces_enginer(tmp->cmd_right->cmd, env, exp);
 	else
 		last_execute(&tmp->cmd_right, env, shell, exp);
 	if (!tmp->cmd_left->bracelvl)

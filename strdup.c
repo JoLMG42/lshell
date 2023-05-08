@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/11 11:26:47 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 15:25:41 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 18:07:45 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,14 @@ char	*little_cut_parse_first(char **tab, t_s *s)
 		tab[s->j] = recup_content_env(tab[s->j] + 1,
 				recup_struct_env2(NULL, 2));
 	return (tab[s->j]);
+}
+
+void	cut_e_one_f_2(t_cmd *tmp, t_shell *s, char **envtab, char **et)
+{
+	if (tmp->cmd)
+		check_slash(tmp->cmd, 1);
+	free_all(recup_struct_env2(NULL, 2),
+		recup_struct_env2(NULL, 6), s);
+	cut_middle_execute_free(envtab, et);
+	exit(127);
 }

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 17:57:50 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 18:06:56 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,20 @@ int	main_while(t_env *env, t_env *exp)
 	char	*str;
 	int		i;
 
+	str = NULL;
+	i = recup_status_braces(0);
 	signal(SIGINT, handler);
 	signal(SIGQUIT, SIG_IGN);
-	str = readline("ft_containers$ ");
+	if (i != 9)
+		str = readline("ft_containers$ ");
+	else
+	{
+		str = readline("");
+		recup_status_braces(-1);
+	}
 	if (!str)
 		return (0);
-	i = pars_prompt(str, env, exp, 5);
-	if (i == 0)
+	if (!pars_prompt(str, env, exp, 5))
 		printf("INVALID SYNTAX\n");
 	if (str[0])
 		add_history(str);

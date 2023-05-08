@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 17:38:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 11:23:14 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 17:58:29 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ void	cut_first_execute2(t_cmd *tmp, char **et, char **ext, t_shell *t)
 			check_slash(tmp->cmd, 1);
 		free_all(recup_struct_env2(NULL, 2),
 			recup_struct_env2(NULL, 6), t);
+		cut_middle_execute_free(et, ext);
 		exit(127);
 	}
 }

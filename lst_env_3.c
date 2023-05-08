@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 16:14:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:08:55 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 17:35:16 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ char	*checkegal(char *str, char c)
 		res[i] = str[i];
 		i++;
 	}
+	free(res);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:58:02 by lcalvie           #+#    #+#             */
-/*   Updated: 2023/05/04 15:58:11 by lcalvie          ###   ########.fr       */
+/*   Updated: 2023/05/08 18:05:49 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,15 @@ void	init_shell_struct(t_shell *shell)
 t_shell	*recup_shell(t_shell *shell)
 {
 	static t_shell	*tmp;
+	static int		c;
 
-	if (!shell)
+	if (!shell && c == 1)
 		return (tmp);
 	if (shell)
+	{
+		c = 1;
 		tmp = shell;
+	}
 	return (NULL);
 }
 
@@ -61,10 +65,13 @@ char	**pars_first_check(char *str, char **tab)
 	return (tab);
 }
 
-void	init_shell_and_tab(char *str, t_shell **shell, char ***tab)
+void	init_shell_and_tab(char *str, t_shell **shell, char ***tab, int mode)
 {
-	*shell = malloc(sizeof(struct s_shell));
-	init_shell_struct(*shell);
+	if (mode != 2)
+	{
+		*shell = malloc(sizeof(struct s_shell));
+		init_shell_struct(*shell);
+	}
 	recup_shell(*shell);
 	*tab = pars_first_check(str, NULL);
 	if (!(*tab))

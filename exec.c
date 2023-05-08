@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 11:11:34 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 18:05:28 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,12 @@ t_tree	*exec_after(t_tree *tmp, t_tree *to_wait, t_env **exp, t_shell *shell)
 t_tree	*exec_end_while(t_tree *tmp, t_shell *shell)
 {
 	tmp = skip_pipe(tmp, shell);
-	if (tmp && tmp->cmd_left->is_hd)
+	if (tmp && tmp->cmd_left && tmp->cmd_left->is_hd)
 	{
 		if (tmp->cmd_left->name_in)
 			unlink(tmp->cmd_left->name_in);
 	}
-	if (tmp && tmp->cmd_right->is_hd)
+	if (tmp && tmp->cmd_right && tmp->cmd_right->is_hd)
 	{
 		if (tmp->cmd_right->name_in)
 			unlink(tmp->cmd_right->name_in);

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 16:08:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 18:24:48 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 17:47:56 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void	cd_no_arg(t_env **env, t_env **exp)
 		return ;
 	}
 	update_pwd_oldpwd(env, str, 1, exp);
-	free(str);
 }
 
 char	*recup_content_env(char *find, t_env **env)
@@ -39,7 +38,7 @@ char	*recup_content_env(char *find, t_env **env)
 	while (tmp)
 	{
 		if (ft_strcmp(find, tmp->name) == 0)
-			return (ft_strdup(tmp->content));
+			return ((tmp->content));
 		tmp = tmp->next;
 	}
 	return (NULL);

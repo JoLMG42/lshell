@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:30:37 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 17:31:16 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 17:41:53 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	export_no_arg(t_env **exp)
 	while (idx)
 	{
 		if (!check_egal(idx->line))
-			printf("export %s\n", idx->name);
+			printf("export %s\n", idx->line);
 		else
 			printf("export %s=\"%s\"\n", idx->name, idx->content);
 		idx = idx->next;

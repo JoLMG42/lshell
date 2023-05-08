@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 14:33:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 17:48:55 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 17:22:35 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	exec_one_only(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 	if (tmp->cmd_right->cmd == NULL)
 	{
 		if (tmp->cmd_left->bracelvl)
-			pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
+			braces_enginer(tmp->cmd_left->cmd, env, exp);
 		else
 		{
 			executeone(&tmp->cmd_left, env, shell, exp);
@@ -35,37 +35,13 @@ void	exec_one_only(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 
 void	e_no_next_pp(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 {
-	char	*ttt;
-
 	if (tmp->cmd_left->bracelvl)
-		pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
+		braces_enginer(tmp->cmd_left->cmd, env, exp);
 	else
 		first_execute(&tmp->cmd_left, env, shell, exp);
 	if (tmp->cmd_right->bracelvl)
 	{
-		int frk = fork();
-		if (frk == 0)
-		{
-			ttt = ft_strdup(tmp->cmd_right->cmd);
-		//	aaa = dup_tree(&tmp);
-		//	printf("YYYYYYYY = %s\n", aaa->cmd_right->cmd);
-		//	recup_struct(&aaa, 9);
-			pars_prompt(ttt, *env, *exp, 2);
-			ft_lstclear_env(env, del);
-			ft_lstclear_env(exp, del);
-			t_tree *aaa = recup_struct(NULL, 1);
-			ft_lstcleartree(&aaa, del);
-			//free_all(recup_struct_env2(NULL, 2),
-			//recup_struct_env2(NULL, 6), shell);
-		//	tmp = aaa;
-		//	free(ttt);
-			                rl_on_new_line();
-//                printf("\n");
-                rl_replace_line("", 1);
-                rl_redisplay();
-			exit(0);
-
-		}
+		braces_enginer(tmp->cmd_right->cmd, env, exp);
 	}
 	else
 	{
@@ -80,7 +56,7 @@ void	e_no_next_pp(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 void	e_no_next_ee(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 {
 	if (tmp->cmd_left->bracelvl)
-		pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
+		braces_enginer(tmp->cmd_left->cmd, env, exp);
 	else
 	{
 		exec_and(&tmp->cmd_left, env, exp, shell);
@@ -89,7 +65,7 @@ void	e_no_next_ee(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 	if (g_rvalue == 0)
 	{
 		if (tmp->cmd_right->bracelvl)
-			pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
+			braces_enginer(tmp->cmd_right->cmd, env, exp);
 		else
 		{
 			exec_and(&tmp->cmd_right, env, exp, shell);
@@ -103,7 +79,7 @@ void	e_no_next_ee(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 void	e_no_next_ou(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 {
 	if (tmp->cmd_left->bracelvl)
-		pars_prompt(tmp->cmd_left->cmd, *env, *exp, 2);
+		braces_enginer(tmp->cmd_left->cmd, env, exp);
 	else
 	{
 		exec_and(&tmp->cmd_left, env, exp, shell);
@@ -112,7 +88,7 @@ void	e_no_next_ou(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)
 	if (g_rvalue != 0)
 	{
 		if (tmp->cmd_right->bracelvl)
-			pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
+			braces_enginer(tmp->cmd_right->cmd, env, exp);
 		else
 		{
 			exec_and(&tmp->cmd_right, env, exp, shell);

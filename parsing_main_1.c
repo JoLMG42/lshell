@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 17:19:44 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 16:25:10 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,16 +61,12 @@ void	parse_other_cmd(t_tree *tree, t_env *env)
 
 void	start_exec(t_tree *tree, t_shell *shell, t_env *env, t_env *exp)
 {
-	//t_tree		*u;
-
 	recup_struct(&tree, 0);
 	shell->tree = tree;
 	shell->env = env;
 	shell->exp = exp;
 	exec(&tree, &env, &exp, shell);
 	ft_lstcleartree(&tree, del);
-	//u = recup_struct(NULL, 10);
-	//ft_lstcleartree(&u, del);
 	recup_struct(NULL, 3);
 }
 
@@ -88,13 +84,13 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 	{
 		t_shell	*bbb;
 		bbb = recup_shell(NULL);
-		free(bbb);
+		shell = bbb;
 		t_tree	*aaa;
 		aaa = recup_struct(NULL, 1);
 		ft_lstcleartree(&aaa, del);
 		flag = 0;
 	}
-	init_shell_and_tab(str, &shell, &tab);
+	init_shell_and_tab(str, &shell, &tab, mode);
 	if (mode == 2)
 		free(str);
 	if (!tab)

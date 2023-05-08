@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 17:35:39 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 18:07:26 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,7 +187,7 @@ void	heredoc_nocmd(char *limiter, t_env **env, t_env **exp, t_shell *shell);
 int		cut_hd_no_cmd(char *limiter);
 void	heredoc_cmd(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell);
 int		create_fd_hd(t_cmd *cmd);
-void	init_shell_and_tab(char *str, t_shell **shell, char ***tab);
+void	init_shell_and_tab(char *str, t_shell **shell, char ***tab, int mode);
 void	debug_print(t_tree *tree);
 int		find_count_wildcards(char *recup, char *file, int count, int count2);
 char	*ft_strstr(char *str, char *to_find);
@@ -213,6 +213,9 @@ void	cut_export_join_error(char *tmp);
 void	cut_export_join_unset(t_env **env, t_env **exp, t_env *recup);
 void	cut_middle_error(char *str, t_shell *tree);
 char	*little_cut_parse_first(char **tab, t_s *s);
-int	*recup_flag(int *i);
+int		*recup_flag(int *i);
+void	braces_enginer(char *cmd, t_env **env, t_env **exp);
+int		recup_status_braces(int i);
+void	cut_e_one_f_2(t_cmd *tmp, t_shell *s, char **envtab, char **et);
 
 #endif

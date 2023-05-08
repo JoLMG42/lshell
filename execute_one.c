@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 18:08:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 18:31:06 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 18:05:12 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,7 @@ void	cut_execone_fork(t_cmd *tmp, char **envtab, char **exectab, t_shell *s)
 		dup2(tmp->fd_in, 0);
 		dup2(tmp->fd_out, 1);
 		if (!tmp->cmd || execve(tmp->cmd, exectab, envtab) == -1)
-		{
-			if (tmp->cmd)
-				check_slash(tmp->cmd, 1);
-			free_all(recup_struct_env2(NULL, 2),
-				recup_struct_env2(NULL, 6), s);
-			cut_middle_execute_free(envtab, exectab);
-			exit(127);
-		}
+			cut_e_one_f_2(tmp, s, envtab, exectab);
 		exit(0);
 	}
 	else

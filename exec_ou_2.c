@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:11:06 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:11:13 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 16:21:41 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_tree	*ex_sec_grp_ou(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell)
 	else
 	{
 		if (tmp->cmd_right->bracelvl)
-			pars_prompt(tmp->cmd_right->cmd, *env, *exp, 2);
+			braces_enginer(tmp->cmd_right->cmd, env, exp);
 		else
 		{
 			exec_and(&tmp->cmd_right, env, exp, shell);

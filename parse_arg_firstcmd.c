@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:42:39 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 15:19:09 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/08 17:52:49 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ void	parseargfirstcmd(t_tree **lst, char **tab, char *str)
 	while (tmp->cmd_left->arg[++s.i])
 	{
 		tmp->cmd_left->arg[s.i] = addspacedol(tmp->cmd_left->arg[s.i]);
+		tab = NULL;
 		tab = ft_supersplit(tmp->cmd_left->arg[s.i], ' ');
 		free(tmp->cmd_left->arg[s.i]);
 		tmp->cmd_left->arg[s.i] = NULL;
