@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 11:03:13 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 23:18:58 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/09 13:38:37 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,27 @@ t_tree	*cut_ouverturefirstcmd_2(t_tree *tmp, char **tab, int i)
 	return (tmp);
 }
 
+t_tree	*little_cut_ouv_f_cmd(t_tree *tmp, char **tab, int i)
+{
+	free(tmp->cmd_left->name_in);
+	tmp->cmd_left->name_in = ft_strdup(tab[i + 1]);
+	tmp->cmd_left->mode_open = 1;
+	if (tab[i + 2])
+		tmp->cmd_left->cmd = recalculcmd(tmp->cmd_left->cmd,
+				tmp->cmd_left->name_in, "<");
+	else if (i > 0)
+	{
+		free(tmp->cmd_left->cmd);
+		tmp->cmd_left->cmd = ft_strdup(tab[i - 1]);
+	}
+	else
+	{
+		free(tmp->cmd_left->cmd);
+		tmp->cmd_left->cmd = NULL;
+	}
+	return (tmp);
+}
+
 t_tree	*cut_ouverturefirstcmd(t_tree *tmp, char **tab, int i)
 {
 	if (ft_strcmp(tab[i], ">") == 0)
@@ -74,24 +95,7 @@ t_tree	*cut_ouverturefirstcmd(t_tree *tmp, char **tab, int i)
 		tmp->cmd_left->mode_open = 1;
 	}
 	else if (ft_strcmp(tab[i], "<") == 0)
-	{
-		free(tmp->cmd_left->name_in);
-		tmp->cmd_left->name_in = ft_strdup(tab[i + 1]);
-		tmp->cmd_left->mode_open = 1;
-		if (tab[i + 2])
-			tmp->cmd_left->cmd = recalculcmd(tmp->cmd_left->cmd,
-					tmp->cmd_left->name_in, "<");
-		else if (i > 0)
-		{
-			free(tmp->cmd_left->cmd);
-			tmp->cmd_left->cmd = ft_strdup(tab[i - 1]);
-		}
-		else
-		{
-			free(tmp->cmd_left->cmd);
-			tmp->cmd_left->cmd = NULL;
-		}
-	}
+		tmp = little_cut_ouv_f_cmd(tmp, tab, i);
 	return (tmp);
 }
 

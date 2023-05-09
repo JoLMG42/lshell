@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 11:10:53 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 10:10:13 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/09 13:46:32 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,10 @@ t_tree	*cut_ouvertureredir_3(t_tree *tmp, char **tab, int i)
 				free(tmp->cmd_right->cmd);
 			tmp->cmd_right->cmd = NULL;
 		}
+		free(tmp->cmd_right->limiter);
 		tmp->cmd_right->limiter = ft_strdup(tab[i + 1]);
 		tmp->cmd_right->is_hd = 1;
+		free(tmp->cmd_right->name_in);
 		tmp->cmd_right->name_in = ft_strdup(tab[i + 1]);
 		if (tmp->cmd_right->cmd)
 			tmp->cmd_right->cmd = recalculcmd(tmp->cmd_right->cmd,
@@ -52,8 +54,25 @@ t_tree	*cut_ouvertureredir_2(t_tree *tmp, char **tab, int i)
 			free(tmp->cmd_right->cmd);
 			tmp->cmd_right->cmd = NULL;
 		}
+		free(tmp->cmd_right->name_out);
 		tmp->cmd_right->name_out = ft_strdup(tab[i + 1]);
 		tmp->cmd_right->mode_open = 2;
+	}
+	return (tmp);
+}
+
+t_tree	*little_cut_ouv_cmd(t_tree *tmp, char **tab, int i)
+{
+	free(tmp->cmd_right->name_in);
+	tmp->cmd_right->name_in = ft_strdup(tab[i + 1]);
+	tmp->cmd_right->mode_open = 1;
+	if (tab[i + 2])
+		tmp->cmd_right->cmd = recalculcmd(tmp->cmd_right->cmd,
+				tmp->cmd_right->name_in, "<");
+	else
+	{
+		free(tmp->cmd_right->cmd);
+		tmp->cmd_right->cmd = NULL;
 	}
 	return (tmp);
 }
@@ -67,22 +86,12 @@ t_tree	*cut_ouvertureredir(t_tree *tmp, char **tab, int i)
 			tmp->cmd_right->cmd = ft_strdup(tab[i - 1]);
 		else
 			tmp->cmd_right->cmd = NULL;
+		free(tmp->cmd_right->name_out);
 		tmp->cmd_right->name_out = ft_strdup(tab[i + 1]);
 		tmp->cmd_right->mode_open = 1;
 	}
 	if (ft_strcmp(tab[i], "<") == 0)
-	{
-		tmp->cmd_right->name_in = ft_strdup(tab[i + 1]);
-		tmp->cmd_right->mode_open = 1;
-		if (tab[i + 2])
-			tmp->cmd_right->cmd = recalculcmd(tmp->cmd_right->cmd,
-					tmp->cmd_right->name_in, "<");
-		else
-		{
-			free(tmp->cmd_right->cmd);
-			tmp->cmd_right->cmd = NULL;
-		}
-	}
+		tmp = little_cut_ouv_cmd(tmp, tab, i);
 	return (tmp);
 }
 

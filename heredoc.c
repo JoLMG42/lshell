@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 14:10:05 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 15:44:33 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/09 13:45:26 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ void	heredoc(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell)
 	tmpvalue = g_rvalue;
 	g_rvalue = 0;
 	tmp = (*cmd);
+	if (!tmp->cmd && !tmp->limiter)
+		return ;
 	if (!tmp->cmd)
 	{
 		heredoc_nocmd(tmp->limiter, env, exp, shell);
