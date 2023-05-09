@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:41:51 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/03 16:43:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/09 23:59:43 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ char	*check_slash(char *cmd, int mode)
 	putstr_fd_echo("minishell: ", 2);
 	putstr_fd_echo(cmd, 2);
 	putstr_fd_echo(": command not found\n", 2);
+	free(cmd);
 	return (NULL);
 }
 
