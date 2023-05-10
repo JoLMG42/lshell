@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:11:53 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 10:47:57 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:58:28 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,19 +39,28 @@ t_tree	*skip_pipe(t_tree *tmp, t_shell *shell)
 	return (tmp);
 }
 
-void	init_heredoc(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
+int	init_heredoc(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 {
 	t_tree	*tmp;
 
 	tmp = (*tree)->next;
 	if (tmp && tmp->cmd_left->is_hd)
+	{
 		heredoc(&tmp->cmd_left, env, exp, shell);
+		if (g_rvalue == 130)
+			return (130);
+	}
 	while (tmp)
 	{
 		if (tmp->cmd_right->is_hd)
+		{
 			heredoc(&tmp->cmd_right, env, exp, shell);
+			if (g_rvalue == 130)
+				return (130);
+		}
 		tmp = tmp->next;
 	}
+	return (0);
 }
 
 void	init_hd(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell)

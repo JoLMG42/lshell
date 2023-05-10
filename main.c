@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 18:06:56 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 14:08:14 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ int	main(int ac, char **av, char **envp)
 
 	(void)ac;
 	(void)av;
+	if (!ttyname(1) || !ttyname(0))
+		return (0);
 	get_env(&env, envp, 0, &exp);
 	recup_struct_env(&env, 0);
 	recup_struct_env(&exp, 5);

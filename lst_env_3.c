@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 16:14:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 17:35:16 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:26:59 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,34 @@ void	add_little_env(t_env **env, int mode, t_env **exp)
 	ft_export(tab, env, exp);
 }
 
+char	*update_shlvl(char *name, char *content)
+{
+	int	n;
+
+	if (name && ft_strcmp(name, "SHLVL") == 0)
+	{
+		n = ft_atoi(content);
+		if (n >= 1000)
+		{
+			putstr_fd_echo("minishell: warning: shell level ", 2);
+			putstr_fd_echo("(", 2);
+			putstr_fd_echo(content, 2);
+			putstr_fd_echo(")", 2);
+			putstr_fd_echo(" too hight, resetting to 1\n", 2);
+			n = 1;
+		}
+		else if (n <= 0)
+			n = 1;
+		else
+			n++;
+		free(content);
+		content = ft_itoa(n);
+	}
+	return (content);
+}
+
 void	get_env(t_env **env, char **envi, int mode, t_env **exp)
 {
-	char	*name;
-	char	*content;
 	int		i;
 
 	i = -1;
@@ -86,14 +110,5 @@ void	get_env(t_env **env, char **envi, int mode, t_env **exp)
 		return ;
 	}
 	while (envi[++i])
-	{
-		name = checkegal(envi[i], '=');
-		content = checkafteregal(envi[i], '=');
-		ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(envi[i]),
-				ft_strdup(name), ft_strdup(content)));
-		ft_lstadd_back_env(exp, ft_lstnew_env(ft_strdup(envi[i]),
-				ft_strdup(name), ft_strdup(content)));
-		free(name);
-		free(content);
-	}
+		get_env_2(envi, env, exp, i);
 }

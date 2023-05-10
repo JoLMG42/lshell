@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 14:10:05 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/09 13:45:26 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:55:42 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,4 @@ void	heredoc(t_cmd **cmd, t_env **env, t_env **exp, t_shell *shell)
 		return ;
 	}
 	heredoc_cmd(tmp, env, exp, shell);
-	if (g_rvalue == 0)
-		g_rvalue = tmpvalue;
 }

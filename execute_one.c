@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 18:08:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 18:05:12 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 14:46:28 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,8 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 		tmp->pid = 0;
 		return ;
 	}
+	if (!tmp->cmd)
+		exec_fail(NULL);
 	tmp = cut_exec_one_in_out(tmp);
 	cut_executone(tmp, shell, env);
 	if (tmp->fd_in == -1)

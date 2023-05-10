@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:46:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 13:15:47 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 14:46:09 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ char	*cut_recup_cmd(char **newpath, char *cmd, char *tmp, int i)
 	char	*recover;
 
 	recover = NULL;
-	while (newpath && newpath[i++])
+	while (cmd && cmd[0] && newpath && newpath[++i])
 	{
 		tmp = ft_strjoin2(newpath[i], "/");
 		recover = ft_strjoin(tmp, cmd);
@@ -30,7 +30,7 @@ char	*cut_recup_cmd(char **newpath, char *cmd, char *tmp, int i)
 		free(recover);
 		recover = NULL;
 	}
-	printf("%s : command not found\n", cmd);
+	exec_fail(cmd);
 	if (recover)
 		free(recover);
 	free(cmd);
@@ -57,7 +57,7 @@ char	*recup_cmd(char *cmd, t_env **env, int i)
 	newpath = recover_path(tab);
 	free_tab(tab);
 	recover = NULL;
-	return (cut_recup_cmd(newpath, cmd, tmp, i));
+	return (cut_recup_cmd(newpath, cmd, tmp, i - 1));
 }
 
 void	cut_middle_error(char *str, t_shell *tree)

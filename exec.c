@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 13:21:12 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/10 00:17:58 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 16:07:10 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,8 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 	t_tree	*to_wait;
 
 	to_wait = NULL;
-	init_heredoc(tree, env, exp, shell);
+	if (init_heredoc(tree, env, exp, shell) == 130)
+		return ;
 	tmp = (*tree)->next;
 	(*tree)->next->in_exec = 1;
 	i = mini_init(shell, to_wait);
@@ -104,8 +105,5 @@ void	exec(t_tree **tree, t_env **env, t_env **exp, t_shell *shell)
 		tmp = exec_end_while(tmp, shell);
 	}
 	if (shell && shell->saveope)
-	{
 		free(shell->saveope);
-		shell->saveope = NULL;
-	}
 }

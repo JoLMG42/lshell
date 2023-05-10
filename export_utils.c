@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 17:31:23 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 17:32:06 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:30:04 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	check_plus(char *str)
 	int	i;
 
 	i = 0;
-	while (str[i])
+	while (str && str[i])
 	{
 		if (str[i] == '+')
 			return (1);
@@ -51,7 +51,7 @@ int	check_egal(char *str)
 	int	i;
 
 	i = 0;
-	while (str[i])
+	while (str && str[i])
 	{
 		if (str[i] == '=')
 			return (1);
@@ -65,7 +65,7 @@ int	len_egal(char *str)
 	int	i;
 
 	i = 0;
-	while (str[i])
+	while (str && str[i])
 	{
 		if (str[i] == '=')
 			break ;

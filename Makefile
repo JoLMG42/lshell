@@ -6,7 +6,7 @@
 #    By: lguillau <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/14 14:27:36 by lguillau          #+#    #+#              #
-#    Updated: 2023/05/05 11:25:07 by jtaravel         ###   ########.fr        #
+#    Updated: 2023/05/10 13:49:03 by jtaravel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,6 +41,7 @@ FILES	=	add_sapce_dol.c\
 			export_utils.c \
 			first_execute.c \
 			free.c \
+			ft_atoi.c \
 			ft_itoa.c \
 			ft_lst.c \
 			ft_lsttree.c \
@@ -81,8 +82,6 @@ FILES	=	add_sapce_dol.c\
 			wildcards_2.c \
 			wildcards_3.c \
 			wildcards_4.c \
-
-
 
 
 S_PATH	=	srcs/

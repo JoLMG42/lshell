@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:42:39 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 17:52:49 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:25:40 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,19 @@ t_tree	*cut_parseargfirstcmd(t_tree *tmp, char **tab, t_s *s, char *str)
 
 char	*little_cut_parse_first_cmd(char **tab, t_s *s)
 {
+	char	*dup;
+
+	dup = NULL;
 	tab[s->j] = ft_suppr_dq_sq(tab[s->j]);
 	if (recup_content_env(tab[s->j] + 1,
 			recup_struct_env2(NULL, 2)) != NULL)
-		tab[s->j] = recup_content_env(tab[s->j] + 1,
+		dup = recup_content_env2(tab[s->j] + 1,
 				recup_struct_env2(NULL, 2));
+	if (dup)
+	{
+		free(tab[s->j]);
+		tab[s->j] = ft_strdup(dup);
+	}
 	return (tab[s->j]);
 }
 

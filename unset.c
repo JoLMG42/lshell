@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 14:50:25 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 18:14:18 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 12:53:33 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,14 @@ void	ft_unset(char **tab, t_env **env, t_env **exp)
 	i = 0;
 	while (tab && tab[i])
 	{
-		tmp = (*env)->next;
+		tmp = (*env);
 		while (tmp)
 		{
 			if (unset2(tab[i], tmp) == 1)
 				break ;
 			tmp = tmp->next;
 		}
-		tmpexp = (*exp)->next;
+		tmpexp = (*exp);
 		while (tmpexp)
 		{
 			if (unset2(tab[i], tmpexp) == 1)

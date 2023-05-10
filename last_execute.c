@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:51:46 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 11:14:13 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 14:29:14 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,7 @@ void	last_execute(t_cmd **cmd, t_env **env, t_shell *tree, t_env **exp)
 		tmp->cmd = recup_cmd(tmp->cmd, env, 0);
 	tmp->pid = fork();
 	if (tmp->pid == 0)
-	{
 		cut_last_execute(tmp, tree, env, exp);
-	}
 	else
 	{
 		if (tree->pipefd[0] != 0)

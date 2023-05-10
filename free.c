@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 18:58:24 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 18:00:08 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:31:46 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,33 @@ int	*recup_flag(int *i)
 	if (!i)
 		return (tmp);
 	return (0);
+}
+
+void	get_env_2(char **envi, t_env **env, t_env **exp, int i)
+{
+	char	*name;
+	char	*content;
+	char	*line;
+
+	line = NULL;
+	content = NULL;
+	name = NULL;
+	name = checkegal(envi[i], '=');
+	content = checkafteregal(envi[i], '=');
+	content = update_shlvl(name, content);
+	if (!name && !content)
+		line = ft_strdup(envi[i]);
+	else
+	{
+		line = ft_strjoin(line, name);
+		line = ft_strjoin(line, "=");
+		line = ft_strjoin(line, content);
+	}
+	ft_lstadd_back_env(env, ft_lstnew_env(ft_strdup(line),
+			ft_strdup(name), ft_strdup(content)));
+	ft_lstadd_back_env(exp, ft_lstnew_env(ft_strdup(line),
+			ft_strdup(name), ft_strdup(content)));
+	free(line);
+	free(name);
+	free(content);
 }

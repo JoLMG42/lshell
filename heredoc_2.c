@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:43:24 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/05 15:29:57 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:58:12 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void	heredoc_cmd(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
 {
 	int		frk;
 	int		value;
-	t_tree	*t;
 
 	value = 0;
 	cmd->fd_in = create_fd_hd(cmd);
@@ -52,15 +51,15 @@ void	heredoc_cmd(t_cmd *cmd, t_env **env, t_env **exp, t_shell *shell)
 			if (cut_hd_cmd(cmd) == 0)
 				break ;
 		}
-		t = recup_struct(NULL, 1);
-		ft_lstcleartree(&t, del);
-		free(shell);
-		ft_lstclear_env(env, del);
-		ft_lstclear_env(exp, del);
+		free_all(env, exp, shell);
 		exit(0);
 	}
 	else
+	{
 		waitpid(frk, &value, 0);
+		if (WEXITSTATUS(value) == 2)
+			g_rvalue = 130;
+	}
 }
 
 int	cut_hd_no_cmd(char *limiter)
@@ -89,7 +88,6 @@ void	heredoc_nocmd(char *limiter, t_env **env, t_env **exp, t_shell *shell)
 {
 	int		frk;
 	int		value;
-	t_tree	*t;
 
 	value = 0;
 	frk = fork();
@@ -101,22 +99,23 @@ void	heredoc_nocmd(char *limiter, t_env **env, t_env **exp, t_shell *shell)
 			if (cut_hd_no_cmd(limiter) == 0)
 				break ;
 		}
-		t = recup_struct(NULL, 1);
-		ft_lstcleartree(&t, del);
-		free(shell);
-		ft_lstclear_env(env, del);
-		ft_lstclear_env(exp, del);
-		exit(0);
+		free_all(env, exp, shell);
 		exit(0);
 	}
 	else
+	{
 		waitpid(frk, &value, 0);
+		if (WEXITSTATUS(value) == 2)
+			g_rvalue = 130;
+	}
 }
 
 void	handler_heredoc(int sig)
 {
 	if (sig == 2)
 	{
+		free_all(recup_struct_env2(NULL, 2), recup_struct_env2(NULL, 6),
+			recup_shell(NULL));
 		g_rvalue = 130;
 		printf("\n");
 		exit(2);

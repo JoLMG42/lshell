@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/11 11:19:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/04 16:04:36 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 14:46:48 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,14 @@ char	*ft_strjoin2(char *s1, char *s2)
 	if (c == 1)
 		free(s1);
 	return (join);
+}
+
+void	exec_fail(char *cmd)
+{
+	putstr_fd_echo("minishell: ", 2);
+	if (!cmd)
+		putstr_fd_echo("", 2);
+	else
+		putstr_fd_echo(cmd, 2);
+	putstr_fd_echo(": command not found\n", 2);
 }

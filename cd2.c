@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 16:08:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 17:47:56 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:19:50 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,23 @@ void	cd_no_arg(t_env **env, t_env **exp)
 		putstr_fd_echo("minishell: cd: HOME not set\n", 2);
 		g_rvalue = 1;
 	}
-	if (chdir(str) == -1)
-	{
-		free(str);
+	if (!str || chdir(str) == -1)
 		return ;
-	}
 	update_pwd_oldpwd(env, str, 1, exp);
+}
+
+char	*recup_content_env2(char *find, t_env **env)
+{
+	t_env	*tmp;
+
+	tmp = (*env)->next;
+	while (tmp)
+	{
+		if (ft_strcmp(find, tmp->name) == 0)
+			return (ft_strdup(tmp->content));
+		tmp = tmp->next;
+	}
+	return (NULL);
 }
 
 char	*recup_content_env(char *find, t_env **env)
@@ -38,7 +49,7 @@ char	*recup_content_env(char *find, t_env **env)
 	while (tmp)
 	{
 		if (ft_strcmp(find, tmp->name) == 0)
-			return ((tmp->content));
+			return (tmp->content);
 		tmp = tmp->next;
 	}
 	return (NULL);

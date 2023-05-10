@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 16:41:51 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/09 23:59:43 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 14:35:43 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char	**fusioncmdarg(char *cmd, char **arg)
 
 char	*check_slash(char *cmd, int mode)
 {
-	if (access(cmd, X_OK) == 0 && mode == 0)
+	if (cmd && access(cmd, X_OK) == 0 && mode == 0)
 	{
 		return (cmd);
 	}

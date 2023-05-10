@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 21:54:13 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:53:08 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ int		check_brace(char *str);
 int		check_parse_sq_dq(char *str, char c);
 void	cd_no_arg(t_env **env, t_env **exp);
 char	*recup_content_env(char *find, t_env **env);
+char	*recup_content_env2(char *find, t_env **env);
 void	create_oldpwd(t_env **env, int mode);
 void	update_pwd_oldpwd(t_env **env, char *newpath, int mode, t_env **exp);
 char	*add_spaces(char *str, int i, int j);
@@ -181,7 +182,7 @@ t_tree	*little_cut(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell);
 t_tree	*exec_sec_grp_ou(t_tree *tmp, t_tree *tw, t_env **exp, t_shell *shell);
 void	init_hd(t_tree *tmp, t_env **env, t_env **exp, t_shell *shell);
 t_tree	*skip_pipe(t_tree *tmp, t_shell *shell);
-void	init_heredoc(t_tree **tree, t_env **env, t_env **exp, t_shell *shell);
+int		init_heredoc(t_tree **tree, t_env **env, t_env **exp, t_shell *shell);
 void	handler_heredoc(int sig);
 void	heredoc_nocmd(char *limiter, t_env **env, t_env **exp, t_shell *shell);
 int		cut_hd_no_cmd(char *limiter);
@@ -218,5 +219,11 @@ void	braces_enginer(char *cmd, t_env **env, t_env **exp);
 int		recup_status_braces(int i);
 void	cut_e_one_f_2(t_cmd *tmp, t_shell *s, char **envtab, char **et);
 void	braces_parsing(t_shell **shell);
+int		ft_atoi(const char *str);
+void	get_env_2(char **envi, t_env **env, t_env **exp, int i);
+char	*update_shlvl(char *name, char *content);
+char	*checkafteregal(char *str, char c);
+char	*checkegal(char *str, char c);
+void	exec_fail(char *cmd);
 
 #endif

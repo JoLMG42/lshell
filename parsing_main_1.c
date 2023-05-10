@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/08 22:20:44 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/10 15:32:17 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 	parse_first_cmd(tree, env);
 	if (i > 1)
 		parse_other_cmd(tree, env);
-	debug_print(tree);
+	//debug_print(tree);
 	start_exec(tree, shell, env, exp);
 	free(shell);
 	return (1);
