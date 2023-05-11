@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/10 15:32:17 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 13:28:31 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void	start_exec(t_tree *tree, t_shell *shell, t_env *env, t_env *exp)
 	recup_struct(NULL, 3);
 }
 
+	/*debug_print(tree);*/
 int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 {
 	char		**tab;
@@ -90,7 +91,6 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 	parse_first_cmd(tree, env);
 	if (i > 1)
 		parse_other_cmd(tree, env);
-	//debug_print(tree);
 	start_exec(tree, shell, env, exp);
 	free(shell);
 	return (1);

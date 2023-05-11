@@ -6,86 +6,86 @@
 #    By: lguillau <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/14 14:27:36 by lguillau          #+#    #+#              #
-#    Updated: 2023/05/10 13:49:03 by jtaravel         ###   ########.fr        #
+#    Updated: 2023/05/11 12:26:21 by jtaravel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FILES	=	add_sapce_dol.c\
-			add_spaces2.c \
-			add_spaces.c \
-			builtins.c \
-			cd2.c \
-			cd.c \
-			check_syntax_func.c \
-			echo_2.c \
-			echo.c \
-			env.c \
-			exec_2.c \
-			exec_bonux.c \
-			exec.c \
-			exec_et_2.c \
-			exec_et.c \
-			exec_no_next.c \
-			exec_ou_2.c \
-			exec_ou.c \
-			exec_pp_2.c \
-			exec_pp.c \
-			execute_one.c \
-			exec_utils2.c \
-			exec_utils.c \
-			exit_2.c \
-			exit.c \
-			export.c \
-			export_no_arg.c \
-			export_plus_equal.c \
-			export_utils.c \
-			first_execute.c \
-			free.c \
-			ft_atoi.c \
-			ft_itoa.c \
-			ft_lst.c \
-			ft_lsttree.c \
-			heredoc_2.c \
-			heredoc.c \
-			last_execute.c \
-			lst_env_2.c \
-			lst_env_3.c \
-			lst_env.c \
-			main.c \
-			middle_execute.c \
-			ouverture_redir.c \
-			ouverture_redir_first_cmd.c \
-			parse_arg.c \
-			parse_arg_firstcmd.c \
-			parse_cmd.c \
-			parse_first_cmd.c \
-			parsing_main_1.c \
-			parsing_main_2.c \
-			pwd.c \
-			recalculcmd.c \
-			set_arg.c \
-			set_arg_firstcmd.c \
-			set_brace_lvl.c \
-			set_brace_lvl_firstcmd.c \
-			strdup.c \
-			string_tools2.c \
-			string_tools3.c \
-			string_tools4.c \
-			string_tools.c \
-			strjoin.c \
-			supersplit2.c \
-			supersplit.c \
-			syntax.c \
-			unset.c \
-			wait.c \
-			wildcards.c \
-			wildcards_2.c \
-			wildcards_3.c \
-			wildcards_4.c \
+FILES	=	srcs/parsing/add_sapce_dol.c\
+		srcs/parsing/add_spaces2.c \
+		srcs/parsing/add_spaces.c \
+		srcs/builtins/builtins.c \
+		srcs/builtins/cd2.c \
+		srcs/builtins/cd.c \
+		srcs/parsing/check_syntax_func.c \
+		srcs/builtins/echo_2.c \
+		srcs/builtins/echo.c \
+		srcs/builtins/env.c \
+		srcs/exec/exec_2.c \
+		srcs/exec/exec_bonux.c \
+		srcs/exec/exec.c \
+		srcs/exec/exec_et_2.c \
+		srcs/exec/exec_et.c \
+		srcs/exec/exec_no_next.c \
+		srcs/exec/exec_ou_2.c \
+		srcs/exec/exec_ou.c \
+		srcs/exec/exec_pp_2.c \
+		srcs/exec/exec_pp.c \
+		srcs/exec/execute_one.c \
+		srcs/exec/exec_utils2.c \
+		srcs/exec/exec_utils.c \
+		srcs/builtins/exit_2.c \
+		srcs/builtins/exit.c \
+		srcs/builtins/export.c \
+		srcs/builtins/export_no_arg.c \
+		srcs/builtins/export_plus_equal.c \
+		srcs/builtins/export_utils.c \
+		srcs/exec/first_execute.c \
+		srcs/utils/free.c \
+		srcs/utils/ft_atoi.c \
+		srcs/utils/ft_itoa.c \
+		srcs/lst/ft_lst.c \
+		srcs/lst/ft_lsttree.c \
+		srcs/exec/heredoc_2.c \
+		srcs/exec/heredoc.c \
+		srcs/exec/last_execute.c \
+		srcs/lst/lst_env_2.c \
+		srcs/lst/lst_env_3.c \
+		srcs/lst/lst_env.c \
+		srcs/main.c \
+		srcs/exec/middle_execute.c \
+		srcs/parsing/ouverture_redir.c \
+		srcs/parsing/ouverture_redir_first_cmd.c \
+		srcs/parsing/parse_arg.c \
+		srcs/parsing/parse_arg_firstcmd.c \
+		srcs/parsing/parse_cmd.c \
+		srcs/parsing/parse_first_cmd.c \
+		srcs/parsing/parsing_main_1.c \
+		srcs/parsing/parsing_main_2.c \
+		srcs/builtins/pwd.c \
+		srcs/parsing/recalculcmd.c \
+		srcs/parsing/set_arg.c \
+		srcs/parsing/set_arg_firstcmd.c \
+		srcs/parsing/set_brace_lvl.c \
+		srcs/parsing/set_brace_lvl_firstcmd.c \
+		srcs/utils/strdup.c \
+		srcs/utils/string_tools2.c \
+		srcs/utils/string_tools3.c \
+		srcs/utils/string_tools4.c \
+		srcs/utils/string_tools.c \
+		srcs/utils/strjoin.c \
+		srcs/utils/supersplit2.c \
+		srcs/utils/supersplit.c \
+		srcs/parsing/syntax.c \
+		srcs/builtins/unset.c \
+		srcs/exec/wait.c \
+		srcs/parsing/wildcards.c \
+		srcs/parsing/wildcards_2.c \
+		srcs/parsing/wildcards_3.c \
+		srcs/parsing/wildcards_4.c \
 
 
 S_PATH	=	srcs/
-O_PATH	=	./
+O_PATH	=	
 I_PATH	=	includes/
 
 SRCS	=	${addprefix ${S_PATH}, ${FILES}}
@@ -97,7 +97,7 @@ CC	=	clang
 
 RM	=	rm -rf
 
-CFLAGS	=	-Wall -Wextra -Werror -g3
+CFLAGS	=	-Wall -Wextra -Werror -I./includes -g3
 
 ${O_PATH}%.o:	${S_PATH}%.c
 		@mkdir -p ${dir $@}

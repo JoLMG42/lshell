@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:42:39 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/10 15:25:40 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 12:39:30 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ char	*little_cut_parse_first_cmd(char **tab, t_s *s)
 	{
 		free(tab[s->j]);
 		tab[s->j] = ft_strdup(dup);
+		free(dup);
 	}
 	return (tab[s->j]);
 }

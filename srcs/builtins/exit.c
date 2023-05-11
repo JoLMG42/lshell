@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 19:38:19 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 19:38:21 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 13:28:06 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,11 @@ void	ft_exit_error_1(char **split, char *line, char *tmp, int mode)
 	}
 }
 
-void	ft_error_exit_2(char **split, char *tmp)
+void	ft_error_exit_2(char **split, char *tmp, char *line)
 {
+	free(line);
+	free_all(recup_struct_env2(NULL, 2),
+		recup_struct_env2(NULL, 6), recup_shell(NULL));
 	printf("Bye! 👋\n");
 	printf("Minishell: exit: %s: numeric argument required\n", split[0]);
 	g_rvalue = 1;

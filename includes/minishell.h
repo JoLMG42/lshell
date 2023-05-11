@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/10 15:53:08 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 12:59:38 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void	free_all(t_env **env, t_env **exp, t_shell *shell);
 void	cut_exit(t_env **env, t_env **exp, t_shell *shell, t_cmd *cmd);
 int		ft_mega_atoi(char *str);
 void	ft_exit_error_1(char **split, char *line, char *tmp, int mode);
-void	ft_error_exit_2(char **split, char *tmp);
+void	ft_error_exit_2(char **split, char *tmp, char *line);
 void	ft_exit_2(char **split, int valeur, char *tmp);
 void	export_both(char *str, t_env **env, t_env **exp);
 t_shell	*recup_shell(t_shell *shell);

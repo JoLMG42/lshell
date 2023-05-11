@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 19:36:24 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/04/28 19:38:28 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 12:59:59 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	cut_exit(t_env **env, t_env **exp, t_shell *shell, t_cmd *cmd)
 		return ;
 	}
 	else if (ft_strcmp(line, tmp))
-		ft_error_exit_2(split, tmp);
+		ft_error_exit_2(split, tmp, line);
 	else
 	{
 		free(line);

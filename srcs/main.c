@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 14:56:26 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/10 14:08:14 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 12:29:11 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ int	main_while(t_env *env, t_env *exp)
 		return (0);
 	if (!pars_prompt(str, env, exp, 5))
 		printf("INVALID SYNTAX\n");
+	if (g_rvalue == 667)
+		g_rvalue = 0;
 	if (str[0])
 		add_history(str);
 	free(str);

@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/04 15:58:02 by lcalvie           #+#    #+#             */
-/*   Updated: 2023/05/08 18:05:49 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 13:30:49 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	init_shell_and_tab(char *str, t_shell **shell, char ***tab, int mode)
 		*tab = rejointab(*tab);
 }
 
-void	debug_print(t_tree *tree)
+/*void	debug_print(t_tree *tree)
 {
 	t_tree	*test;
 	int		n;
@@ -99,7 +99,10 @@ void	debug_print(t_tree *tree)
 				n++;
 			}
 		}
-		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\nBRACE LVL: %d\n\n\n\n", test->cmd_left->name_in, test->cmd_left->name_out, test->cmd_left->is_hd, test->cmd_left->limiter, test->cmd_left->bracelvl);
+		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: \
+		%d\nLIMITER: %s\nBRACE LVL: %d\n\n\n\n", test->cmd_left->name_in, \
+		test->cmd_left->name_out, test->cmd_left->is_hd, \
+		test->cmd_left->limiter, test->cmd_left->bracelvl);
 		printf("CMD RIGHT: %s\n", test->cmd_right->cmd);
 		n = 0;
 		if (test->cmd_right->arg)
@@ -110,7 +113,11 @@ void	debug_print(t_tree *tree)
 				n++;
 			}
 		}
-		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: %s\nBRACE LVL: %d\n\n\n\n", test->cmd_right->name_in, test->cmd_right->name_out, test->cmd_right->is_hd, test->cmd_right->limiter, test->cmd_right->bracelvl);
+		printf("REDIR IN: %s\nREDIR OUT: %s\nIS_HD: %d\nLIMITER: \
+		%s\nBRACE LVL: %d\n\n\n\n", test->cmd_right->name_in, \
+		test->cmd_right->name_out, test->cmd_right->is_hd, \
+		test->cmd_right->limiter, test->cmd_right->bracelvl);
 		test = test->next;
+
 	}
-}
+}*/
