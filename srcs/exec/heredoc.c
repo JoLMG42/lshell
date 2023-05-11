@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/18 14:10:05 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/10 15:55:42 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 16:38:34 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	ft_putstr_fd(char *str, int fd)
 	int	i;
 
 	i = 0;
-	while (str[i])
+	while (str && str[i])
 	{
 		write(fd, &str[i], 1);
 		i++;

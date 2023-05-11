@@ -6,7 +6,7 @@
 #    By: lguillau <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/14 14:27:36 by lguillau          #+#    #+#              #
-#    Updated: 2023/05/11 12:26:21 by jtaravel         ###   ########.fr        #
+#    Updated: 2023/05/11 16:57:23 by jtaravel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -82,6 +82,7 @@ FILES	=	srcs/parsing/add_sapce_dol.c\
 		srcs/parsing/wildcards_2.c \
 		srcs/parsing/wildcards_3.c \
 		srcs/parsing/wildcards_4.c \
+		expander.c \
 
 
 S_PATH	=	srcs/

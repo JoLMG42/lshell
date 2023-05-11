@@ -6,7 +6,7 @@
 /*   By: jtaravel <jtaravel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/19 16:36:52 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/10 12:47:38 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 16:38:49 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ void	cd_moins(t_env **env)
 		putstr_fd_echo(str, 2);
 		putstr_fd_echo(": No such file or directory\n", 2);
 		g_rvalue = 1;
-		free(str);
 		return ;
 	}
 	putstr_fd_echo(str, 1);

@@ -6,7 +6,7 @@
 /*   By: jtaravel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 18:08:00 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/11 13:19:21 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 16:33:13 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,8 @@ void	executeone(t_cmd **cmd, t_env **env, t_shell *shell, t_env **exp)
 	t_cmd	*tmp;
 
 	(void)exp;
+	close(shell->pipefd[0]);
+	close(shell->pipefd[1]);
 	tmp = *cmd;
 	if (!tmp)
 		return ;

@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/10 16:26:08 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/11 12:59:38 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 16:56:48 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,5 +225,6 @@ char	*update_shlvl(char *name, char *content);
 char	*checkafteregal(char *str, char c);
 char	*checkegal(char *str, char c);
 void	exec_fail(char *cmd);
+char    *expander(char *str, t_env **env, int i, char *res);
 
 #endif

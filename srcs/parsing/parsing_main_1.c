@@ -6,7 +6,7 @@
 /*   By: lcalvie <lcalvie@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 17:50:43 by jtaravel          #+#    #+#             */
-/*   Updated: 2023/05/11 13:28:31 by jtaravel         ###   ########.fr       */
+/*   Updated: 2023/05/11 16:57:06 by jtaravel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,8 @@ int	pars_prompt(char *str, t_env *env, t_env *exp, int mode)
 
 	if (mode == 2)
 		braces_parsing(&shell);
+	printf("PROMPT = %s\n", str);
+	str = expander(str, &env, 0, NULL);
 	init_shell_and_tab(str, &shell, &tab, mode);
 	if (mode == 2)
 		free(str);
